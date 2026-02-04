@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +52,7 @@ public class AdminPermissionServiceImpl implements AdminPermissionService {
 
     @Override
     @Transactional
-    public PermissionResponse updatePermission(Long permissionId, UpdatePermissionRequest request) {
+    public PermissionResponse updatePermission(UUID permissionId, UpdatePermissionRequest request) {
         Permission p = permissionRepository.findById(permissionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Permission not found"));
 
@@ -73,7 +74,7 @@ public class AdminPermissionServiceImpl implements AdminPermissionService {
 
     @Override
     @Transactional
-    public void deletePermission(Long permissionId) {
+    public void deletePermission(UUID permissionId) {
         if (!permissionRepository.existsById(permissionId)) {
             throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Permission not found");
         }

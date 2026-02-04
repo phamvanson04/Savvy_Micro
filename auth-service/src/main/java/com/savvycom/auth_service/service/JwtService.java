@@ -67,7 +67,7 @@ public class JwtService {
                 .compact();
     }
 
-    public String generateRefreshToken(Long userId) {
+    public String generateRefreshToken(UUID userId) {
         Instant now = Instant.now();
         Date issuedAt = Date.from(now);
         Date exp = Date.from(now.plusMillis(refreshExpMs));

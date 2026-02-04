@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -63,7 +64,7 @@ public class AuthUserMapper {
                 .build();
     }
 
-    public List<Long> loadSchoolIds(Long userId) {
+    public List<Long> loadSchoolIds(UUID userId) {
         return userSchoolScopeRepository.findByUserId(userId).stream()
                 .map(UserSchoolScope::getSchoolId)
                 .distinct()

@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class AdminUserServiceImpl implements AdminUserService {
@@ -44,7 +46,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public AdminUserDetailResponse getUser(Long userId) {
+    public AdminUserDetailResponse getUser(UUID userId) {
         User u = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "User not found"));
 
@@ -72,7 +74,7 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .email(email)
                 .username(username)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .enabled(true) // hoặc theo request nếu bạn muốn cho phép set enabled
+                .enabled(true)
                 .roles(roleResolver.resolveRolesOrDefault(request.getRoleNames()))
                 .build();
 
@@ -87,7 +89,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional
-    public AdminUserDetailResponse updateUser(Long userId, AdminUpdateUserRequest request) {
+    public AdminUserDetailResponse updateUser(UUID userId, AdminUpdateUserRequest request) {
         User u = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "User not found"));
 
@@ -112,12 +114,11 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional
-    public void deleteUser(Long userId) {
+    public void deleteUser(UUID userId) {
         if (!userRepository.existsById(userId)) {
             throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "User not found");
         }
 
-        // NOTE: refreshTokenRepository cần có deleteByUserId(userId)
         refreshTokenRepository.deleteByUserId(userId);
 
         scopeHelper.replaceStudentMapping(userId, null);
@@ -128,7 +129,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional
-    public AdminUserDetailResponse setUserRoles(Long userId, AdminSetUserRolesRequest request) {
+    public AdminUserDetailResponse setUserRoles(UUID userId, AdminSetUserRolesRequest request) {
         User u = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "User not found"));
 

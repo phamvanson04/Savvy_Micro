@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,16 +36,16 @@ public class AdminUserPageAssembler {
                     .build();
         }
 
-        List<Long> userIds = users.stream().map(User::getId).toList();
+        List<UUID> userIds = users.stream().map(User::getId).toList();
 
-        Map<Long, List<Long>> schoolIdsByUserId = userSchoolScopeRepository.findByUserIdIn(userIds)
+        Map<UUID, List<Long>> schoolIdsByUserId = userSchoolScopeRepository.findByUserIdIn(userIds)
                 .stream()
                 .collect(Collectors.groupingBy(
                         UserSchoolScope::getUserId,
                         Collectors.mapping(UserSchoolScope::getSchoolId, Collectors.toList())
                 ));
 
-        Map<Long, Long> studentIdByUserId = userStudentRepository.findByUserIdIn(userIds)
+        Map<UUID, Long> studentIdByUserId = userStudentRepository.findByUserIdIn(userIds)
                 .stream()
                 .collect(Collectors.toMap(UserStudent::getUserId, UserStudent::getStudentId, (a, b) -> a));
 

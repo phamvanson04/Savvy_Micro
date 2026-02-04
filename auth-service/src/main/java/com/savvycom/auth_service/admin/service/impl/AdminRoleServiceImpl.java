@@ -59,7 +59,7 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 
     @Override
     @Transactional
-    public RoleResponse updateRole(Long roleId, UpdateRoleRequest request) {
+    public RoleResponse updateRole(UUID roleId, UpdateRoleRequest request) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Role not found"));
 
@@ -76,7 +76,7 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 
     @Override
     @Transactional
-    public void deleteRole(Long roleId) {
+    public void deleteRole(UUID roleId) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Role not found"));
 

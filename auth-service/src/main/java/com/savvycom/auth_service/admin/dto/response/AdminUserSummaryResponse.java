@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -11,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class AdminUserSummaryResponse {
-    private Long id;
+    private UUID id;
     private String email;
     private String username;
     private boolean enabled;

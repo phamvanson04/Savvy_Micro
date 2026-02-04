@@ -5,11 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 public interface UserSchoolScopeRepository extends JpaRepository<UserSchoolScope, UserSchoolScope.PK> {
-    List<UserSchoolScope> findByUserId(Long userId);
+    List<UserSchoolScope> findByUserId(UUID userId);
 
-    List<UserSchoolScope> findByUserIdIn(Collection<Long> userIds);
+    List<UserSchoolScope> findByUserIdIn(Collection<UUID> userIds);
 
-    void deleteByUserId(Long userId);
+    void deleteByUserId(UUID userId);
 }

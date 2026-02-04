@@ -8,11 +8,13 @@ import com.savvycom.auth_service.admin.dto.response.AdminUserDetailResponse;
 import com.savvycom.auth_service.admin.dto.response.AdminUserSummaryResponse;
 import org.springframework.data.domain.Pageable;
 
+import java.util.UUID;
+
 public interface AdminUserService {
     PageResponse<AdminUserSummaryResponse> listUsers(Pageable pageable);
-    AdminUserDetailResponse getUser(Long userId);
+    AdminUserDetailResponse getUser(UUID userId);
     AdminUserDetailResponse createUser(AdminCreateUserRequest request);
-    AdminUserDetailResponse updateUser(Long userId, AdminUpdateUserRequest request);
-    void deleteUser(Long userId);
-    AdminUserDetailResponse setUserRoles(Long userId, AdminSetUserRolesRequest request);
+    AdminUserDetailResponse updateUser(UUID userId, AdminUpdateUserRequest request);
+    void deleteUser(UUID userId);
+    AdminUserDetailResponse setUserRoles(UUID userId, AdminSetUserRolesRequest request);
 }

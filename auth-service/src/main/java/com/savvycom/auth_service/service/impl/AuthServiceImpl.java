@@ -61,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
 
         Instant now = Instant.now();
 
-        // username: nếu bạn chưa có input username trong request -> có thể derive từ email
+        // nếu chưa có input username trong request -> có thể derive từ email
         String username = deriveUsername(email);
 
         User user = User.builder()
@@ -184,7 +184,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private String deriveUsername(String email) {
-        // đơn giản: lấy phần trước @, bạn có thể làm logic khác
+        // lấy phần trước @
         String base = email == null ? "user" : email.split("@")[0];
         base = base.replaceAll("[^a-zA-Z0-9._-]", "");
         if (base.length() < 3) base = base + "_user";

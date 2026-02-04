@@ -2,8 +2,10 @@ package com.savvycom.auth_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -15,11 +17,12 @@ import java.time.Instant;
 public class RefreshToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @UuidGenerator
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
     @Column(name="user_id", nullable=false)
-    private Long userId;
+    private UUID userId;
 
     @Column(name="token_hash", nullable=false, unique=true, length=255)
     private String tokenHash;

@@ -7,7 +7,6 @@ import com.savvycom.auth_service.repository.RefreshTokenRepository;
 import com.savvycom.auth_service.service.JwtService;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,16 +23,16 @@ public class AuthTokenHelper {
     private final JwtService jwtService;
 
     @Transactional
-    public String issueRefreshToken(Long userId) {
+    public String issueRefreshToken(UUID userId) {
         Instant now = Instant.now();
 
-        String raw = jwtService.generateRefreshToken(userId);
+        String raw = jwtService.generateRefreshToken(userId); // <- JwtService generateRefreshToken(UUID)
         String hash = sha256(raw);
 
         Instant exp = jwtService.parseAndValidateRefreshToken(raw).getExpiration().toInstant();
 
         refreshTokenRepository.save(RefreshToken.builder()
-                .userId(userId)
+                .userId(userId) // UUID
                 .tokenHash(hash)
                 .expiresAt(exp)
                 .createdAt(now)
@@ -83,7 +82,7 @@ public class AuthTokenHelper {
 
         Instant now = Instant.now();
 
-        String newRaw = jwtService.generateRefreshToken(oldToken.getUserId());
+        String newRaw = jwtService.generateRefreshToken(oldToken.getUserId()); // UUID
         String newHash = sha256(newRaw);
         Instant newExp = jwtService.parseAndValidateRefreshToken(newRaw).getExpiration().toInstant();
 

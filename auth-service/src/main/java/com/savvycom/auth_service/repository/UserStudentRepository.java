@@ -6,13 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface UserStudentRepository extends JpaRepository<UserStudent, Long> {
-    Optional<UserStudent> findByUserId(Long userId);
+public interface UserStudentRepository extends JpaRepository<UserStudent, UUID> {
+    Optional<UserStudent> findByUserId(UUID userId);
 
     boolean existsByStudentId(Long studentId);
 
-    List<UserStudent> findByUserIdIn(Collection<Long> userId);
+    List<UserStudent> findByUserIdIn(Collection<UUID> userIds);
 
-    void deleteByUserId(Long userId);
+    void deleteByUserId(UUID userId);
 }

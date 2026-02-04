@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class AdminRoleController {
     @PutMapping("/{roleId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseResponse<RoleResponse>> updateRole(
-            @PathVariable Long roleId,
+            @PathVariable UUID roleId,
             @Valid @RequestBody UpdateRoleRequest request
     ) {
         return ok("Role updated", adminRoleService.updateRole(roleId, request));
@@ -45,7 +46,7 @@ public class AdminRoleController {
 
     @DeleteMapping("/{roleId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseResponse<Void>> deleteRole(@PathVariable Long roleId) {
+    public ResponseEntity<BaseResponse<Void>> deleteRole(@PathVariable UUID roleId) {
         adminRoleService.deleteRole(roleId);
         return ok("Role deleted", null);
     }

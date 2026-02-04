@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public class UserSchoolScope {
 
     @Id
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private UUID userId;
 
     @Id
     @Column(name = "school_id", nullable = false)
@@ -29,7 +30,7 @@ public class UserSchoolScope {
     @AllArgsConstructor
     @EqualsAndHashCode
     public static class PK implements Serializable {
-        private Long userId;
+        private UUID userId;
         private Long schoolId;
     }
 }

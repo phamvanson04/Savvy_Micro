@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -22,7 +23,7 @@ public class UserStudent {
 
     @Id
     @Column(name="user_id", nullable=false)
-    private Long userId;
+    private UUID userId;
 
     @Column(name="student_id", nullable=false)
     private Long studentId;
