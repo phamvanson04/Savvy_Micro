@@ -21,4 +21,5 @@ application:
       secret-key: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
       expiration: 900000
       refresh-token:
+        secret-key: "Q0E3aWl4ZmZyV0dZWm0zQm1kTjJQdFRuV2M4Z0ZxYjFQeHcxYlM0dD0="
         expiration: 3600000

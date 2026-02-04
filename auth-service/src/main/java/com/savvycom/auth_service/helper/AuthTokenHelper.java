@@ -4,6 +4,8 @@ import com.savvy.common.exception.BusinessException;
 import com.savvy.common.exception.ErrorCode;
 import com.savvycom.auth_service.entity.RefreshToken;
 import com.savvycom.auth_service.repository.RefreshTokenRepository;
+import com.savvycom.auth_service.service.JwtService;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,21 +21,21 @@ import java.util.UUID;
 public class AuthTokenHelper {
 
     private final RefreshTokenRepository refreshTokenRepository;
-
-    @Value("${application.security.jwt.refresh-token.expiration}")
-    private long refreshTokenExpirationMs;
+    private final JwtService jwtService;
 
     @Transactional
     public String issueRefreshToken(Long userId) {
         Instant now = Instant.now();
 
-        String raw = UUID.randomUUID().toString();
+        String raw = jwtService.generateRefreshToken(userId);
         String hash = sha256(raw);
+
+        Instant exp = jwtService.parseAndValidateRefreshToken(raw).getExpiration().toInstant();
 
         refreshTokenRepository.save(RefreshToken.builder()
                 .userId(userId)
                 .tokenHash(hash)
-                .expiresAt(now.plusMillis(refreshTokenExpirationMs))
+                .expiresAt(exp)
                 .createdAt(now)
                 .build());
 
@@ -45,6 +47,13 @@ public class AuthTokenHelper {
         if (rawToken == null || rawToken.isBlank()) {
             throw new BusinessException(ErrorCode.TOKEN_INVALID, "refresh token is missing");
         }
+
+        try {
+            jwtService.parseAndValidateRefreshToken(rawToken);
+        } catch (JwtException e) {
+            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Refresh token invalid");
+        }
+
         String hash = sha256(rawToken);
         return refreshTokenRepository.findByTokenHash(hash)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TOKEN_INVALID, "refresh token revoked or not found"));
@@ -74,13 +83,14 @@ public class AuthTokenHelper {
 
         Instant now = Instant.now();
 
-        String newRaw = UUID.randomUUID().toString();
+        String newRaw = jwtService.generateRefreshToken(oldToken.getUserId());
         String newHash = sha256(newRaw);
+        Instant newExp = jwtService.parseAndValidateRefreshToken(newRaw).getExpiration().toInstant();
 
         refreshTokenRepository.save(RefreshToken.builder()
                 .userId(oldToken.getUserId())
                 .tokenHash(newHash)
-                .expiresAt(now.plusMillis(refreshTokenExpirationMs))
+                .expiresAt(newExp)
                 .createdAt(now)
                 .build());
 

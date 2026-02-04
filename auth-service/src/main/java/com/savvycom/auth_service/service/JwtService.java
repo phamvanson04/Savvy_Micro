@@ -1,8 +1,7 @@
 package com.savvycom.auth_service.service;
 
 import com.savvycom.auth_service.entity.User;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,15 +13,26 @@ import java.util.*;
 @Service
 public class JwtService {
 
-    private final SecretKey key;
+    private static final String CLAIM_TYP = "typ";
+    private static final String TYP_REFRESH = "refresh";
+
+    private final SecretKey accessKey;
     private final long accessExpMs;
 
+    private final SecretKey refreshKey;
+    private final long refreshExpMs;
+
     public JwtService(
-            @Value("${application.security.jwt.secret-key}") String secret,
-            @Value("${application.security.jwt.expiration}") long accessExpMs
+            @Value("${application.security.jwt.secret-key}") String accessSecret,
+            @Value("${application.security.jwt.expiration}") long accessExpMs,
+            @Value("${application.security.jwt.refresh-token.secret-key}") String refreshSecret,
+            @Value("${application.security.jwt.refresh-token.expiration}") long refreshExpMs
     ) {
-        this.key = Keys.hmacShaKeyFor(decodeSecret(secret));
+        this.accessKey = Keys.hmacShaKeyFor(decodeSecret(accessSecret));
         this.accessExpMs = accessExpMs;
+
+        this.refreshKey = Keys.hmacShaKeyFor(decodeSecret(refreshSecret));
+        this.refreshExpMs = refreshExpMs;
     }
 
     public String generateAccessToken(
@@ -49,12 +59,41 @@ public class JwtService {
         }
 
         return Jwts.builder()
-                .setSubject(String.valueOf(user.getId())) // sub = userId
+                .setSubject(String.valueOf(user.getId()))
                 .setIssuedAt(issuedAt)
                 .setExpiration(exp)
                 .addClaims(claims)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(accessKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateRefreshToken(Long userId) {
+        Instant now = Instant.now();
+        Date issuedAt = Date.from(now);
+        Date exp = Date.from(now.plusMillis(refreshExpMs));
+
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .setId(UUID.randomUUID().toString())
+                .setIssuedAt(issuedAt)
+                .setExpiration(exp)
+                .claim(CLAIM_TYP, TYP_REFRESH)
+                .signWith(refreshKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public Claims parseAndValidateRefreshToken(String rawRefreshToken) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(refreshKey)
+                .build()
+                .parseClaimsJws(rawRefreshToken)
+                .getBody();
+
+        String typ = claims.get(CLAIM_TYP, String.class);
+        if (!TYP_REFRESH.equals(typ)) {
+            throw new JwtException("Invalid token type");
+        }
+        return claims;
     }
 
     private static byte[] decodeSecret(String s) {
