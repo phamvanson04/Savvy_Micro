@@ -7,15 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateGradeRequest {
-    private Long schoolId;
-    private Long classId;
-    private Long studentId;
+    private UUID schoolId;
+    private UUID classId;
+    private UUID studentId;
     private String term;
     private String subject;
     private BigDecimal score;

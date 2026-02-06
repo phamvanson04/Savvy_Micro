@@ -6,16 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class GradeResponse {
-    private Long id;
-    private Long schoolId;
-    private Long classId;
-    private Long studentId;
+    private UUID id;
+    private UUID schoolId;
+    private UUID classId;
+    private UUID studentId;
     private String term;
     private String subject;
     private BigDecimal score;

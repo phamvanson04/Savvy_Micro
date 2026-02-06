@@ -17,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -52,11 +53,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            Long userId = Long.parseLong(userIdStr);
+            UUID userId = UUID.fromString(userIdStr);
             List<String> roles = parseCommaSeparated(rolesStr);
-            List<Long> schoolIds = parseSchoolIds(schoolIdsStr);
+            List<UUID> schoolIds = parseSchoolIds(schoolIdsStr);
             List<String> permissions = parseCommaSeparated(permissionsStr);
-            List<Long> dataScopeSchoolIds = parseDataScopeSchoolIds(dataScopeStr);
+            List<UUID> dataScopeSchoolIds = parseDataScopeSchoolIds(dataScopeStr);
 
             // Set user context
             UserContext userContext = new UserContext();
@@ -102,18 +103,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .collect(Collectors.toList());
     }
 
-    private List<Long> parseSchoolIds(String value) {
+    private List<UUID> parseSchoolIds(String value) {
         if (!StringUtils.hasText(value)) {
             return List.of();
         }
         return Arrays.stream(value.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .map(Long::parseLong)
+                .map(UUID::fromString)
                 .collect(Collectors.toList());
     }
 
-    private List<Long> parseDataScopeSchoolIds(String dataScopeStr) {
+    private List<UUID> parseDataScopeSchoolIds(String dataScopeStr) {
         if (!StringUtils.hasText(dataScopeStr)) {
             return List.of();
         }
@@ -125,7 +126,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             return Arrays.stream(schoolIdsJson.split(","))
                     .map(String::trim)
-                    .map(Long::parseLong)
+                    .map(s -> s.replaceAll("[\"\\s]", ""))
+                    .filter(s -> !s.isEmpty())
+                    .map(UUID::fromString)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             logger.warn("Failed to parse dataScope: " + dataScopeStr, e);

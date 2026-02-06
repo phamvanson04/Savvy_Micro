@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class GradeServiceImpl implements IGradeService {
     private final SubjectRepository subjectRepository;
 
 
-    public StudentGradesResponse getStudentGrades(Long studentId, String term, Long schoolId) {
+    public StudentGradesResponse getStudentGrades(UUID studentId, String term, UUID schoolId) {
         UserContext context = UserContext.get();
 
         // Validate schoolId parameter
@@ -48,7 +49,7 @@ public class GradeServiceImpl implements IGradeService {
           
             List<Grade> existingGrades = gradeRepository.findByStudentId(studentId);
             if (!existingGrades.isEmpty()) {
-                Long actualSchoolId = existingGrades.get(0).getSchoolId();
+                UUID actualSchoolId = existingGrades.get(0).getSchoolId();
                 if (!schoolId.equals(actualSchoolId)) {
                     throw new BusinessException(
                             ErrorCode.FORBIDDEN,
@@ -108,11 +109,11 @@ public class GradeServiceImpl implements IGradeService {
         List<Grade> grades;
         
         if (context.isAdmin()) {
-            // ADMIN can see all grades without restrictions
+            // ADMIN full access to all grades
             grades = gradeRepository.findAll();
         } else if (context.isManager()) {
             // MANAGER can only see grades from schools in their dataScope
-            List<Long> accessibleSchoolIds = context.getAccessibleSchoolIds();
+            List<UUID> accessibleSchoolIds = context.getAccessibleSchoolIds();
             if (accessibleSchoolIds.isEmpty()) {
                 throw new BusinessException(
                         ErrorCode.FORBIDDEN,
@@ -208,7 +209,7 @@ public class GradeServiceImpl implements IGradeService {
                 .build();
     }
 
-    public GradeResponse updateGrade(Long gradeId, UpdateGradeRequest request) {
+    public GradeResponse updateGrade(UUID gradeId, UpdateGradeRequest request) {
         UserContext context = UserContext.get();
 
         Grade grade = gradeRepository.findById(gradeId)

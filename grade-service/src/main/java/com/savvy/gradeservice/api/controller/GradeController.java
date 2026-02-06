@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/grades")
@@ -20,9 +21,9 @@ public class GradeController {
 
     @GetMapping
     public BaseResponse<StudentGradesResponse> getStudentGrades(
-            @RequestParam Long studentId,
+            @RequestParam UUID studentId,
             @RequestParam String term,
-            @RequestParam Long schoolId
+            @RequestParam UUID schoolId
     ) {
         StudentGradesResponse response = gradeService.getStudentGrades(studentId, term, schoolId);
         return BaseResponse.success(response);
@@ -42,7 +43,7 @@ public class GradeController {
 
     @PutMapping("/{gradeId}")
     public BaseResponse<GradeResponse> updateGrade(
-            @PathVariable Long gradeId,
+            @PathVariable UUID gradeId,
             @Valid @RequestBody UpdateGradeRequest request
     ) {
         GradeResponse response = gradeService.updateGrade(gradeId, request);

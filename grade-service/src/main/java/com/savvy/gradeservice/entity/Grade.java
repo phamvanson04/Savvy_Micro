@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "grades", uniqueConstraints = {
@@ -18,19 +19,19 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Grade {
-    
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+    @GeneratedValue(strategy = GenerationType.UUID)
+    protected UUID id;
+
     @Column(name = "school_id", nullable = false)
-    private Long schoolId;
+    private UUID schoolId;
     
     @Column(name = "class_id", nullable = false)
-    private Long classId;
+    private UUID classId;
     
     @Column(name = "student_id", nullable = false)
-    private Long studentId;
+    private UUID studentId;
     
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subject_id", nullable = false)
@@ -43,7 +44,7 @@ public class Grade {
     private BigDecimal score;
     
     @Column(name = "created_by")
-    private Long createdBy;
+    private UUID createdBy;
     
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

@@ -6,16 +6,17 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface GradeRepository extends JpaRepository<Grade, Long> {
+public interface GradeRepository extends JpaRepository<Grade, UUID> {
     
-    List<Grade> findByStudentIdAndTerm(Long studentId, String term);
+    List<Grade> findByStudentIdAndTerm(UUID studentId, String term);
     
-    List<Grade> findByStudentId(Long studentId);
+    List<Grade> findByStudentId(UUID studentId);
 
-    List<Grade> findBySchoolIdIn(List<Long> schoolIds);
+    List<Grade> findBySchoolIdIn(List<UUID> schoolIds);
 
-    boolean existsByStudentIdAndSubjectIdAndTerm(Long studentId, Long subjectId, String term);
+    boolean existsByStudentIdAndSubjectIdAndTerm(UUID studentId, UUID subjectId, String term);
 
 }
