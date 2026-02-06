@@ -61,7 +61,7 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public School update(UUID id, UpdateSchoolRequest request) {
-        School existedSchool=findById(id);
+        School existedSchool = findById(id);
         existedSchool.setCode(request.getCode());
         existedSchool.setName(request.getName());
         existedSchool.setAddress(request.getAddress());

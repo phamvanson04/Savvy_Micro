@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -17,6 +19,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE classes SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@SQLRestriction("deleted_at is null")
 public class Class {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -27,8 +31,10 @@ public class Class {
     Integer grade;
     @Enumerated(EnumType.STRING)
     ClassStatus status;
+
     @CreationTimestamp
     Instant createdAt;
+
     @ManyToOne
     @JoinColumn(name = "school_id")
     School school;

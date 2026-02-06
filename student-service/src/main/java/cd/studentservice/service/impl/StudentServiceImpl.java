@@ -77,6 +77,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Transactional
     public void delete(UUID id) {
         Student existedStudent = studentRepository.getReferenceById(id);
         studentRepository.delete(existedStudent);
