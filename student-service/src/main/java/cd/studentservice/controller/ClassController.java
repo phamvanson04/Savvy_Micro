@@ -21,7 +21,7 @@ class ClassController {
     private final ClassService classService;
 
     @GetMapping
-//    @PreAuthorize("hasAnyRole('SCHOOL_MANAGER','ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
     public ResponseEntity<BaseResponse<List<ClassResponse>>>findBySchoolId(@RequestParam UUID schoolId){
         return ResponseEntity.ok(BaseResponse.success(classService.findBySchoolId(schoolId),"Getting data success"));
     }

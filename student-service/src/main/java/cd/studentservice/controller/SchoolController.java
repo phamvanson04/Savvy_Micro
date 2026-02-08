@@ -26,15 +26,17 @@ class SchoolController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseResponse<PageResponse<SchoolResponse>>>findAll(@RequestParam int page,
                                                              @RequestParam int size){
-        return ResponseEntity.ok(BaseResponse.success(schoolService.getPages(size,page),"Get data succes"));
+        return ResponseEntity.ok(BaseResponse.success(schoolService.getPages(size,page),"Get data success"));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseResponse<School>>save(@RequestBody CreateSchoolRequest request){
         return ResponseEntity.ok(BaseResponse.success(schoolService.save(request),"Save data success"));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BaseResponse<School>>update(@PathVariable UUID id,
                                                       @RequestBody UpdateSchoolRequest request){
         return ResponseEntity.ok(BaseResponse.success(schoolService.update(id,request),"Update data success"));
