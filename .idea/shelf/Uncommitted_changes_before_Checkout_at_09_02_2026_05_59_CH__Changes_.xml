@@ -1,0 +1,9 @@
+<changelist name="Uncommitted_changes_before_Checkout_at_09_02_2026_05_59_CH_[Changes]" date="1770634755075" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_02_2026_05_59_CH_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 09/02/2026 05:59 CH [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" />
+    <option name="AFTER_PATH" value="api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_02_2026_05_59_CH_[Changes]/AuthenticationGlobalFilter.class" />
+  </binary>
+</changelist>

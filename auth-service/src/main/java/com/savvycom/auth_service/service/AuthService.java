@@ -9,6 +9,6 @@ public interface AuthService {
     RegisterResponse register(RegisterRequest request);
     TokenResponse login(LoginRequest request);
     TokenResponse refresh(RefreshRequest request);
-    void logout(LogoutRequest request, String authorizationHeader);
+    void logout(String authorizationHeader);
     IntrospectResponse introspect(IntrospectRequest request);
 }

@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final RoleRepository roleRepository;
     private final UserSchoolScopeRepository userSchoolScopeRepository;
     private final UserStudentRepository userStudentRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -166,13 +168,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void logout(LogoutRequest request, String authorizationHeader) {
-        RefreshToken rt = tokenHelper.getRefreshTokenOrThrow(request.getRefreshToken());
-        tokenHelper.revokeIfNeeded(rt);
+    public void logout(String authorizationHeader) {
 
         String accessToken = extractBearerToken(authorizationHeader);
         if (!StringUtils.hasText(accessToken)) {
-            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token is mising");
+            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token is missing");
         }
 
         Claims claims;
@@ -182,12 +182,29 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token invalid");
         }
 
+        // lay userId từ sub
+        String sub = claims.getSubject();
+        if (!StringUtils.hasText(sub)) {
+            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token sub is missing");
+        }
+
+        UUID userId;
+        try {
+            userId = UUID.fromString(sub.trim());
+        } catch (IllegalArgumentException ex) {
+            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token sub is not UUID");
+        }
+
+        // Xóa refresh token theo userId
+        refreshTokenRepository.deleteByUserId(userId);
+
+        // Blacklist access token để logout có hiệu lực ngay trên gateway/introspect
         String jti = claims.getId();
         if (!StringUtils.hasText(jti)) {
             throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token jti is missing");
         }
 
-        var exp = claims.getExpiration();
+        Date exp = claims.getExpiration();
         if (exp == null) {
             throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token exp is missing");
         }

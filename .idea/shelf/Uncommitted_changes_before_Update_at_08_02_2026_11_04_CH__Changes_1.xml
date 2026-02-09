@@ -1,0 +1,9 @@
+<changelist name="Uncommitted_changes_before_Update_at_08_02_2026_11_04_CH_[Changes]1" date="1770567012801" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_02_2026_11_04_CH_[Changes]1/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 08/02/2026 11:04 CH [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="api-gateway/target/classes/com/savvy/gateway/config/SecurityConfig.class" />
+    <option name="AFTER_PATH" value="api-gateway/target/classes/com/savvy/gateway/config/SecurityConfig.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_02_2026_11_04_CH_[Changes]1/SecurityConfig.class" />
+  </binary>
+</changelist>

@@ -1,0 +1,765 @@
+Index: auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.service.impl;\r\n\r\nimport com.savvy.common.exception.BusinessException;\r\nimport com.savvy.common.exception.ErrorCode;\r\nimport com.savvycom.auth_service.dto.request.*;\r\nimport com.savvycom.auth_service.dto.response.*;\r\nimport com.savvycom.auth_service.entity.*;\r\nimport com.savvycom.auth_service.helper.AuthTokenHelper;\r\nimport com.savvycom.auth_service.helper.AuthUserMapper;\r\nimport com.savvycom.auth_service.repository.*;\r\nimport com.savvycom.auth_service.service.AuthService;\r\nimport com.savvycom.auth_service.service.JwtService;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.beans.factory.annotation.Value;\r\nimport org.springframework.security.authentication.AuthenticationManager;\r\nimport org.springframework.security.authentication.UsernamePasswordAuthenticationToken;\r\nimport org.springframework.security.core.AuthenticationException;\r\nimport org.springframework.security.crypto.password.PasswordEncoder;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.transaction.annotation.Transactional;\r\n\r\nimport java.time.Instant;\r\nimport java.util.List;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class AuthServiceImpl implements AuthService {\r\n\r\n    private static final String DEFAULT_ROLE_STUDENT = \"ROLE_STUDENT\";\r\n    private static final String STATUS_ACTIVE = \"ACTIVE\";\r\n\r\n    private final UserRepository userRepository;\r\n    private final RoleRepository roleRepository;\r\n    private final UserSchoolScopeRepository userSchoolScopeRepository;\r\n    private final UserStudentRepository userStudentRepository;\r\n\r\n    private final PasswordEncoder passwordEncoder;\r\n    private final AuthenticationManager authenticationManager;\r\n\r\n    private final JwtService jwtService;\r\n    private final AuthTokenHelper tokenHelper;\r\n    private final AuthUserMapper userMapper;\r\n\r\n    @Value(\"${application.security.jwt.expiration}\")\r\n    private long accessTokenExpirationMs;\r\n\r\n    @Override\r\n    @Transactional\r\n    public RegisterResponse register(RegisterRequest request) {\r\n        String email = userMapper.normalizeEmail(request.getEmail());\r\n\r\n        if (userRepository.existsByEmail(email)) {\r\n            throw new BusinessException(ErrorCode.DUPLICATE_RESOURCE, \"Email already exists\");\r\n        }\r\n\r\n        Role studentRole = roleRepository.findByName(DEFAULT_ROLE_STUDENT)\r\n                .orElseThrow(() -> new BusinessException(\r\n                        ErrorCode.INTERNAL_SERVER_ERROR,\r\n                        \"Missing role ROLE_STUDENT (seed not run?)\"\r\n                ));\r\n\r\n        Instant now = Instant.now();\r\n\r\n        // nếu chưa có input username trong request -> có thể derive từ email\r\n        String username = deriveUsername(email);\r\n\r\n        User user = User.builder()\r\n                .email(email)\r\n                .username(username)\r\n                .passwordHash(passwordEncoder.encode(request.getPassword()))\r\n                .enabled(true)\r\n                .createdAt(now)\r\n                .updatedAt(now)\r\n                .build();\r\n\r\n        user.getRoles().add(studentRole);\r\n        userRepository.save(user);\r\n\r\n        // save data scope schoolIds\r\n        List<Long> schoolIds = request.getSchoolIds();\r\n        if (schoolIds != null) {\r\n            for (Long sid : schoolIds) {\r\n                userSchoolScopeRepository.save(UserSchoolScope.builder()\r\n                        .userId(user.getId())\r\n                        .schoolId(sid)\r\n                        .build());\r\n            }\r\n        }\r\n\r\n        // save student mapping\r\n        Long studentId = request.getStudentId();\r\n        if (studentId != null) {\r\n            userStudentRepository.save(UserStudent.builder()\r\n                    .userId(user.getId())\r\n                    .studentId(studentId)\r\n                    .createdAt(now)\r\n                    .build());\r\n        }\r\n\r\n        return userMapper.toRegisterResponse(user, schoolIds, studentId);\r\n    }\r\n\r\n    @Override\r\n    @Transactional\r\n    public TokenResponse login(LoginRequest request) {\r\n        String email = userMapper.normalizeEmail(request.getEmail());\r\n\r\n        authenticate(email, request.getPassword());\r\n\r\n        User user = userRepository.findByEmail(email)\r\n                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS, \"Invalid credentials\"));\r\n\r\n        assertUserEnabled(user);\r\n\r\n        // load scopes\r\n        List<Long> schoolIds = userMapper.loadSchoolIds(user.getId());\r\n        Long studentId = userStudentRepository.findById(user.getId())\r\n                .map(UserStudent::getStudentId)\r\n                .orElse(null);\r\n\r\n        // claims\r\n        List<String> roles = userMapper.extractRoleNames(user);\r\n        List<String> permissions = userMapper.extractPermissionCodes(user);\r\n\r\n        String accessToken = jwtService.generateAccessToken(user, roles, permissions, schoolIds, studentId);\r\n        String refreshToken = tokenHelper.issueRefreshToken(user.getId());\r\n\r\n        return TokenResponse.builder()\r\n                .accessToken(accessToken)\r\n                .refreshToken(refreshToken)\r\n                .expiresIn(accessTokenExpirationMs / 1000)\r\n                .build();\r\n    }\r\n\r\n    @Override\r\n    @Transactional\r\n    public TokenResponse refresh(RefreshRequest request) {\r\n        RefreshToken old = tokenHelper.getUsableRefreshTokenOrThrow(request.getRefreshToken());\r\n\r\n        User user = userRepository.findById(old.getUserId())\r\n                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, \"User not found\"));\r\n\r\n        assertUserEnabled(user);\r\n\r\n        List<Long> schoolIds = userMapper.loadSchoolIds(user.getId());\r\n        Long studentId = userStudentRepository.findById(user.getId())\r\n                .map(UserStudent::getStudentId)\r\n                .orElse(null);\r\n\r\n        List<String> roles = userMapper.extractRoleNames(user);\r\n        List<String> permissions = userMapper.extractPermissionCodes(user);\r\n\r\n        String newAccessToken = jwtService.generateAccessToken(user, roles, permissions, schoolIds, studentId);\r\n        String newRefreshToken = tokenHelper.rotate(old);\r\n\r\n        return TokenResponse.builder()\r\n                .accessToken(newAccessToken)\r\n                .refreshToken(newRefreshToken)\r\n                .expiresIn(accessTokenExpirationMs / 1000)\r\n                .build();\r\n    }\r\n\r\n    @Override\r\n    @Transactional\r\n    public void logout(LogoutRequest request) {\r\n        RefreshToken rt = tokenHelper.getRefreshTokenOrThrow(request.getRefreshToken());\r\n        tokenHelper.revokeIfNeeded(rt);\r\n    }\r\n\r\n    private void authenticate(String email, String password) {\r\n        try {\r\n            authenticationManager.authenticate(\r\n                    new UsernamePasswordAuthenticationToken(email, password)\r\n            );\r\n        } catch (AuthenticationException e) {\r\n            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS, \"Invalid credentials\");\r\n        }\r\n    }\r\n\r\n    private void assertUserEnabled(User user) {\r\n        if (user == null || !user.isEnabled()) {\r\n            throw new BusinessException(ErrorCode.FORBIDDEN, \"Account is disabled\");\r\n        }\r\n    }\r\n\r\n    private String deriveUsername(String email) {\r\n        // lấy phần trước @\r\n        String base = email == null ? \"user\" : email.split(\"@\")[0];\r\n        base = base.replaceAll(\"[^a-zA-Z0-9._-]\", \"\");\r\n        if (base.length() < 3) base = base + \"_user\";\r\n        // tránh trùng username\r\n        String candidate = base;\r\n        int i = 1;\r\n        while (userRepository.existsByUsername(candidate)) {\r\n            candidate = base + i;\r\n            i++;\r\n        }\r\n        return candidate;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java b/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java	(date 1770523108717)
+@@ -9,8 +9,13 @@
+ import com.savvycom.auth_service.helper.AuthUserMapper;
+ import com.savvycom.auth_service.repository.*;
+ import com.savvycom.auth_service.service.AuthService;
++import com.savvycom.auth_service.service.InvalidatedTokenService;
+ import com.savvycom.auth_service.service.JwtService;
++import io.jsonwebtoken.Claims;
++import io.jsonwebtoken.JwtException;
+ import lombok.RequiredArgsConstructor;
++import lombok.extern.slf4j.Slf4j;
++import org.hibernate.usertype.BaseUserTypeSupport;
+ import org.springframework.beans.factory.annotation.Value;
+ import org.springframework.security.authentication.AuthenticationManager;
+ import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+@@ -18,10 +23,12 @@
+ import org.springframework.security.crypto.password.PasswordEncoder;
+ import org.springframework.stereotype.Service;
+ import org.springframework.transaction.annotation.Transactional;
++import org.springframework.util.StringUtils;
+ 
+ import java.time.Instant;
+ import java.util.List;
+ 
++@Slf4j
+ @Service
+ @RequiredArgsConstructor
+ public class AuthServiceImpl implements AuthService {
+@@ -41,6 +48,8 @@
+     private final AuthTokenHelper tokenHelper;
+     private final AuthUserMapper userMapper;
+ 
++    private final InvalidatedTokenService invalidatedTokenService;
++
+     @Value("${application.security.jwt.expiration}")
+     private long accessTokenExpirationMs;
+ 
+@@ -123,6 +132,20 @@
+         List<String> permissions = userMapper.extractPermissionCodes(user);
+ 
+         String accessToken = jwtService.generateAccessToken(user, roles, permissions, schoolIds, studentId);
++        try {
++            var claims = jwtService.parseAndValidateAccessToken(accessToken);
++
++            System.out.println("sub(userId): " + claims.getSubject());
++            System.out.println("jti: " + claims.getId());
++            System.out.println("exp: " + claims.getExpiration());
++            System.out.println("roles: " + claims.get("roles"));
++            System.out.println("permissions: " + claims.get("permissions"));
++            System.out.println("studentId: " + claims.get("studentId"));
++            System.out.println("dataScope: " + claims.get("dataScope"));
++        } catch (JwtException e) {
++            System.out.println(e.getClass().getSimpleName() + ": " + e.getMessage());
++        }
++
+         String refreshToken = tokenHelper.issueRefreshToken(user.getId());
+ 
+         return TokenResponse.builder()
+@@ -162,9 +185,114 @@
+ 
+     @Override
+     @Transactional
+-    public void logout(LogoutRequest request) {
++    public void logout(LogoutRequest request, String authorizationHeader) {
+         RefreshToken rt = tokenHelper.getRefreshTokenOrThrow(request.getRefreshToken());
+         tokenHelper.revokeIfNeeded(rt);
++
++        String accessToken = extractBearerToken(authorizationHeader);
++        if (!StringUtils.hasText(accessToken)) {
++            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token is mising");
++        }
++
++        Claims claims;
++        try {
++            claims = jwtService.parseAndValidateAccessToken(accessToken);
++        } catch (JwtException e) {
++            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token invalid");
++        }
++
++        String jti = claims.getId();
++        if (!StringUtils.hasText(jti)) {
++            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token jti is missing");
++        }
++
++        var exp = claims.getExpiration();
++        if (exp == null) {
++            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token exp is missing");
++        }
++
++        invalidatedTokenService.blacklistAccessToken(jti, exp.toInstant(), "LOGOUT");
++    }
++
++    @Override
++    @Transactional(readOnly = true)
++    public IntrospectResponse introspect(IntrospectRequest request) {
++        String token = request == null ? null : request.getToken();
++        if (token == null || token.isBlank()) {
++            return IntrospectResponse.builder()
++                    .valid(false)
++                    .reason("MISSING")
++                    .build();
++        }
++
++        token = stripBearer(token);
++
++        try {
++            var claims = jwtService.parseAndValidateAccessToken(token);
++
++            String jti = claims.getId();
++            if (jti != null && invalidatedTokenService.isBlacklisted(jti)) {
++                return IntrospectResponse.builder()
++                        .valid(false)
++                        .reason("REVOKED")
++                        .build();
++            }
++
++            String sub = claims.getSubject();
++            long exp = claims.getExpiration() == null ? 0L : claims.getExpiration().toInstant().getEpochSecond();
++
++            @SuppressWarnings("unchecked")
++            var roles = (java.util.List<String>) claims.get("roles", java.util.List.class);
++
++            @SuppressWarnings("unchecked")
++            var permissions = (java.util.List<String>) claims.get("permissions", java.util.List.class);
++
++            Long studentId = null;
++            Object sid = claims.get("studentId");
++            if (sid instanceof Number n) {
++                studentId = n.longValue();
++            } else if (sid instanceof String s && StringUtils.hasText(s)) {
++                studentId = Long.parseLong(s);
++            }
++
++            @SuppressWarnings("unchecked")
++            var dataScope = (java.util.Map<String, Object>) claims.get("dataScope", java.util.Map.class);
++
++            return IntrospectResponse.builder()
++                    .valid(true)
++                    .sub(sub)
++                    .jti(jti)
++                    .exp(exp)
++                    .roles(roles)
++                    .permissions(permissions)
++                    .studentId(studentId)
++                    .dataScope(dataScope)
++                    .build();
++        } catch (JwtException e) {
++            return IntrospectResponse.builder()
++                    .valid(false)
++                    .reason("INVALID_OR_EXPIRED")
++                    .build();
++        }
++    }
++
++    private String stripBearer(String token) {
++        String t = token.trim();
++        if (t.regionMatches(true, 0, "Bearer ", 0, 7)) {
++            return t.substring(7).trim();
++        }
++        return t;
++    }
++
++    private String extractBearerToken(String authorizationHeader) {
++        if (authorizationHeader == null) return null;
++        String v = authorizationHeader.trim();
++        if (v.isEmpty()) return null;
++
++        if (v.regionMatches(true, 0, "Bearer ", 0, 7)) {
++            return v.substring(7).trim();
++        }
++        return v;
+     }
+ 
+     private void authenticate(String email, String password) {
+Index: auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.service;\r\n\r\nimport com.savvycom.auth_service.dto.request.LoginRequest;\r\nimport com.savvycom.auth_service.dto.request.LogoutRequest;\r\nimport com.savvycom.auth_service.dto.request.RefreshRequest;\r\nimport com.savvycom.auth_service.dto.request.RegisterRequest;\r\nimport com.savvycom.auth_service.dto.response.RegisterResponse;\r\nimport com.savvycom.auth_service.dto.response.TokenResponse;\r\n\r\npublic interface AuthService {\r\n    RegisterResponse register(RegisterRequest request);\r\n    TokenResponse login(LoginRequest request);\r\n    TokenResponse refresh(RefreshRequest request);\r\n    void logout(LogoutRequest request);\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java b/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java	(date 1770484930587)
+@@ -1,9 +1,7 @@
+ package com.savvycom.auth_service.service;
+ 
+-import com.savvycom.auth_service.dto.request.LoginRequest;
+-import com.savvycom.auth_service.dto.request.LogoutRequest;
+-import com.savvycom.auth_service.dto.request.RefreshRequest;
+-import com.savvycom.auth_service.dto.request.RegisterRequest;
++import com.savvycom.auth_service.dto.request.*;
++import com.savvycom.auth_service.dto.response.IntrospectResponse;
+ import com.savvycom.auth_service.dto.response.RegisterResponse;
+ import com.savvycom.auth_service.dto.response.TokenResponse;
+ 
+@@ -11,5 +9,6 @@
+     RegisterResponse register(RegisterRequest request);
+     TokenResponse login(LoginRequest request);
+     TokenResponse refresh(RefreshRequest request);
+-    void logout(LogoutRequest request);
++    void logout(LogoutRequest request, String authorizationHeader);
++    IntrospectResponse introspect(IntrospectRequest request);
+ }
+Index: api-gateway/target/classes/application.properties
+===================================================================
+diff --git a/api-gateway/target/classes/application.properties b/api-gateway/target/classes/application.properties
+deleted file mode 100644
+--- a/api-gateway/target/classes/application.properties	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ /dev/null	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
+@@ -1,56 +0,0 @@
+-#spring.application.name=api-gateway
+-#server.port=8080
+-#
+-## Eureka Client Configuration
+-##eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+-##eureka.client.register-with-eureka=true
+-##eureka.client.fetch-registry=true
+-##eureka.instance.prefer-ip-address=true
+-##eureka.instance.hostname=localhost
+-#
+-## Gateway Configuration
+-#spring.cloud.gateway.discovery.locator.enabled=false
+-#spring.cloud.gateway.discovery.locator.lower-case-service-id=true
+-#
+-## CORS Configuration
+-#spring.cloud.gateway.globalcors.cors-configurations.[/**].allowed-origins=*
+-#spring.cloud.gateway.globalcors.cors-configurations.[/**].allowed-methods=GET,POST,PUT,DELETE,OPTIONS
+-#spring.cloud.gateway.globalcors.cors-configurations.[/**].allowed-headers=*
+-#spring.cloud.gateway.globalcors.cors-configurations.[/**].allow-credentials=false
+-#
+-## Gateway Routes - Auth Service
+-#spring.cloud.gateway.routes[0].id=auth-service
+-## spring.cloud.gateway.routes[0].uri=lb://auth-service
+-#spring.cloud.gateway.routes[0].uri=http://localhost:8081
+-#spring.cloud.gateway.routes[0].predicates[0]=Path=/api/v1/auth/**,/api/v1/admin/**
+-## spring.cloud.gateway.routes[0].filters[0]=StripPrefix=0
+-#
+-## Gateway Routes - Student Service
+-#spring.cloud.gateway.routes[1].id=student-service
+-## spring.cloud.gateway.routes[1].uri=lb://student-service
+-#spring.cloud.gateway.routes[1].uri=http://localhost:8083
+-#spring.cloud.gateway.routes[1].predicates[0]=Path=/api/v1/students/**
+-## spring.cloud.gateway.routes[1].filters[0]=StripPrefix=0
+-#
+-## Gateway Routes - Grade Service
+-#spring.cloud.gateway.routes[2].id=grade-service
+-## spring.cloud.gateway.routes[2].uri=lb://grade-service
+-#spring.cloud.gateway.routes[2].uri=http://localhost:8082
+-#spring.cloud.gateway.routes[2].predicates[0]=Path=/api/v1/grades/**
+-## spring.cloud.gateway.routes[2].filters[0]=StripPrefix=0
+-#
+-#application.security.jwt.secret-key=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+-#application.security.jwt.expiration=900000
+-#application.security.jwt.refresh-token.expiration=3600000
+-#
+-#gateway.internal.secret=GATEWAY_SHARED_SECRET_123
+-#
+-## Actuator endpoints
+-#management.endpoints.web.exposure.include=health,info,gateway
+-#management.endpoint.gateway.enabled=true
+-#management.endpoint.health.show-details=always
+-#
+-## Logging
+-#logging.level.org.springframework.cloud.gateway=DEBUG
+-#logging.level.com.savvy.gateway=DEBUG
+-#logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+Index: api-gateway/src/main/java/com/savvy/gateway/config/JwtDecoderConfig.java
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/config/JwtDecoderConfig.java b/api-gateway/src/main/java/com/savvy/gateway/config/JwtDecoderConfig.java
+deleted file mode 100644
+--- a/api-gateway/src/main/java/com/savvy/gateway/config/JwtDecoderConfig.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ /dev/null	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
+@@ -1,45 +0,0 @@
+-package com.savvy.gateway.config;
+-
+-import org.springframework.context.annotation.Bean;
+-import org.springframework.context.annotation.Configuration;
+-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+-import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+-
+-import javax.crypto.SecretKey;
+-import javax.crypto.spec.SecretKeySpec;
+-import java.util.Base64;
+-import java.util.regex.Pattern;
+-
+-@Configuration
+-public class JwtDecoderConfig {
+-
+-    private static final Pattern HEX = Pattern.compile("^[0-9a-fA-F]+$");
+-
+-    @Bean
+-    public ReactiveJwtDecoder reactiveJwtDecoder(JwtProps props) {
+-        byte[] keyBytes = decodeSecret(props.getSignerKey());
+-        SecretKey secretKey = new SecretKeySpec(keyBytes, "HmacSHA256");
+-
+-        return NimbusReactiveJwtDecoder
+-                .withSecretKey(secretKey)
+-                .macAlgorithm(MacAlgorithm.HS256)
+-                .build();
+-    }
+-
+-    private byte[] decodeSecret(String s) {
+-        if (s == null) throw new IllegalArgumentException("jwt.signerKey is null");
+-        String t = s.trim();
+-
+-        if (t.length() % 2 == 0 && HEX.matcher(t).matches()) {
+-            byte[] out = new byte[t.length() / 2];
+-            for (int i = 0; i < out.length; i++) {
+-                int hi = Character.digit(t.charAt(i * 2), 16);
+-                int lo = Character.digit(t.charAt(i * 2 + 1), 16);
+-                out[i] = (byte) ((hi << 4) + lo);
+-            }
+-            return out;
+-        }
+-        return Base64.getDecoder().decode(t);
+-    }
+-}
+Index: api-gateway/src/main/java/com/savvy/gateway/filter/RequestIdGlobalFilter.java
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/filter/RequestIdGlobalFilter.java b/api-gateway/src/main/java/com/savvy/gateway/filter/RequestIdGlobalFilter.java
+deleted file mode 100644
+--- a/api-gateway/src/main/java/com/savvy/gateway/filter/RequestIdGlobalFilter.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ /dev/null	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
+@@ -1,38 +0,0 @@
+-// v2
+-
+-package com.savvy.gateway.filter;
+-
+-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+-import org.springframework.cloud.gateway.filter.GlobalFilter;
+-import org.springframework.core.Ordered;
+-import org.springframework.http.server.reactive.ServerHttpRequest;
+-import org.springframework.stereotype.Component;
+-import org.springframework.util.StringUtils;
+-import org.springframework.web.server.ServerWebExchange;
+-import reactor.core.publisher.Mono;
+-
+-import java.util.UUID;
+-
+-@Component
+-public class RequestIdGlobalFilter implements GlobalFilter, Ordered {
+-
+-    private static final String HEADER = "X-Request-ID";
+-
+-    @Override
+-    public int getOrder() {
+-        return Ordered.HIGHEST_PRECEDENCE;
+-    }
+-
+-    @Override
+-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+-        String rid = exchange.getRequest().getHeaders().getFirst(HEADER);
+-        if(!StringUtils.hasText(rid)) {
+-            rid = UUID.randomUUID().toString();
+-            ServerHttpRequest mutated = exchange.getRequest().mutate()
+-                    .header(HEADER, rid)
+-                    .build();
+-            return chain.filter(exchange.mutate().request(mutated).build());
+-        }
+-        return chain.filter(exchange);
+-    }
+-}
+Index: api-gateway/src/main/java/com/savvy/gateway/config/JwtAuthConverterConfig.java
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/config/JwtAuthConverterConfig.java b/api-gateway/src/main/java/com/savvy/gateway/config/JwtAuthConverterConfig.java
+deleted file mode 100644
+--- a/api-gateway/src/main/java/com/savvy/gateway/config/JwtAuthConverterConfig.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ /dev/null	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
+@@ -1,53 +0,0 @@
+-package com.savvy.gateway.config;
+-
+-import org.springframework.context.annotation.Bean;
+-import org.springframework.context.annotation.Configuration;
+-import org.springframework.core.convert.converter.Converter;
+-import org.springframework.security.authentication.AbstractAuthenticationToken;
+-import org.springframework.security.core.GrantedAuthority;
+-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+-import org.springframework.security.oauth2.jwt.Jwt;
+-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+-import reactor.core.publisher.Mono;
+-
+-import java.util.*;
+-
+-@Configuration
+-public class JwtAuthConverterConfig {
+-
+-    @Bean
+-    public Converter<Jwt, Mono<AbstractAuthenticationToken>> jwtAuthenticationConverter() {
+-        return new JwtToAuthTokenConverter();
+-    }
+-
+-    static final class JwtToAuthTokenConverter implements Converter<Jwt, Mono<AbstractAuthenticationToken>> {
+-
+-        @Override
+-        public Mono<AbstractAuthenticationToken> convert(Jwt jwt) {
+-            return Mono.just(new JwtAuthenticationToken(jwt, authoritiesFromClaims(jwt)));
+-        }
+-
+-        private Collection<GrantedAuthority> authoritiesFromClaims(Jwt jwt) {
+-            Set<GrantedAuthority> out = new LinkedHashSet<>();
+-
+-            List<String> roles = jwt.getClaimAsStringList("roles");
+-            if (roles != null) {
+-                for (String r : roles) {
+-                    if (r == null || r.isBlank()) continue;
+-                    String name = r.trim().toUpperCase(Locale.ROOT);
+-                    out.add(new SimpleGrantedAuthority(name.startsWith("ROLE_") ? name : "ROLE_" + name));
+-                }
+-            }
+-
+-            List<String> perms = jwt.getClaimAsStringList("permissions");
+-            if (perms != null) {
+-                for (String p : perms) {
+-                    if (p == null || p.isBlank()) continue;
+-                    out.add(new SimpleGrantedAuthority(p.trim().toUpperCase(Locale.ROOT)));
+-                }
+-            }
+-
+-            return out;
+-        }
+-    }
+-}
+Index: api-gateway/src/main/java/com/savvy/gateway/config/WebClientConfiguration.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/config/WebClientConfiguration.java b/api-gateway/src/main/java/com/savvy/gateway/config/WebClientConfiguration.java
+new file mode 100644
+--- /dev/null	(date 1770484566566)
++++ b/api-gateway/src/main/java/com/savvy/gateway/config/WebClientConfiguration.java	(date 1770484566566)
+@@ -0,0 +1,28 @@
++package com.savvy.gateway.config;
++
++import com.savvy.gateway.repository.IdentityClient;
++import org.springframework.context.annotation.Bean;
++import org.springframework.context.annotation.Configuration;
++import org.springframework.web.reactive.function.client.WebClient;
++import org.springframework.web.reactive.function.client.support.WebClientAdapter;
++import org.springframework.web.service.invoker.HttpServiceProxyFactory;
++
++@Configuration
++public class WebClientConfiguration {
++
++    @Bean
++    WebClient identityWebClient() {
++        return WebClient.builder()
++                .baseUrl("http://localhost:8081")
++                .build();
++    }
++
++    @Bean
++    IdentityClient identityClient(WebClient identityWebClient) {
++        HttpServiceProxyFactory factory = HttpServiceProxyFactory
++                .builderFor(WebClientAdapter.create(identityWebClient))
++                .build();
++
++        return factory.createClient(IdentityClient.class);
++    }
++}
+Index: auth-service/src/main/java/com/savvycom/auth_service/admin/dto/request/AdminCreateUserRequest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.admin.dto.request;\r\n\r\nimport jakarta.validation.constraints.Email;\r\nimport jakarta.validation.constraints.NotBlank;\r\nimport jakarta.validation.constraints.Size;\r\nimport lombok.*;\r\n\r\nimport java.util.List;\r\n\r\n@Setter\r\n@Getter\r\n@AllArgsConstructor\r\n@NoArgsConstructor\r\n@Builder\r\npublic class AdminCreateUserRequest {\r\n    @Email(message = \"Email is invalid\")\r\n    @NotBlank(message = \"Email is required\")\r\n    private String email;\r\n\r\n    @NotBlank(message = \"Password is required\")\r\n    @Size(min = 6, message = \"Password must be at least 6 characters\")\r\n    private String password;\r\n\r\n    @NotBlank(message = \"Username is required\")\r\n    private String username;\r\n\r\n    @Builder.Default\r\n    private boolean enabled = true;\r\n    private List<String> roleNames;\r\n    private List<Long> schoolIds;\r\n    private Long studentId;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/admin/dto/request/AdminCreateUserRequest.java b/auth-service/src/main/java/com/savvycom/auth_service/admin/dto/request/AdminCreateUserRequest.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/admin/dto/request/AdminCreateUserRequest.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/admin/dto/request/AdminCreateUserRequest.java	(date 1770346240688)
+@@ -24,8 +24,7 @@
+     @NotBlank(message = "Username is required")
+     private String username;
+ 
+-    @Builder.Default
+-    private boolean enabled = true;
++    private Boolean enabled;
+     private List<String> roleNames;
+     private List<Long> schoolIds;
+     private Long studentId;
+Index: api-gateway/src/main/java/com/savvy/gateway/dto/request/IntrospectRequest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/dto/request/IntrospectRequest.java b/api-gateway/src/main/java/com/savvy/gateway/dto/request/IntrospectRequest.java
+new file mode 100644
+--- /dev/null	(date 1770484379906)
++++ b/api-gateway/src/main/java/com/savvy/gateway/dto/request/IntrospectRequest.java	(date 1770484379906)
+@@ -0,0 +1,14 @@
++package com.savvy.gateway.dto.request;
++
++import jakarta.validation.constraints.NotBlank;
++import lombok.*;
++
++@Setter
++@Getter
++@NoArgsConstructor
++@AllArgsConstructor
++@Builder
++public class IntrospectRequest {
++    @NotBlank
++    private String token;
++}
+\ No newline at end of file
+Index: api-gateway/src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\r\n  port: 8080\r\n\r\nspring:\r\n  application:\r\n    name: api-gateway\r\n\r\n  cloud:\r\n    gateway:\r\n      httpclient:\r\n        connect-timeout: 3000\r\n        response-timeout: 10s\r\n      routes:\r\n        - id: auth-service\r\n          uri: http://localhost:8081\r\n          predicates:\r\n            - Path=/api/v1/auth/**\r\n        - id: student-service\r\n          uri: http://localhost:8082\r\n          predicates:\r\n            - Path=/api/v1/students/**\r\n        - id: grade-service\r\n          uri: http://localhost:8083\r\n          predicates:\r\n            - Path=/api/v1/grades/**\r\n\r\njwt:\r\n  signerKey: \"1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij\"\r\n\r\nsecurity:\r\n  public-paths:\r\n    - /api/v1/auth/register\r\n    - /api/v1/auth/login\r\n    - /api/v1/auth/refresh\r\n    - /api/v1/auth/logout\r\n    - /actuator/**\r\n    - /swagger-ui/**\r\n    - /v3/api-docs/**\r\n  permissions-mapping:\r\n    - methods: [GET]\r\n      paths: [/api/v1/students/me]\r\n      require: [STUDENT_READ]\r\n    - methods: [GET]\r\n      paths: [/api/v1/students/**]\r\n      require: [STUDENT_READ]\r\n    - methods: [GET]\r\n      paths: [/api/v1/grades/me]\r\n      require: [GRADE_READ]\r\n    - methods: [GET]\r\n      paths: [/api/v1/grades/**]\r\n      require: [GRADE_READ]\r\n    - methods: [POST, PUT, DELETE]\r\n      paths: [/api/v1/grades/**]\r\n      require: [GRADE_WRITE]\r\n    - methods: [ GET,POST,PUT,DELETE ]\r\n      paths: [ /api/v1/auth/admin/** ]\r\n      require: [ ROLE_ADMIN ]\r\n\r\n  logging:\r\n    level:\r\n      org.springframework.security: DEBUG\r\n      org.springframework.security.oauth2: DEBUG\r\n      org.springframework.cloud.gateway: DEBUG\r\n      reactor.netty.http.server: INFO\r\n      reactor.netty.http.client: INFO
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/resources/application.yml b/api-gateway/src/main/resources/application.yml
+--- a/api-gateway/src/main/resources/application.yml	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/api-gateway/src/main/resources/application.yml	(date 1770485504541)
+@@ -33,28 +33,10 @@
+     - /api/v1/auth/login
+     - /api/v1/auth/refresh
+     - /api/v1/auth/logout
++    - /api/v1/auth/introspect
+     - /actuator/**
+     - /swagger-ui/**
+     - /v3/api-docs/**
+-  permissions-mapping:
+-    - methods: [GET]
+-      paths: [/api/v1/students/me]
+-      require: [STUDENT_READ]
+-    - methods: [GET]
+-      paths: [/api/v1/students/**]
+-      require: [STUDENT_READ]
+-    - methods: [GET]
+-      paths: [/api/v1/grades/me]
+-      require: [GRADE_READ]
+-    - methods: [GET]
+-      paths: [/api/v1/grades/**]
+-      require: [GRADE_READ]
+-    - methods: [POST, PUT, DELETE]
+-      paths: [/api/v1/grades/**]
+-      require: [GRADE_WRITE]
+-    - methods: [ GET,POST,PUT,DELETE ]
+-      paths: [ /api/v1/auth/admin/** ]
+-      require: [ ROLE_ADMIN ]
+ 
+   logging:
+     level:
+Index: auth-service/src/main/java/com/savvycom/auth_service/entity/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.entity;\r\n\r\nimport jakarta.persistence.*;\r\nimport lombok.*;\r\nimport org.hibernate.annotations.UuidGenerator;\r\n\r\nimport java.time.Instant;\r\nimport java.util.HashSet;\r\nimport java.util.Set;\r\nimport java.util.UUID;\r\n\r\n@Getter\r\n@Setter\r\n@AllArgsConstructor\r\n@NoArgsConstructor\r\n@Builder\r\n@Entity\r\n@Table(name = \"users\")\r\npublic class User {\r\n\r\n    @Id\r\n    @UuidGenerator\r\n    @Column(name = \"id\", updatable = false, nullable = false)\r\n    private UUID id;\r\n\r\n    @Column(nullable = false, unique = true, length = 150)\r\n    private String email;\r\n\r\n    @Column(nullable=false, unique=true, length=100)\r\n    private String username;\r\n\r\n    @Column(name=\"password_hash\", nullable=false, length=255)\r\n    private String passwordHash;\r\n\r\n    private boolean enabled;\r\n\r\n    @Column(name=\"created_at\", nullable=false)\r\n    private Instant createdAt;\r\n\r\n    @Column(name=\"updated_at\", nullable=false)\r\n    private Instant updatedAt;\r\n\r\n    @Builder.Default\r\n    @ManyToMany(fetch = FetchType.EAGER)\r\n    @JoinTable(\r\n            name=\"user_roles\",\r\n            joinColumns=@JoinColumn(name=\"user_id\"),\r\n            inverseJoinColumns=@JoinColumn(name=\"role_id\")\r\n    )\r\n    private Set<Role> roles = new HashSet<>();\r\n\r\n    @PrePersist\r\n    public void prePersist() {\r\n        Instant now = Instant.now();\r\n        this.createdAt = now;\r\n        this.updatedAt = now;\r\n    }\r\n\r\n    @PreUpdate\r\n    public void preUpdate() {\r\n        this.updatedAt = Instant.now();\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/entity/User.java b/auth-service/src/main/java/com/savvycom/auth_service/entity/User.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/entity/User.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/entity/User.java	(date 1770484748225)
+@@ -32,7 +32,9 @@
+     @Column(name="password_hash", nullable=false, length=255)
+     private String passwordHash;
+ 
+-    private boolean enabled;
++    @Builder.Default
++    @Column(nullable = false)
++    private boolean enabled = true;
+ 
+     @Column(name="created_at", nullable=false)
+     private Instant createdAt;
+@@ -60,4 +62,4 @@
+     public void preUpdate() {
+         this.updatedAt = Instant.now();
+     }
+-}
++}
+\ No newline at end of file
+Index: auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.controller;\r\n\r\nimport com.savvy.common.dto.BaseResponse;\r\nimport com.savvycom.auth_service.dto.request.LoginRequest;\r\nimport com.savvycom.auth_service.dto.request.LogoutRequest;\r\nimport com.savvycom.auth_service.dto.request.RefreshRequest;\r\nimport com.savvycom.auth_service.dto.request.RegisterRequest;\r\nimport com.savvycom.auth_service.dto.response.RegisterResponse;\r\nimport com.savvycom.auth_service.dto.response.TokenResponse;\r\nimport com.savvycom.auth_service.service.AuthService;\r\nimport jakarta.validation.Valid;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.web.bind.annotation.PostMapping;\r\nimport org.springframework.web.bind.annotation.RequestBody;\r\nimport org.springframework.web.bind.annotation.RequestMapping;\r\nimport org.springframework.web.bind.annotation.RestController;\r\n\r\nimport java.util.Map;\r\n\r\n@RestController\r\n@RequiredArgsConstructor\r\n@RequestMapping(\"/api/v1/auth\")\r\npublic class AuthController {\r\n\r\n    private final AuthService authService;\r\n\r\n    @PostMapping(\"/register\")\r\n    public ResponseEntity<BaseResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request) {\r\n        RegisterResponse res = authService.register(request);\r\n        return ResponseEntity.ok(BaseResponse.success(res, \"Register successfully\"));\r\n    }\r\n\r\n    @PostMapping(\"/login\")\r\n    public ResponseEntity<BaseResponse<TokenResponse>> login(@Valid @RequestBody LoginRequest request) {\r\n        TokenResponse res = authService.login(request);\r\n        return ResponseEntity.ok(BaseResponse.success(res, \"Login successfully\"));\r\n    }\r\n\r\n    @PostMapping(\"/refresh\")\r\n    public ResponseEntity<BaseResponse<TokenResponse>> refresh(@Valid @RequestBody RefreshRequest request) {\r\n        TokenResponse res = authService.refresh(request);\r\n        return ResponseEntity.ok(BaseResponse.success(res, \"Refresh token successfully\"));\r\n    }\r\n\r\n    @PostMapping(\"/logout\")\r\n    public ResponseEntity<BaseResponse<Map<String, Object>>> logout(@Valid @RequestBody LogoutRequest request) {\r\n        authService.logout(request);\r\n        return ResponseEntity.ok(BaseResponse.success(Map.of(\"loggedOut\", true), \"Logout successfully\"));\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java b/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java	(date 1770484958270)
+@@ -1,20 +1,16 @@
+ package com.savvycom.auth_service.controller;
+ 
+ import com.savvy.common.dto.BaseResponse;
+-import com.savvycom.auth_service.dto.request.LoginRequest;
+-import com.savvycom.auth_service.dto.request.LogoutRequest;
+-import com.savvycom.auth_service.dto.request.RefreshRequest;
+-import com.savvycom.auth_service.dto.request.RegisterRequest;
++import com.savvycom.auth_service.dto.request.*;
++import com.savvycom.auth_service.dto.response.IntrospectResponse;
+ import com.savvycom.auth_service.dto.response.RegisterResponse;
+ import com.savvycom.auth_service.dto.response.TokenResponse;
+ import com.savvycom.auth_service.service.AuthService;
+ import jakarta.validation.Valid;
+ import lombok.RequiredArgsConstructor;
++import org.springframework.http.HttpHeaders;
+ import org.springframework.http.ResponseEntity;
+-import org.springframework.web.bind.annotation.PostMapping;
+-import org.springframework.web.bind.annotation.RequestBody;
+-import org.springframework.web.bind.annotation.RequestMapping;
+-import org.springframework.web.bind.annotation.RestController;
++import org.springframework.web.bind.annotation.*;
+ 
+ import java.util.Map;
+ 
+@@ -25,6 +21,12 @@
+ 
+     private final AuthService authService;
+ 
++    @PostMapping("/introspect")
++    public ResponseEntity<BaseResponse<IntrospectResponse>> introspect(@Valid @RequestBody IntrospectRequest request) {
++        IntrospectResponse res = authService.introspect(request);
++        return ResponseEntity.ok(BaseResponse.success(res, "Introspect OK"));
++    }
++
+     @PostMapping("/register")
+     public ResponseEntity<BaseResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request) {
+         RegisterResponse res = authService.register(request);
+@@ -44,8 +46,12 @@
+     }
+ 
+     @PostMapping("/logout")
+-    public ResponseEntity<BaseResponse<Map<String, Object>>> logout(@Valid @RequestBody LogoutRequest request) {
+-        authService.logout(request);
++    public ResponseEntity<BaseResponse<Map<String, Object>>> logout(
++            @Valid @RequestBody LogoutRequest request,
++            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization
++    ) {
++        authService.logout(request, authorization);
+         return ResponseEntity.ok(BaseResponse.success(Map.of("loggedOut", true), "Logout successfully"));
+     }
++
+ }
+Index: auth-service/src/main/java/com/savvycom/auth_service/helper/AuthTokenHelper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.helper;\r\n\r\nimport com.savvy.common.exception.BusinessException;\r\nimport com.savvy.common.exception.ErrorCode;\r\nimport com.savvycom.auth_service.entity.RefreshToken;\r\nimport com.savvycom.auth_service.repository.RefreshTokenRepository;\r\nimport com.savvycom.auth_service.service.JwtService;\r\nimport io.jsonwebtoken.JwtException;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.stereotype.Component;\r\nimport org.springframework.transaction.annotation.Transactional;\r\n\r\nimport java.nio.charset.StandardCharsets;\r\nimport java.security.MessageDigest;\r\nimport java.time.Instant;\r\nimport java.util.UUID;\r\n\r\n@Component\r\n@RequiredArgsConstructor\r\npublic class AuthTokenHelper {\r\n\r\n    private final RefreshTokenRepository refreshTokenRepository;\r\n    private final JwtService jwtService;\r\n\r\n    @Transactional\r\n    public String issueRefreshToken(UUID userId) {\r\n        Instant now = Instant.now();\r\n\r\n        String raw = jwtService.generateRefreshToken(userId); // <- JwtService generateRefreshToken(UUID)\r\n        String hash = sha256(raw);\r\n\r\n        Instant exp = jwtService.parseAndValidateRefreshToken(raw).getExpiration().toInstant();\r\n\r\n        refreshTokenRepository.save(RefreshToken.builder()\r\n                .userId(userId) // UUID\r\n                .tokenHash(hash)\r\n                .expiresAt(exp)\r\n                .createdAt(now)\r\n                .build());\r\n\r\n        return raw;\r\n    }\r\n\r\n    @Transactional(readOnly = true)\r\n    public RefreshToken getRefreshTokenOrThrow(String rawToken) {\r\n        if (rawToken == null || rawToken.isBlank()) {\r\n            throw new BusinessException(ErrorCode.TOKEN_INVALID, \"refresh token is missing\");\r\n        }\r\n\r\n        try {\r\n            jwtService.parseAndValidateRefreshToken(rawToken);\r\n        } catch (JwtException e) {\r\n            throw new BusinessException(ErrorCode.TOKEN_INVALID, \"Refresh token invalid\");\r\n        }\r\n\r\n        String hash = sha256(rawToken);\r\n        return refreshTokenRepository.findByTokenHash(hash)\r\n                .orElseThrow(() -> new BusinessException(ErrorCode.TOKEN_INVALID, \"refresh token revoked or not found\"));\r\n    }\r\n\r\n    @Transactional(readOnly = true)\r\n    public RefreshToken getUsableRefreshTokenOrThrow(String rawToken) {\r\n        RefreshToken rt = getRefreshTokenOrThrow(rawToken);\r\n        assertUsable(rt);\r\n        return rt;\r\n    }\r\n\r\n    public void assertUsable(RefreshToken token) {\r\n        Instant now = Instant.now();\r\n\r\n        if (token.getRevokedAt() != null) {\r\n            throw new BusinessException(ErrorCode.TOKEN_INVALID, \"refresh token revoked or not found\");\r\n        }\r\n        if (token.getExpiresAt() == null || token.getExpiresAt().isBefore(now)) {\r\n            throw new BusinessException(ErrorCode.TOKEN_EXPIRED, \"refresh token expired\");\r\n        }\r\n    }\r\n\r\n    @Transactional\r\n    public String rotate(RefreshToken oldToken) {\r\n        assertUsable(oldToken);\r\n\r\n        Instant now = Instant.now();\r\n\r\n        String newRaw = jwtService.generateRefreshToken(oldToken.getUserId()); // UUID\r\n        String newHash = sha256(newRaw);\r\n        Instant newExp = jwtService.parseAndValidateRefreshToken(newRaw).getExpiration().toInstant();\r\n\r\n        refreshTokenRepository.save(RefreshToken.builder()\r\n                .userId(oldToken.getUserId())\r\n                .tokenHash(newHash)\r\n                .expiresAt(newExp)\r\n                .createdAt(now)\r\n                .build());\r\n\r\n        oldToken.setRevokedAt(now);\r\n        oldToken.setReplacedByTokenHash(newHash);\r\n        refreshTokenRepository.save(oldToken);\r\n\r\n        return newRaw;\r\n    }\r\n\r\n    @Transactional\r\n    public void revokeIfNeeded(RefreshToken token) {\r\n        if (token.getRevokedAt() == null) {\r\n            token.setRevokedAt(Instant.now());\r\n            refreshTokenRepository.save(token);\r\n        }\r\n    }\r\n\r\n    private String sha256(String raw) {\r\n        try {\r\n            MessageDigest md = MessageDigest.getInstance(\"SHA-256\");\r\n            byte[] digest = md.digest(raw.getBytes(StandardCharsets.UTF_8));\r\n            StringBuilder sb = new StringBuilder();\r\n            for (byte b : digest) sb.append(String.format(\"%02x\", b));\r\n            return sb.toString();\r\n        } catch (Exception e) {\r\n            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, \"Cannot hash token\", e);\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/helper/AuthTokenHelper.java b/auth-service/src/main/java/com/savvycom/auth_service/helper/AuthTokenHelper.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/helper/AuthTokenHelper.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/helper/AuthTokenHelper.java	(date 1770485199769)
+@@ -26,7 +26,7 @@
+     public String issueRefreshToken(UUID userId) {
+         Instant now = Instant.now();
+ 
+-        String raw = jwtService.generateRefreshToken(userId); // <- JwtService generateRefreshToken(UUID)
++        String raw = jwtService.generateRefreshToken(userId);
+         String hash = sha256(raw);
+ 
+         Instant exp = jwtService.parseAndValidateRefreshToken(raw).getExpiration().toInstant();
+Index: auth-service/src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\r\n  port: 8081\r\n\r\nspring:\r\n  application:\r\n    name: auth-service\r\n  datasource:\r\n    url: jdbc:postgresql://localhost:5432/auth_service_db\r\n    username: postgres\r\n    password: 123456a@\r\n    driver-class-name: org.postgresql.Driver\r\n  jpa:\r\n    hibernate:\r\n      ddl-auto: update\r\n    show-sql: true\r\n    properties:\r\n      hibernate:\r\n        default_schema: private\r\n\r\napplication:\r\n  security:\r\n    jwt:\r\n      secret-key: \"1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij\"\r\n      expiration: 900000\r\n      refresh-token:\r\n        secret-key: \"Q0E3aWl4ZmZyV0dZWm0zQm1kTjJQdFRuV2M4Z0ZxYjFQeHcxYlM0dD0=\"\r\n        expiration: 3600000\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/resources/application.yml b/auth-service/src/main/resources/application.yml
+--- a/auth-service/src/main/resources/application.yml	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/auth-service/src/main/resources/application.yml	(date 1770485021702)
+@@ -13,9 +13,9 @@
+     hibernate:
+       ddl-auto: update
+     show-sql: true
+-    properties:
+-      hibernate:
+-        default_schema: private
++#    properties:
++#      hibernate:
++#        default_schema: private
+ 
+ application:
+   security:
+@@ -24,4 +24,4 @@
+       expiration: 900000
+       refresh-token:
+         secret-key: "Q0E3aWl4ZmZyV0dZWm0zQm1kTjJQdFRuV2M4Z0ZxYjFQeHcxYlM0dD0="
+-        expiration: 3600000
++        expiration: 3600000
+\ No newline at end of file
+Index: auth-service/src/main/java/com/savvycom/auth_service/service/InvalidatedTokenService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/service/InvalidatedTokenService.java b/auth-service/src/main/java/com/savvycom/auth_service/service/InvalidatedTokenService.java
+new file mode 100644
+--- /dev/null	(date 1770484818159)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/service/InvalidatedTokenService.java	(date 1770484818159)
+@@ -0,0 +1,39 @@
++package com.savvycom.auth_service.service;
++
++import com.savvycom.auth_service.entity.InvalidatedToken;
++import com.savvycom.auth_service.repository.InvalidatedTokenRepository;
++import lombok.RequiredArgsConstructor;
++import org.springframework.stereotype.Service;
++import org.springframework.transaction.annotation.Transactional;
++
++import java.time.Instant;
++
++@Service
++@RequiredArgsConstructor
++public class InvalidatedTokenService {
++
++    private final InvalidatedTokenRepository invalidatedTokenRepository;
++
++    @Transactional
++    public void blacklistAccessToken(String jti, Instant expiresAt, String reason) {
++        Instant now = Instant.now();
++
++        if (jti == null || jti.isBlank() || expiresAt == null) return;
++
++        if (invalidatedTokenRepository.existsById(jti)) return;
++
++        invalidatedTokenRepository.save(InvalidatedToken.builder()
++                .jti(jti)
++                .expiresAt(expiresAt)
++                .createdAt(now)
++                .type("ACCESS")
++                .reason(reason)
++                .build());
++    }
++
++    @Transactional(readOnly = true)
++    public boolean isBlacklisted(String jti) {
++        if (jti == null || jti.isBlank()) return false;
++        return invalidatedTokenRepository.existsByJtiAndExpiresAtAfter(jti, Instant.now());
++    }
++}
+Index: auth-service/src/main/java/com/savvycom/auth_service/repository/InvalidatedTokenRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/repository/InvalidatedTokenRepository.java b/auth-service/src/main/java/com/savvycom/auth_service/repository/InvalidatedTokenRepository.java
+new file mode 100644
+--- /dev/null	(date 1770484790679)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/repository/InvalidatedTokenRepository.java	(date 1770484790679)
+@@ -0,0 +1,10 @@
++package com.savvycom.auth_service.repository;
++
++import com.savvycom.auth_service.entity.InvalidatedToken;
++import org.springframework.data.jpa.repository.JpaRepository;
++
++import java.time.Instant;
++
++public interface InvalidatedTokenRepository extends JpaRepository<InvalidatedToken, String> {
++    boolean existsByJtiAndExpiresAtAfter(String jti, Instant now);
++}

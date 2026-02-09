@@ -41,6 +41,7 @@ public class AuthenticationGlobalFilter implements org.springframework.cloud.gat
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {
 
+        // lay path de check public/private
         String path = exchange.getRequest().getURI().getPath();
 
         log.info("[GW] path={}, Authorization={}",
@@ -52,6 +53,7 @@ public class AuthenticationGlobalFilter implements org.springframework.cloud.gat
             return chain.filter(exchange);
         }
 
+        // lay authorization header và kiểm tra format bearer
         String auth = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if (!StringUtils.hasText(auth) || !auth.regionMatches(true, 0, "Bearer ", 0, 7)) {
             return unauthenticated(exchange.getResponse(), "Missing Bearer token");
@@ -61,6 +63,7 @@ public class AuthenticationGlobalFilter implements org.springframework.cloud.gat
 
         return identityService.introspect(token)
                 .flatMap(res -> {
+                    // Lay data, payload chua data o response
                     IntrospectResponse data = res == null ? null : res.getData();
                     if (data != null && data.isValid()) {
 
@@ -83,6 +86,7 @@ public class AuthenticationGlobalFilter implements org.springframework.cloud.gat
                                 h.getFirst("X-School-Ids")
                         );
 
+                        // Tao exchange moi chua request moi, chay filter chan va router xuong service
                         return chain.filter(exchange.mutate().request(mutated).build());
                     }
 
