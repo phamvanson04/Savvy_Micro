@@ -38,21 +38,28 @@ public class AdminUserPageAssembler {
 
         List<UUID> userIds = users.stream().map(User::getId).toList();
 
-        Map<UUID, List<Long>> schoolIdsByUserId = userSchoolScopeRepository.findByUserIdIn(userIds)
+        Map<UUID, UUID> schoolIdByUserId = userSchoolScopeRepository.findByUserIdIn(userIds)
                 .stream()
-                .collect(Collectors.groupingBy(
+                .filter(x -> x.getSchoolId() != null)
+                .collect(Collectors.toMap(
                         UserSchoolScope::getUserId,
-                        Collectors.mapping(UserSchoolScope::getSchoolId, Collectors.toList())
+                        UserSchoolScope::getSchoolId,
+                        (a, b) -> a // nếu lỡ duplicate row thì lấy cái đầu
                 ));
 
-        Map<UUID, Long> studentIdByUserId = userStudentRepository.findByUserIdIn(userIds)
+        Map<UUID, UUID> studentIdByUserId = userStudentRepository.findByUserIdIn(userIds)
                 .stream()
-                .collect(Collectors.toMap(UserStudent::getUserId, UserStudent::getStudentId, (a, b) -> a));
+                .filter(x -> x.getStudentId() != null)
+                .collect(Collectors.toMap(
+                        UserStudent::getUserId,
+                        UserStudent::getStudentId,
+                        (a, b) -> a
+                ));
 
         List<AdminUserSummaryResponse> items = users.stream()
                 .map(u -> mapper.toSummary(
                         u,
-                        schoolIdsByUserId.get(u.getId()),
+                        schoolIdByUserId.get(u.getId()),
                         studentIdByUserId.get(u.getId())
                 ))
                 .toList();

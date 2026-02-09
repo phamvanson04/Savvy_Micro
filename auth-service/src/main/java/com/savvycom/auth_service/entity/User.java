@@ -31,7 +31,9 @@ public class User {
     @Column(name="password_hash", nullable=false, length=255)
     private String passwordHash;
 
-    private boolean enabled;
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean enabled = true;
 
     @Column(name="created_at", nullable=false)
     private Instant createdAt;

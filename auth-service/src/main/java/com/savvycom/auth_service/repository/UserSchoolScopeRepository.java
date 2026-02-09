@@ -7,8 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-public interface UserSchoolScopeRepository extends JpaRepository<UserSchoolScope, UserSchoolScope.PK> {
-    List<UserSchoolScope> findByUserId(UUID userId);
+public interface UserSchoolScopeRepository extends JpaRepository<UserSchoolScope, UUID> {
 
     List<UserSchoolScope> findByUserIdIn(Collection<UUID> userIds);
 

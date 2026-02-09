@@ -11,5 +11,5 @@ import java.util.UUID;
 @Builder
 public class UserStudentIdResponse {
     private UUID userId;
-    private Long studentId;
+    private UUID studentId;
 }

@@ -1,5 +1,5 @@
 server:
-  port: 8088
+  port: 8080
 
 spring:
   application:
@@ -33,28 +33,10 @@ security:
     - /api/v1/auth/login
     - /api/v1/auth/refresh
     - /api/v1/auth/logout
+    - /api/v1/auth/introspect
     - /actuator/**
     - /swagger-ui/**
     - /v3/api-docs/**
-  permissions-mapping:
-    - methods: [GET]
-      paths: [/api/v1/students/me]
-      require: [STUDENT_READ]
-    - methods: [GET]
-      paths: [/api/v1/students/**]
-      require: [STUDENT_READ]
-    - methods: [GET]
-      paths: [/api/v1/grades/me]
-      require: [GRADE_READ]
-    - methods: [GET]
-      paths: [/api/v1/grades/**]
-      require: [GRADE_READ]
-    - methods: [POST, PUT, DELETE]
-      paths: [/api/v1/grades/**]
-      require: [GRADE_WRITE]
-    - methods: [ GET,POST,PUT,DELETE ]
-      paths: [ /api/v1/auth/admin/** ]
-      require: [ ROLE_ADMIN ]
 
   logging:
     level:

@@ -39,27 +39,34 @@ public class JwtService {
             User user,
             List<String> roles,
             List<String> permissions,
-            List<Long> schoolIds,
-            Long studentId
+            UUID schoolId,
+            UUID studentId
     ) {
         Instant now = Instant.now();
         Date issuedAt = Date.from(now);
         Date exp = Date.from(now.plusMillis(accessExpMs));
 
+        // dataScope: schoolId (single)
         Map<String, Object> dataScope = new HashMap<>();
-        dataScope.put("schoolIds", schoolIds == null ? List.of() : schoolIds);
+        if (schoolId != null) {
+            dataScope.put("schoolId", schoolId.toString());
+        } else {
+            dataScope.put("schoolId", null);
+        }
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roles == null ? List.of() : roles);
         claims.put("permissions", permissions == null ? List.of() : permissions);
         claims.put("dataScope", dataScope);
 
+        // studentId: UUID string
         if (studentId != null) {
-            claims.put("studentId", studentId);
+            claims.put("studentId", studentId.toString());
         }
 
         return Jwts.builder()
                 .setSubject(String.valueOf(user.getId()))
+                .setId(UUID.randomUUID().toString())
                 .setIssuedAt(issuedAt)
                 .setExpiration(exp)
                 .addClaims(claims)
@@ -93,6 +100,25 @@ public class JwtService {
         if (!TYP_REFRESH.equals(typ)) {
             throw new JwtException("Invalid token type");
         }
+        return claims;
+    }
+
+    public Claims parseAndValidateAccessToken(String rawAccessToken) {
+        if (rawAccessToken == null || rawAccessToken.isBlank()) {
+            throw new JwtException("Access token is missing");
+        }
+
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(accessKey)
+                .build()
+                .parseClaimsJws(rawAccessToken)
+                .getBody();
+
+        String typ = claims.get(CLAIM_TYP, String.class);
+        if (TYP_REFRESH.equals(typ)) {
+            throw new JwtException("Invalid token type");
+        }
+
         return claims;
     }
 

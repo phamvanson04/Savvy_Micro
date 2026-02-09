@@ -17,7 +17,7 @@ public class RegisterResponse {
     private String email;
     private List<String> roles;
     private DataScope dataScope;
-    private Long studentId;
+    private UUID studentId;
 
     @Getter
     @Setter
@@ -25,6 +25,6 @@ public class RegisterResponse {
     @AllArgsConstructor
     @Builder
     public static class DataScope {
-        private List<Long> schoolIds;
+        private UUID schoolId;
     }
 }

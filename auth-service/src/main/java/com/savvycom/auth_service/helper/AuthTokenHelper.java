@@ -26,7 +26,7 @@ public class AuthTokenHelper {
     public String issueRefreshToken(UUID userId) {
         Instant now = Instant.now();
 
-        String raw = jwtService.generateRefreshToken(userId); // <- JwtService generateRefreshToken(UUID)
+        String raw = jwtService.generateRefreshToken(userId);
         String hash = sha256(raw);
 
         Instant exp = jwtService.parseAndValidateRefreshToken(raw).getExpiration().toInstant();

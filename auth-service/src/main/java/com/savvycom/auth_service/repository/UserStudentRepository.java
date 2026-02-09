@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface UserStudentRepository extends JpaRepository<UserStudent, UUID> {
     Optional<UserStudent> findByUserId(UUID userId);
 
-    boolean existsByStudentId(Long studentId);
+    boolean existsByStudentId(UUID studentId);
 
     List<UserStudent> findByUserIdIn(Collection<UUID> userIds);
 

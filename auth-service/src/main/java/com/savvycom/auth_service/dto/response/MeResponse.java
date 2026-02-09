@@ -24,6 +24,6 @@ public class MeResponse {
     @AllArgsConstructor
     @Builder
     public static class DataScope {
-        private List<Long> schoolIds;
+        private UUID schoolId;
     }
 }

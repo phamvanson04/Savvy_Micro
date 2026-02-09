@@ -18,8 +18,8 @@ public class AdminUserDetailResponse {
     private boolean enabled;
     private List<String> roles;
     private List<String> permissions;
-    private List<Long> schoolIds;
-    private Long studentId;
+    private UUID schoolId;
+    private UUID studentId;
     private Instant createdAt;
     private Instant updatedAt;
 }

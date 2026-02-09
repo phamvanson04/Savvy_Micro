@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -12,5 +13,5 @@ import java.util.List;
 @Builder
 public class AdminSetUserSchoolScopeRequest {
     @NotEmpty(message = "schoolIds is required")
-    private List<Long> schoolIds;
+    private UUID schoolId;
 }
