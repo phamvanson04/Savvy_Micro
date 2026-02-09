@@ -9,8 +9,8 @@ spring:
     name: student-service
   datasource:
     driver-class-name: org.postgresql.Driver
-    username: conan09040
-    password: conan14121
+    username: micro
+    password: 123456
     url: jdbc:postgresql://localhost:5432/student_service
   jpa:
     show-sql: true

@@ -19,26 +19,39 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/schools")
 @RequiredArgsConstructor
-class SchoolController {
+public class SchoolController {
     private final SchoolService schoolService;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseResponse<PageResponse<SchoolResponse>>>findAll(@RequestParam int page,
+    public BaseResponse<PageResponse<SchoolResponse>>findPage(@RequestParam int page,
                                                              @RequestParam int size){
-        return ResponseEntity.ok(BaseResponse.success(schoolService.getPages(size,page),"Get data success"));
+        return BaseResponse.success(schoolService.getPages(size,page),"Get data success");
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
+    public BaseResponse<SchoolResponse>findById(@PathVariable UUID id){
+        return BaseResponse.success(schoolService.findById(id),"Get data success");
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseResponse<School>>save(@RequestBody CreateSchoolRequest request){
-        return ResponseEntity.ok(BaseResponse.success(schoolService.save(request),"Save data success"));
+    public BaseResponse<SchoolResponse>save(@RequestBody CreateSchoolRequest request){
+        return BaseResponse.created(schoolService.save(request),"Save data success");
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseResponse<School>>update(@PathVariable UUID id,
+    public BaseResponse<SchoolResponse>update(@PathVariable UUID id,
                                                       @RequestBody UpdateSchoolRequest request){
-        return ResponseEntity.ok(BaseResponse.success(schoolService.update(id,request),"Update data success"));
+        return BaseResponse.created(schoolService.update(id,request),"Update data success");
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public BaseResponse<?>delete(@PathVariable UUID id){
+        schoolService.delete(id);
+        return BaseResponse.success(null,"Delete data success");
     }
 }

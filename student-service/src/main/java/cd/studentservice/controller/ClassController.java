@@ -17,7 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/classes")
 @RequiredArgsConstructor
-class ClassController {
+public class ClassController {
     private final ClassService classService;
 
     @GetMapping

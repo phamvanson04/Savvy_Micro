@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public interface StudentService {
     PageResponse<StudentResponse>getPage(int size, int page);
-    Student findById(UUID id);
-    Student save(CreateStudentRequest request);
-    Student update(UUID id, UpdateStudentRequest request);
+    StudentResponse findById(UUID id);
+    StudentResponse save(CreateStudentRequest request);
+    StudentResponse update(UUID id, UpdateStudentRequest request);
     void delete(UUID id);
 }
