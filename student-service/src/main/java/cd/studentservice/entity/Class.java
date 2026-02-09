@@ -35,6 +35,8 @@ public class Class {
     @CreationTimestamp
     Instant createdAt;
 
+    Instant deletedAt;
+
     @ManyToOne
     @JoinColumn(name = "school_id")
     School school;

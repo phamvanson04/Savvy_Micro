@@ -34,4 +34,5 @@ public class School {
     SchoolStatus status;
     @CreationTimestamp
     Instant createdAt;
+    Instant deletedAt;
 }

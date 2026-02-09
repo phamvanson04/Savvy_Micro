@@ -15,10 +15,11 @@
               <node kind="schema" qname="@" />
             </node>
             <node kind="database">
-              <name qname="student_service" />
-              <name qname="grade_service" />
               <name qname="auth_service_db" />
+              <name qname="student_service" />
+              <node kind="schema" qname="public" />
             </node>
+            <node kind="database" qname="grade_service" />
           </node>
         </introspection-scope>
       </schema-mapping>

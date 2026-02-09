@@ -36,6 +36,7 @@ public class Student {
     StudentStatus status;
     @CreationTimestamp
     Instant createdAt;
+    Instant deletedAt;
 
     @ManyToOne
     @JoinColumn(name = "class_id")
