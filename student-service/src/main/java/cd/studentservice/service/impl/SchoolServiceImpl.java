@@ -1,7 +1,6 @@
 package cd.studentservice.service.impl;
 
 import cd.studentservice.dto.request.CreateSchoolRequest;
-import cd.studentservice.dto.request.CreateStudentRequest;
 import cd.studentservice.dto.request.UpdateSchoolRequest;
 import cd.studentservice.dto.response.SchoolResponse;
 import cd.studentservice.entity.School;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -24,8 +24,8 @@ public class SchoolServiceImpl implements SchoolService {
     private final SchoolMapper schoolMapper;
 
     @Override
-    public School findById(UUID id) {
-        return schoolRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find school with id: " + id));
+    public SchoolResponse findById(UUID id) {
+        return schoolMapper.toSchoolResponse(schoolRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find school with id: " + id)));
     }
 
     @Override
@@ -49,23 +49,31 @@ public class SchoolServiceImpl implements SchoolService {
 
 
     @Override
-    public School save(CreateSchoolRequest request) {
+    @Transactional
+    public SchoolResponse save(CreateSchoolRequest createSchoolRequest) {
         School school= School.builder()
-                .code(request.getCode())
-                .name(request.getName())
-                .address(request.getAddress())
-                .status(request.getStatus())
+                .code(createSchoolRequest.getCode())
+                .name(createSchoolRequest.getName())
+                .address(createSchoolRequest.getAddress())
+                .status(createSchoolRequest.getStatus())
                 .build();
-        return schoolRepository.save(school);
+        return schoolMapper.toSchoolResponse(schoolRepository.save(school));
     }
 
     @Override
-    public School update(UUID id, UpdateSchoolRequest request) {
-        School existedSchool = findById(id);
-        existedSchool.setCode(request.getCode());
-        existedSchool.setName(request.getName());
-        existedSchool.setAddress(request.getAddress());
-        existedSchool.setStatus(request.getStatus());
-        return schoolRepository.save(existedSchool);
+    @Transactional
+    public SchoolResponse update(UUID id, UpdateSchoolRequest updateSchoolRequest) {
+        School existedSchool = schoolRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find school with id: " + id));
+        existedSchool.setCode(updateSchoolRequest.getCode());
+        existedSchool.setName(updateSchoolRequest.getName());
+        existedSchool.setAddress(updateSchoolRequest.getAddress());
+        existedSchool.setStatus(updateSchoolRequest.getStatus());
+        return schoolMapper.toSchoolResponse(schoolRepository.save(existedSchool));
+    }
+
+    @Override
+    @Transactional
+    public void delete(UUID id) {
+        schoolRepository.deleteById(id);
     }
 }

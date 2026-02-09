@@ -10,9 +10,10 @@ import com.savvy.common.dto.PageResponse;
 import java.util.UUID;
 
 public interface SchoolService {
-    School findById(UUID id);
+    SchoolResponse findById(UUID id);
     School getReferenceById(UUID id);
     PageResponse<SchoolResponse>getPages(int size,int page);
-    School save(CreateSchoolRequest request);
-    School update(UUID id, UpdateSchoolRequest request);
+    SchoolResponse save(CreateSchoolRequest request);
+    SchoolResponse update(UUID id, UpdateSchoolRequest request);
+    void delete(UUID id);
 }
