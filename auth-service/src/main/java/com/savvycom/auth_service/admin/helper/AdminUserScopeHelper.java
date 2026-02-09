@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Component
@@ -23,40 +21,36 @@ public class AdminUserScopeHelper {
     private final UserStudentRepository userStudentRepository;
 
     @Transactional(readOnly = true)
-    public List<Long> loadSchoolIds(UUID userId) {
-        return userSchoolScopeRepository.findByUserId(userId)
-                .stream()
+    public UUID loadSchoolId(UUID userId) {
+        return userSchoolScopeRepository.findById(userId)
                 .map(UserSchoolScope::getSchoolId)
-                .filter(Objects::nonNull)
-                .distinct()
-                .toList();
+                .orElse(null);
     }
 
     @Transactional(readOnly = true)
-    public Long loadStudentId(UUID userId) {
+    public UUID loadStudentId(UUID userId) {
         return userStudentRepository.findByUserId(userId)
                 .map(UserStudent::getStudentId)
                 .orElse(null);
     }
 
     @Transactional
-    public void replaceSchoolScope(UUID userId, List<Long> schoolIds) {
+    public void setSchoolScope(UUID userId, UUID schoolId) {
+        // xóa mapping cũ (nếu bạn muốn set null)
         userSchoolScopeRepository.deleteByUserId(userId);
 
-        if (schoolIds == null || schoolIds.isEmpty()) {
+        if (schoolId == null) {
             return;
         }
 
-        for (Long sid : schoolIds.stream().filter(Objects::nonNull).distinct().toList()) {
-            userSchoolScopeRepository.save(UserSchoolScope.builder()
-                    .userId(userId)
-                    .schoolId(sid)
-                    .build());
-        }
+        userSchoolScopeRepository.save(UserSchoolScope.builder()
+                .userId(userId)
+                .schoolId(schoolId)
+                .build());
     }
 
     @Transactional
-    public void replaceStudentMapping(UUID userId, Long studentId) {
+    public void replaceStudentMapping(UUID userId, UUID studentId) {
         userStudentRepository.deleteByUserId(userId);
 
         if (studentId == null) {

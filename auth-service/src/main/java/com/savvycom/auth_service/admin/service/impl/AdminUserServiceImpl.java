@@ -52,7 +52,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         return mapper.toDetail(
                 u,
-                scopeHelper.loadSchoolIds(userId),
+                scopeHelper.loadSchoolId(userId),
                 scopeHelper.loadStudentId(userId)
         );
     }
@@ -74,14 +74,14 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .email(email)
                 .username(username)
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .enabled(true)
+                .enabled(request.getEnabled() == null ? true : request.getEnabled())
                 .roles(roleResolver.resolveRolesOrDefault(request.getRoleNames()))
                 .build();
 
         userRepository.save(u);
 
-        // nếu createUser của bạn có scope:
-        scopeHelper.replaceSchoolScope(u.getId(), request.getSchoolIds());
+        scopeHelper.setSchoolScope(u.getId(), request.getSchoolId());
+
         scopeHelper.replaceStudentMapping(u.getId(), request.getStudentId());
 
         return getUser(u.getId());
@@ -93,7 +93,6 @@ public class AdminUserServiceImpl implements AdminUserService {
         User u = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "User not found"));
 
-        // update username
         if (StringUtils.hasText(request.getUsername())) {
             String username = validator.normalizeUsernameRequired(request.getUsername());
 
@@ -103,7 +102,6 @@ public class AdminUserServiceImpl implements AdminUserService {
             u.setUsername(username);
         }
 
-        // update enabled
         if (request.getEnabled() != null) {
             u.setEnabled(request.getEnabled());
         }
@@ -122,7 +120,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         refreshTokenRepository.deleteByUserId(userId);
 
         scopeHelper.replaceStudentMapping(userId, null);
-        scopeHelper.replaceSchoolScope(userId, null);
+        scopeHelper.setSchoolScope(userId, null);
 
         userRepository.deleteById(userId);
     }

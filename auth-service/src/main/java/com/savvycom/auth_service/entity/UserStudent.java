@@ -26,7 +26,7 @@ public class UserStudent {
     private UUID userId;
 
     @Column(name="student_id", nullable=false)
-    private Long studentId;
+    private UUID studentId;
 
     @Column(name="created_at", nullable=false)
     private Instant createdAt;

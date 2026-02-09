@@ -17,6 +17,6 @@ public class AdminUserSummaryResponse {
     private String username;
     private boolean enabled;
     private List<String> roles;
-    private List<Long> schoolIds;
-    private Long studentId;
+    private UUID schoolId;
+    private UUID studentId;
 }

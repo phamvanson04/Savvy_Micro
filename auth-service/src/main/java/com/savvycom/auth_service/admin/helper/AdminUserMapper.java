@@ -9,23 +9,24 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Component
 public class AdminUserMapper {
 
-    public AdminUserSummaryResponse toSummary(User u, List<Long> schoolIds, Long studentId) {
+    public AdminUserSummaryResponse toSummary(User u, UUID schoolId, UUID studentId) {
         return AdminUserSummaryResponse.builder()
                 .id(u.getId())
                 .email(u.getEmail())
                 .username(u.getUsername())
                 .enabled(u.isEnabled())
                 .roles(extractRoleNames(u))
-                .schoolIds(distinctLongs(schoolIds))
+                .schoolId(schoolId)
                 .studentId(studentId)
                 .build();
     }
 
-    public AdminUserDetailResponse toDetail(User u, List<Long> schoolIds, Long studentId) {
+    public AdminUserDetailResponse toDetail(User u, UUID schoolId, UUID studentId) {
         return AdminUserDetailResponse.builder()
                 .id(u.getId())
                 .email(u.getEmail())
@@ -33,7 +34,7 @@ public class AdminUserMapper {
                 .enabled(u.isEnabled())
                 .roles(extractRoleNames(u))
                 .permissions(extractPermissionCodes(u))
-                .schoolIds(distinctLongs(schoolIds))
+                .schoolId(schoolId)
                 .studentId(studentId)
                 .createdAt(u.getCreatedAt())
                 .updatedAt(u.getUpdatedAt())
@@ -59,10 +60,5 @@ public class AdminUserMapper {
                 .distinct()
                 .sorted()
                 .toList();
-    }
-
-    private List<Long> distinctLongs(List<Long> input) {
-        if (input == null) return List.of();
-        return input.stream().filter(Objects::nonNull).distinct().toList();
     }
 }

@@ -48,32 +48,31 @@ public class AuthUserMapper {
                 .toList();
     }
 
-    public RegisterResponse toRegisterResponse(User user, List<Long> schoolIds, Long studentId) {
+    public RegisterResponse toRegisterResponse(User user, UUID schoolId, UUID studentId) {
         return RegisterResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .roles(extractRoleNames(user))
                 .studentId(studentId)
-                .dataScope(RegisterResponse.DataScope.builder().schoolIds(schoolIds).build())
+                .dataScope(RegisterResponse.DataScope.builder().schoolId(schoolId).build())
                 .build();
     }
 
-    public MeResponse toMeResponse(User user, List<Long> schoolIds) {
+    public MeResponse toMeResponse(User user, UUID schoolId) {
         return MeResponse.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .roles(extractRoleNames(user))
                 .permissions(extractPermissionCodes(user))
-                .dataScope(MeResponse.DataScope.builder().schoolIds(schoolIds).build())
+                .dataScope(MeResponse.DataScope.builder().schoolId(schoolId).build())
                 .build();
     }
 
-    public List<Long> loadSchoolIds(UUID userId) {
-        return userSchoolScopeRepository.findByUserId(userId).stream()
+    public UUID loadSchoolId(UUID userId) {
+        return userSchoolScopeRepository.findById(userId)
                 .map(UserSchoolScope::getSchoolId)
-                .distinct()
-                .toList();
+                .orElse(null);
     }
 }

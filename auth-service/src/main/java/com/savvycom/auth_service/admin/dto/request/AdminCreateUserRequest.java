@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -24,9 +25,8 @@ public class AdminCreateUserRequest {
     @NotBlank(message = "Username is required")
     private String username;
 
-    @Builder.Default
-    private boolean enabled = true;
+    private Boolean enabled;
     private List<String> roleNames;
-    private List<Long> schoolIds;
-    private Long studentId;
+    private UUID schoolId;
+    private UUID studentId;
 }

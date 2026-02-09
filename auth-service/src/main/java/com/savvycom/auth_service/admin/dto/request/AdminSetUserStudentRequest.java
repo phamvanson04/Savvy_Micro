@@ -3,6 +3,8 @@ package com.savvycom.auth_service.admin.dto.request;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.UUID;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -10,5 +12,5 @@ import lombok.*;
 @Builder
 public class AdminSetUserStudentRequest {
     @NotNull(message = "studentId is required")
-    private Long studentId;
+    private UUID studentId;
 }

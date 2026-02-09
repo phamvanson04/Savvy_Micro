@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -27,8 +27,8 @@ public class RegisterRequest {
     private String password;
 
     @NotNull
-    private List<Long> schoolIds;
+    private UUID schoolId;
 
     @NotNull
-    private Long studentId;
+    private UUID studentId;
 }
