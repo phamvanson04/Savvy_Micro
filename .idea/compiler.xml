@@ -49,7 +49,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
-      <module name="grade-service" options="-parameters" />
+      <module name="grade-service" options="" />
       <module name="gradeservice" options="-parameters" />
       <module name="student-service" options="-parameters" />
     </option>
