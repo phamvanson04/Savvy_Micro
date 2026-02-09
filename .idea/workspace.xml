@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="567559d3-edee-49a8-a28a-f146b729929d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/phamvanson04/Savvy_Micro.git",
+    "accountId": "94af9d79-a670-4b29-911b-ddff5a01a064"
+  }
+}]]></component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "git-widget-placeholder": "Merging main",
+    "node.js.selected.package.tslint": "(autodetect)"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="ms2" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="ms2" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+</project>

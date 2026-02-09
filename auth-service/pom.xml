@@ -46,10 +46,6 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.savvy</groupId>
 			<artifactId>common-library</artifactId>
 			<version>1.0.0</version>
