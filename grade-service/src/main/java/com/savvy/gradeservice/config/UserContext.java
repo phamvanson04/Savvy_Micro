@@ -9,10 +9,10 @@ import java.util.UUID;
 public class UserContext {
     private UUID userId;
     private String username;
-    private List<String> roles;
-    private List<UUID> schoolIds;
-    private List<String> permissions;
-    private List<UUID> dataScopeSchoolIds;
+    private String roles;
+    private UUID schoolId;
+    private String permissions;
+    private UUID dataScopeSchoolId;
 
     private static final ThreadLocal<UserContext> currentUser = new ThreadLocal<>();
 
@@ -48,7 +48,7 @@ public class UserContext {
         if (isAdmin()) {
             return true;
         }
-        return schoolIds != null && schoolIds.contains(schoolId);
+        return this.schoolId != null && this.schoolId.equals(schoolId);
     }
 
     public boolean hasPermission(String permission) {
@@ -67,6 +67,6 @@ public class UserContext {
         if (isAdmin()) {
             return List.of(); // admin all quyền
         }
-        return dataScopeSchoolIds != null ? dataScopeSchoolIds : List.of();
+        return dataScopeSchoolId != null ? List.of(dataScopeSchoolId) : List.of();
     }
 }

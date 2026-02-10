@@ -1,9 +1,9 @@
 package com.savvy.gradeservice.api.controller;
 
 import com.savvy.common.dto.BaseResponse;
-import com.savvy.gradeservice.api.dto.request.CreateGradeDTO;
-import com.savvy.gradeservice.api.dto.request.GradeSearchDTO;
-import com.savvy.gradeservice.api.dto.request.UpdateGradeDTO;
+import com.savvy.gradeservice.api.dto.request.CreateGrade;
+import com.savvy.gradeservice.api.dto.request.GradeSearch;
+import com.savvy.gradeservice.api.dto.request.UpdateGrade;
 import com.savvy.gradeservice.api.dto.response.GradeResponse;
 import com.savvy.gradeservice.api.dto.response.StudentGradesResponse;
 import com.savvy.gradeservice.service.IGradeService;
@@ -31,7 +31,7 @@ public class GradeController {
             @RequestParam(required = false) java.math.BigDecimal minScore,
             @RequestParam(required = false) java.math.BigDecimal maxScore
     ) {
-        GradeSearchDTO searchRequest = GradeSearchDTO.builder()
+        GradeSearch searchRequest = GradeSearch.builder()
                 .schoolId(schoolId)
                 .classId(classId)
                 .studentId(studentId)
@@ -58,7 +58,7 @@ public class GradeController {
 
     @PostMapping
     public BaseResponse<GradeResponse> createGrade(
-            @Valid @RequestBody CreateGradeDTO request
+            @Valid @RequestBody CreateGrade request
     ) {
         GradeResponse response = gradeService.createGrade(request);
         return BaseResponse.created(response, "Grade created successfully");
@@ -68,7 +68,7 @@ public class GradeController {
     @PutMapping("/{gradeId}")
     public BaseResponse<GradeResponse> updateGrade(
             @PathVariable UUID gradeId,
-            @Valid @RequestBody UpdateGradeDTO request
+            @Valid @RequestBody UpdateGrade request
     ) {
         GradeResponse response = gradeService.updateGrade(gradeId, request);
         return BaseResponse.success(response, "Grade updated successfully");

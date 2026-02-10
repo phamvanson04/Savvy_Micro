@@ -2,9 +2,9 @@ package com.savvy.gradeservice.service;
 
 import com.savvy.common.exception.BusinessException;
 import com.savvy.common.exception.ErrorCode;
-import com.savvy.gradeservice.api.dto.request.CreateGradeDTO;
-import com.savvy.gradeservice.api.dto.request.GradeSearchDTO;
-import com.savvy.gradeservice.api.dto.request.UpdateGradeDTO;
+import com.savvy.gradeservice.api.dto.request.CreateGrade;
+import com.savvy.gradeservice.api.dto.request.GradeSearch;
+import com.savvy.gradeservice.api.dto.request.UpdateGrade;
 import com.savvy.gradeservice.api.dto.response.GradeItemResponse;
 import com.savvy.gradeservice.api.dto.response.GradeResponse;
 import com.savvy.gradeservice.api.dto.response.StudentGradesResponse;
@@ -14,6 +14,7 @@ import com.savvy.gradeservice.repository.GradeRepository;
 import com.savvy.gradeservice.service.helper.AccessControlHelper;
 import com.savvy.gradeservice.service.helper.GradeMapper;
 import com.savvy.gradeservice.service.helper.GradeValidator;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -74,7 +75,7 @@ public class GradeServiceImpl implements IGradeService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<GradeResponse> searchGrades(GradeSearchDTO searchRequest) {
+    public List<GradeResponse> searchGrades(GradeSearch searchRequest) {
         UserContext context = UserContext.get();
 
         AccessControlHelper.verifyGradeReadPermission(context);
@@ -89,7 +90,7 @@ public class GradeServiceImpl implements IGradeService {
     }
 
     @Override
-    public GradeResponse createGrade(CreateGradeDTO request) {
+    public GradeResponse createGrade(@Valid CreateGrade request) {
         UserContext context = UserContext.get();
 
         AccessControlHelper.verifySchoolAccess(context, request.getSchoolId());
@@ -124,7 +125,7 @@ public class GradeServiceImpl implements IGradeService {
 
     @Override
 
-    public GradeResponse updateGrade(UUID gradeId, UpdateGradeDTO request) {
+    public GradeResponse updateGrade(UUID gradeId, UpdateGrade request) {
         UserContext context = UserContext.get();
 
         // Find existing grade
@@ -143,8 +144,6 @@ public class GradeServiceImpl implements IGradeService {
         // Update the score
         grade.setScore(request.getScore());
         Grade updatedGrade = gradeRepository.save(grade);
-
-        log.info("Updated grade {} by user {}", gradeId, context.getUserId());
 
         return GradeMapper.toResponse(updatedGrade);
     }
