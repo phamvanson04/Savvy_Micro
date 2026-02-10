@@ -54,27 +54,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             UUID userId = UUID.fromString(userIdStr);
-            List<String> roles = parseCommaSeparated(rolesStr);
-            List<UUID> schoolIds = parseSchoolIds(schoolIdsStr);
-            List<String> permissions = parseCommaSeparated(permissionsStr);
-            List<UUID> dataScopeSchoolIds = parseDataScopeSchoolIds(dataScopeStr);
+            String roles = rolesStr; // Keep as String
+            UUID schoolId = parseFirstSchoolId(schoolIdsStr);
+            String permissions = permissionsStr; // Keep as String
+            UUID dataScopeSchoolId = parseFirstDataScopeSchoolId(dataScopeStr);
 
             // Set user context
             UserContext userContext = new UserContext();
             userContext.setUserId(userId);
             userContext.setUsername(userIdStr); // Use userId as username
             userContext.setRoles(roles);
-            userContext.setSchoolIds(schoolIds);
+            userContext.setSchoolId(schoolId);
             userContext.setPermissions(permissions);
-            userContext.setDataScopeSchoolIds(dataScopeSchoolIds);
+            userContext.setDataScopeSchoolId(dataScopeSchoolId);
             UserContext.set(userContext);
             
             // Debug logging
             logger.info("UserContext set - UserId: " + userContext.getUserId() + ", Roles: " + userContext.getRoles() + 
-                       ", Permissions: " + userContext.getPermissions() + ", DataScopeSchoolIds: " + userContext.getDataScopeSchoolIds());
+                       ", Permissions: " + userContext.getPermissions() + ", DataScopeSchoolId: " + userContext.getDataScopeSchoolId());
 
             // Set vào Security Context
-            List<SimpleGrantedAuthority> authorities = roles.stream()
+            List<SimpleGrantedAuthority> authorities = parseCommaSeparated(roles).stream()
                     .map(SimpleGrantedAuthority::new)
                     .toList();
 
@@ -103,36 +103,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .collect(Collectors.toList());
     }
 
-    private List<UUID> parseSchoolIds(String value) {
+    private UUID parseFirstSchoolId(String value) {
         if (!StringUtils.hasText(value)) {
-            return List.of();
-        }
-        return Arrays.stream(value.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .map(UUID::fromString)
-                .collect(Collectors.toList());
-    }
-
-    private List<UUID> parseDataScopeSchoolIds(String dataScopeStr) {
-        if (!StringUtils.hasText(dataScopeStr)) {
-            return List.of();
+            return null;
         }
         try {
-            // Parse JSON like {"schoolIds":[1,2,3]} and extract schoolIds array
+            String firstId = Arrays.stream(value.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .findFirst()
+                    .orElse(null);
+            return firstId != null ? UUID.fromString(firstId) : null;
+        } catch (Exception e) {
+            logger.warn("Failed to parse schoolId: " + value, e);
+            return null;
+        }
+    }
+
+    private UUID parseFirstDataScopeSchoolId(String dataScopeStr) {
+        if (!StringUtils.hasText(dataScopeStr)) {
+            return null;
+        }
+        try {
+           
             String schoolIdsJson = dataScopeStr.replaceAll(".*\"schoolIds\":\\[([^\\]]+)\\].*", "$1");
             if (schoolIdsJson.equals(dataScopeStr)) {
-                return List.of(); // No match found
+                return null; // No match found
             }
-            return Arrays.stream(schoolIdsJson.split(","))
+            String firstId = Arrays.stream(schoolIdsJson.split(","))
                     .map(String::trim)
                     .map(s -> s.replaceAll("[\"\\s]", ""))
                     .filter(s -> !s.isEmpty())
-                    .map(UUID::fromString)
-                    .collect(Collectors.toList());
+                    .findFirst()
+                    .orElse(null);
+            return firstId != null ? UUID.fromString(firstId) : null;
         } catch (Exception e) {
             logger.warn("Failed to parse dataScope: " + dataScopeStr, e);
-            return List.of();
+            return null;
         }
     }
 

@@ -2,7 +2,7 @@ package com.savvy.gradeservice.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.savvy.gradeservice.api.dto.request.GradeSearchDTO;
+import com.savvy.gradeservice.api.dto.request.GradeSearch;
 import com.savvy.gradeservice.entity.Grade;
 import com.savvy.gradeservice.entity.QGrade;
 import jakarta.persistence.EntityManager;
@@ -21,7 +21,7 @@ public class GradeRepositoryImpl implements GradeRepositoryCustom {
     private final EntityManager entityManager;
 
     @Override
-    public List<Grade> searchGradesWithAccessControl(GradeSearchDTO searchRequest, List<UUID> accessibleSchoolIds) {
+    public List<Grade> searchGradesWithAccessControl(GradeSearch searchRequest, List<UUID> accessibleSchoolIds) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
         QGrade grade = QGrade.grade;// là class được QueryDSL generate tự động từ entity Grade
         BooleanBuilder builder = new BooleanBuilder(); //  điều kiện truy vấn động
