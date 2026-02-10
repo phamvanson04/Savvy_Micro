@@ -1,0 +1,89 @@
+<changelist name="Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1" date="1770696237348" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 2/10/2026 11:03 AM [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/config/JwtAuthenticationFilter.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/config/JwtAuthenticationFilter.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/JwtAuthenticationFilter.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/service/IGradeService.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/service/IGradeService.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/IGradeService.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/repository/GradeRepositoryCustom.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/repository/GradeRepositoryCustom.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeRepositoryCustom.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/service/GradeServiceImpl.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/service/GradeServiceImpl.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeServiceImpl.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/CreateGradeDTO$CreateGradeDTOBuilder.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/CreateGradeDTO$CreateGradeDTOBuilder.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/CreateGradeDTO$CreateGradeDTOBuilder.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/service/helper/AccessControlHelper.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/service/helper/AccessControlHelper.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/AccessControlHelper.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="api-gateway/target/classes/com/savvy/gateway/controller/GatewayController.class" />
+    <option name="AFTER_PATH" value="api-gateway/target/classes/com/savvy/gateway/controller/GatewayController.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GatewayController.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/config/SecurityConfig.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/config/SecurityConfig.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/SecurityConfig.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/GradeSearchDTO$GradeSearchDTOBuilder.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/GradeSearchDTO$GradeSearchDTOBuilder.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeSearchDTO$GradeSearchDTOBuilder.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/UpdateGradeDTO.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/UpdateGradeDTO.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/UpdateGradeDTO.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/CreateGradeDTO.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/CreateGradeDTO.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/CreateGradeDTO.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/repository/GradeRepositoryImpl.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/repository/GradeRepositoryImpl.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeRepositoryImpl.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/UpdateGradeDTO$UpdateGradeDTOBuilder.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/UpdateGradeDTO$UpdateGradeDTOBuilder.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/UpdateGradeDTO$UpdateGradeDTOBuilder.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/config/UserContext.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/config/UserContext.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/UserContext.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/controller/GradeController.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/controller/GradeController.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeController.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/GradeSearchDTO.class" />
+    <option name="AFTER_PATH" value="grade-service/target/classes/com/savvy/gradeservice/api/dto/request/GradeSearchDTO.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeSearchDTO.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" />
+    <option name="AFTER_PATH" value="api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/AuthenticationGlobalFilter.class" />
+  </binary>
+</changelist>

@@ -44,7 +44,6 @@
   &quot;associatedIndex&quot;: 1
 }</component>
   <component name="ProjectId" id="39Qfn5aQvXZdgvRP3iiXQ5iHWUp" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -56,7 +55,6 @@
     "Application.Grade Service.executor": "Run",
     "Application.Student Service.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/test/student-service",
     "node.js.selected.package.tslint": "(autodetect)",
@@ -140,11 +138,6 @@
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="ms2" />
-      <option name="filePath" />
-      <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Application.Grade Service" />

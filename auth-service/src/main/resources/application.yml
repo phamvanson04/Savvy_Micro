@@ -5,9 +5,9 @@ spring:
   application:
     name: auth-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/micro
+    url: jdbc:postgresql://localhost:5432/${DB_NAME}
     username: postgres
-    password: 123456a@
+    password: ${PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
