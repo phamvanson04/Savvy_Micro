@@ -4,52 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2fb9c34d-63e0-4ea3-b446-f0c5a43d2a42" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/ApiGatewayApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/ApiGatewayApplication.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/config/JwtProps.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/config/JwtProps.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/config/SecurityConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/config/SecurityProperties$PermissionRule.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/config/SecurityProperties$PermissionRule.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/config/SecurityProperties.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/config/SecurityProperties.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/config/WebClientConfiguration.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/config/WebClientConfiguration.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/request/IntrospectRequest$IntrospectRequestBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/request/IntrospectRequest$IntrospectRequestBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/request/IntrospectRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/request/IntrospectRequest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/GatewayBaseResponse$ErrorDetail$ErrorDetailBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/GatewayBaseResponse$ErrorDetail$ErrorDetailBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/GatewayBaseResponse$ErrorDetail.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/GatewayBaseResponse$ErrorDetail.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/GatewayBaseResponse$GatewayBaseResponseBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/GatewayBaseResponse$GatewayBaseResponseBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/GatewayBaseResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/GatewayBaseResponse.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/IntrospectResponse$IntrospectResponseBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/IntrospectResponse$IntrospectResponseBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/IntrospectResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/dto/response/IntrospectResponse.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/exception/GatewayExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/exception/GatewayExceptionHandler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/repository/IdentityClient.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/repository/IdentityClient.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/service/IdentityService.class" beforeDir="false" afterPath="$PROJECT_DIR$/../api-gateway/target/classes/com/savvy/gateway/service/IdentityService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/api/controller/GradeController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/api/controller/GradeController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/config/JwtAuthenticationFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/config/JwtAuthenticationFilter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/config/SecurityConfig.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/config/UserContext.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/config/UserContext.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/entity/QGrade.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/entity/QGrade.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/repository/GradeRepositoryCustom.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/repository/GradeRepositoryCustom.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/repository/GradeRepositoryImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/repository/GradeRepositoryImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/service/GradeServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/service/GradeServiceImpl.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/service/IGradeService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/service/IGradeService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/service/helper/AccessControlHelper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/savvy/gradeservice/service/helper/AccessControlHelper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/grade-service-0.0.1-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/grade-service-0.0.1-SNAPSHOT.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/grade-service-0.0.1-SNAPSHOT.jar.original" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
-    </list>
+    <list default="true" id="2fb9c34d-63e0-4ea3-b446-f0c5a43d2a42" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -89,7 +44,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "Spring Boot.GradeServiceApplication.executor": "Run",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "greade-service",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -130,6 +85,7 @@
       <updated>1770701911215</updated>
       <workItem from="1770701913429" duration="151000" />
       <workItem from="1770705293724" duration="687000" />
+      <workItem from="1770707345938" duration="65000" />
     </task>
     <servers />
   </component>
