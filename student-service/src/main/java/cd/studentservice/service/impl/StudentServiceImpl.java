@@ -25,7 +25,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
-    private final SchoolService schoolService;
     private final ClassService classService;
     private final StudentMapper studentMapper;
 

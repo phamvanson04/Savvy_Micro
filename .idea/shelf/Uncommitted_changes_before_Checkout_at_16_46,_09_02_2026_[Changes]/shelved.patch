@@ -1,0 +1,245 @@
+Index: grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java
+===================================================================
+diff --git a/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java b/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java
+deleted file mode 100644
+--- a/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java	(revision e28f30e52fbf58457f4e13adb51aacbb934fcc13)
++++ /dev/null	(revision e28f30e52fbf58457f4e13adb51aacbb934fcc13)
+@@ -1,55 +0,0 @@
+-package com.savvy.gradeservice.entity;
+-
+-import static com.querydsl.core.types.PathMetadataFactory.*;
+-
+-import com.querydsl.core.types.dsl.*;
+-
+-import com.querydsl.core.types.PathMetadata;
+-import javax.annotation.processing.Generated;
+-import com.querydsl.core.types.Path;
+-
+-
+-/**
+- * QGrade is a Querydsl query type for Grade
+- */
+-@Generated("com.querydsl.codegen.DefaultEntitySerializer")
+-public class QGrade extends EntityPathBase<Grade> {
+-
+-    private static final long serialVersionUID = -1958915348L;
+-
+-    public static final QGrade grade = new QGrade("grade");
+-
+-    public final ComparablePath<java.util.UUID> classId = createComparable("classId", java.util.UUID.class);
+-
+-    public final DateTimePath<java.time.Instant> createdAt = createDateTime("createdAt", java.time.Instant.class);
+-
+-    public final ComparablePath<java.util.UUID> createdBy = createComparable("createdBy", java.util.UUID.class);
+-
+-    public final ComparablePath<java.util.UUID> id = createComparable("id", java.util.UUID.class);
+-
+-    public final ComparablePath<java.util.UUID> schoolId = createComparable("schoolId", java.util.UUID.class);
+-
+-    public final NumberPath<java.math.BigDecimal> score = createNumber("score", java.math.BigDecimal.class);
+-
+-    public final ComparablePath<java.util.UUID> studentId = createComparable("studentId", java.util.UUID.class);
+-
+-    public final StringPath subject = createString("subject");
+-
+-    public final StringPath term = createString("term");
+-
+-    public final DateTimePath<java.time.Instant> updatedAt = createDateTime("updatedAt", java.time.Instant.class);
+-
+-    public QGrade(String variable) {
+-        super(Grade.class, forVariable(variable));
+-    }
+-
+-    public QGrade(Path<? extends Grade> path) {
+-        super(path.getType(), path.getMetadata());
+-    }
+-
+-    public QGrade(PathMetadata metadata) {
+-        super(Grade.class, metadata);
+-    }
+-
+-}
+-
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"CompilerConfiguration\">\r\n    <annotationProcessing>\r\n      <profile default=\"true\" name=\"Default\" enabled=\"true\" />\r\n      <profile name=\"Maven default annotation processors profile\" enabled=\"true\">\r\n        <sourceOutputDir name=\"target/generated-sources/annotations\" />\r\n        <sourceTestOutputDir name=\"target/generated-test-sources/test-annotations\" />\r\n        <outputRelativeToContentRoot value=\"true\" />\r\n        <module name=\"api-gateway\" />\r\n        <module name=\"common-library\" />\r\n        <module name=\"auth-service\" />\r\n      </profile>\r\n      <profile name=\"Annotation profile for student-service\" enabled=\"true\">\r\n        <sourceOutputDir name=\"target/generated-sources/annotations\" />\r\n        <sourceTestOutputDir name=\"target/generated-test-sources/test-annotations\" />\r\n        <outputRelativeToContentRoot value=\"true\" />\r\n        <processorPath useClasspath=\"false\">\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.3/mapstruct-1.6.3.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar\" />\r\n        </processorPath>\r\n        <module name=\"student-service\" />\r\n      </profile>\r\n      <profile name=\"Annotation profile for Grade Service\" enabled=\"true\">\r\n        <sourceOutputDir name=\"target/generated-sources/annotations\" />\r\n        <sourceTestOutputDir name=\"target/generated-test-sources/test-annotations\" />\r\n        <outputRelativeToContentRoot value=\"true\" />\r\n        <processorPath useClasspath=\"false\">\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-apt/5.0.0/querydsl-apt-5.0.0-jakarta.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-codegen/5.0.0/querydsl-codegen-5.0.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/mysema/commons/mysema-commons-lang/0.2.4/mysema-commons-lang-0.2.4.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/codegen-utils/5.0.0/codegen-utils-5.0.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/eclipse/jdt/ecj/3.26.0/ecj-3.26.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/io/github/classgraph/classgraph/4.8.108/classgraph-4.8.108.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/javax/inject/javax.inject/1/javax.inject-1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/jetbrains/annotations/21.0.1/annotations-21.0.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/datanucleus/javax.jdo/3.2.0-m13/javax.jdo-3.2.0-m13.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/javax/transaction/transaction-api/1.1/transaction-api-1.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/springframework/roo/org.springframework.roo.annotations/1.3.2.RELEASE/org.springframework.roo.annotations-1.3.2.RELEASE.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/mongodb/morphia/morphia/1.3.2/morphia-1.3.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.4.0/mongo-java-driver-3.4.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/thoughtworks/proxytoys/proxytoys/1.0/proxytoys-1.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/joda-time/joda-time/2.10.10/joda-time-2.10.10.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.4.8.Final/hibernate-core-5.4.8.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/jboss/logging/jboss-logging/3.3.2.Final/jboss-logging-3.3.2.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/javax/persistence/javax.persistence-api/2.2/javax.persistence-api-2.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy/1.10.2/byte-buddy-1.10.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/antlr/antlr/2.7.7/antlr-2.7.7.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/jboss/spec/javax/transaction/jboss-transaction-api_1.2_spec/1.1.1.Final/jboss-transaction-api_1.2_spec-1.1.1.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/jboss/jandex/2.0.5.Final/jandex-2.0.5.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/fasterxml/classmate/1.3.4/classmate-1.3.4.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/dom4j/dom4j/2.1.1/dom4j-2.1.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/hibernate/common/hibernate-commons-annotations/5.1.0.Final/hibernate-commons-annotations-5.1.0.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/glassfish/jaxb/jaxb-runtime/2.3.1/jaxb-runtime-2.3.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/glassfish/jaxb/txw2/2.3.1/txw2-2.3.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/sun/istack/istack-commons-runtime/3.0.7/istack-commons-runtime-3.0.7.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/jvnet/staxex/stax-ex/1.8/stax-ex-1.8.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/sun/xml/fastinfoset/FastInfoset/1.2.15/FastInfoset-1.2.15.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/hibernate/hibernate-envers/5.4.8.Final/hibernate-envers-5.4.8.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0-tests.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/joda/joda-money/1.0.1/joda-money-1.0.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/eclipse/jdt/core/compiler/ecj/4.6.1/ecj-4.6.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/junit/junit/4.13.2/junit-4.13.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/easymock/easymock/4.3/easymock-4.3.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/objenesis/objenesis/3.2/objenesis-3.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/javassist/javassist/3.28.0-GA/javassist-3.28.0-GA.jar\" />\r\n        </processorPath>\r\n        <module name=\"grade-service\" />\r\n      </profile>\r\n    </annotationProcessing>\r\n    <bytecodeTargetLevel>\r\n      <module name=\"gradeservice\" target=\"21\" />\r\n    </bytecodeTargetLevel>\r\n  </component>\r\n  <component name=\"JavacSettings\">\r\n    <option name=\"ADDITIONAL_OPTIONS_OVERRIDE\">\r\n      <module name=\"api-gateway\" options=\"-parameters\" />\r\n      <module name=\"auth-service\" options=\"-parameters\" />\r\n      <module name=\"grade-service\" options=\"-parameters\" />\r\n      <module name=\"gradeservice\" options=\"-parameters\" />\r\n      <module name=\"student-service\" options=\"-parameters\" />\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+--- a/.idea/compiler.xml	(revision e28f30e52fbf58457f4e13adb51aacbb934fcc13)
++++ b/.idea/compiler.xml	(date 1770630390946)
+@@ -17,7 +17,6 @@
+         <outputRelativeToContentRoot value="true" />
+         <processorPath useClasspath="false">
+           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.3/mapstruct-1.6.3.jar" />
+           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+         </processorPath>
+@@ -86,7 +85,7 @@
+     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+       <module name="api-gateway" options="-parameters" />
+       <module name="auth-service" options="-parameters" />
+-      <module name="grade-service" options="-parameters" />
++      <module name="grade-service" options="" />
+       <module name="gradeservice" options="-parameters" />
+       <module name="student-service" options="-parameters" />
+     </option>
+Index: auth-service/src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\r\n  port: 8081\r\n\r\nspring:\r\n  application:\r\n    name: auth-service\r\n  datasource:\r\n    url: jdbc:postgresql://localhost:5432/auth\r\n    username: postgres\r\n    password: 12345\r\n    driver-class-name: org.postgresql.Driver\r\n  jpa:\r\n    hibernate:\r\n      ddl-auto: update\r\n    show-sql: true\r\n#    properties:\r\n#      hibernate:\r\n#        default_schema: private\r\n\r\napplication:\r\n  security:\r\n    jwt:\r\n      secret-key: \"1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij\"\r\n      expiration: 900000\r\n      refresh-token:\r\n        secret-key: \"Q0E3aWl4ZmZyV0dZWm0zQm1kTjJQdFRuV2M4Z0ZxYjFQeHcxYlM0dD0=\"\r\n        expiration: 3600000
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/resources/application.yml b/auth-service/src/main/resources/application.yml
+--- a/auth-service/src/main/resources/application.yml	(revision e28f30e52fbf58457f4e13adb51aacbb934fcc13)
++++ b/auth-service/src/main/resources/application.yml	(date 1770630368378)
+@@ -5,17 +5,14 @@
+   application:
+     name: auth-service
+   datasource:
+-    url: jdbc:postgresql://localhost:5432/auth
+-    username: postgres
+-    password: 12345
++    url: jdbc:postgresql://localhost:5432/auth_service_db
++    username: micro
++    password: 123456
+     driver-class-name: org.postgresql.Driver
+   jpa:
+     hibernate:
+       ddl-auto: update
+     show-sql: true
+-#    properties:
+-#      hibernate:
+-#        default_schema: private
+ 
+ application:
+   security:
+@@ -24,4 +21,4 @@
+       expiration: 900000
+       refresh-token:
+         secret-key: "Q0E3aWl4ZmZyV0dZWm0zQm1kTjJQdFRuV2M4Z0ZxYjFQeHcxYlM0dD0="
+-        expiration: 3600000
+\ No newline at end of file
++        expiration: 3600000
+Index: auth-service/pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n\t\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\t\t xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\n\t<modelVersion>4.0.0</modelVersion>\n\t<parent>\n\t\t<groupId>org.springframework.boot</groupId>\n\t\t<artifactId>spring-boot-starter-parent</artifactId>\n\t\t<version>3.2.0</version>\n\t\t<relativePath/>\n\t</parent>\n\t<groupId>com.savvycom</groupId>\n\t<artifactId>auth-service</artifactId>\n\t<version>0.0.1-SNAPSHOT</version>\n\t<properties>\n\t\t<java.version>21</java.version>\n\t\t<spring-cloud.version>2023.0.0</spring-cloud.version>\n\t</properties>\n\t<dependencies>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-web</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-security</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.security</groupId>\n\t\t\t<artifactId>spring-security-oauth2-jose</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-validation</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-data-jpa</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.postgresql</groupId>\n\t\t\t<artifactId>postgresql</artifactId>\n\t\t\t<scope>runtime</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.flywaydb</groupId>\n\t\t\t<artifactId>flyway-core</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.savvy</groupId>\n\t\t\t<artifactId>common-library</artifactId>\n\t\t\t<version>1.0.0</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>io.jsonwebtoken</groupId>\n\t\t\t<artifactId>jjwt-api</artifactId>\n\t\t\t<version>0.11.5</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>io.jsonwebtoken</groupId>\n\t\t\t<artifactId>jjwt-impl</artifactId>\n\t\t\t<version>0.11.5</version>\n\t\t\t<scope>runtime</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>io.jsonwebtoken</groupId>\n\t\t\t<artifactId>jjwt-jackson</artifactId>\n\t\t\t<version>0.11.5</version>\n\t\t\t<scope>runtime</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.projectlombok</groupId>\n\t\t\t<artifactId>lombok</artifactId>\n\t\t\t<scope>provided</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-test</artifactId>\n\t\t\t<scope>test</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.security</groupId>\n\t\t\t<artifactId>spring-security-test</artifactId>\n\t\t\t<scope>test</scope>\n\t\t</dependency>\n\t</dependencies>\n\n\t<dependencyManagement>\n\t\t<dependencies>\n\t\t\t<dependency>\n\t\t\t\t<groupId>org.springframework.cloud</groupId>\n\t\t\t\t<artifactId>spring-cloud-dependencies</artifactId>\n\t\t\t\t<version>${spring-cloud.version}</version>\n\t\t\t\t<type>pom</type>\n\t\t\t\t<scope>import</scope>\n\t\t\t</dependency>\n\t\t</dependencies>\n\t</dependencyManagement>\n\n\t<build>\n\t\t<plugins>\n\t\t\t<plugin>\n\t\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t\t<artifactId>spring-boot-maven-plugin</artifactId>\n\t\t\t</plugin>\n\t\t</plugins>\n\t</build>\n</project>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/pom.xml b/auth-service/pom.xml
+--- a/auth-service/pom.xml	(revision e28f30e52fbf58457f4e13adb51aacbb934fcc13)
++++ b/auth-service/pom.xml	(date 1770630368397)
+@@ -46,10 +46,6 @@
+ 			<scope>runtime</scope>
+ 		</dependency>
+ 		<dependency>
+-			<groupId>org.flywaydb</groupId>
+-			<artifactId>flyway-core</artifactId>
+-		</dependency>
+-		<dependency>
+ 			<groupId>com.savvy</groupId>
+ 			<artifactId>common-library</artifactId>
+ 			<version>1.0.0</version>
+Index: .idea/dataSources.local.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"dataSourceStorageLocal\" created-in=\"IU-252.23892.409\">\r\n    <data-source name=\"student_service@localhost\" uuid=\"54b5da0b-2f8f-475f-a0ca-e31ec785f0f2\">\r\n      <database-info product=\"PostgreSQL\" version=\"18.1 (Debian 18.1-1.pgdg13+2)\" jdbc-version=\"4.2\" driver-name=\"PostgreSQL JDBC Driver\" driver-version=\"42.7.8\" dbms=\"POSTGRES\" exact-version=\"18.1\" exact-driver-version=\"42.7\">\r\n        <identifier-quote-string>&quot;</identifier-quote-string>\r\n      </database-info>\r\n      <case-sensitivity plain-identifiers=\"lower\" quoted-identifiers=\"exact\" />\r\n      <secret-storage>master_key</secret-storage>\r\n      <user-name>conan09040</user-name>\r\n      <schema-mapping>\r\n        <introspection-scope>\r\n          <node negative=\"1\">\r\n            <node kind=\"database\" qname=\"@\">\r\n              <node kind=\"schema\" qname=\"@\" />\r\n            </node>\r\n            <node kind=\"database\" qname=\"auth_service_db\">\r\n              <node kind=\"schema\" qname=\"private\" />\r\n            </node>\r\n            <node kind=\"database\" qname=\"student_service\">\r\n              <node kind=\"schema\" qname=\"public\" />\r\n            </node>\r\n            <node kind=\"database\">\r\n              <name qname=\"authentication_service\" />\r\n              <name qname=\"auth_service\" />\r\n            </node>\r\n          </node>\r\n        </introspection-scope>\r\n      </schema-mapping>\r\n    </data-source>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/dataSources.local.xml b/.idea/dataSources.local.xml
+--- a/.idea/dataSources.local.xml	(revision e28f30e52fbf58457f4e13adb51aacbb934fcc13)
++++ b/.idea/dataSources.local.xml	(date 1770630370847)
+@@ -1,8 +1,8 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="dataSourceStorageLocal" created-in="IU-252.23892.409">
+-    <data-source name="student_service@localhost" uuid="54b5da0b-2f8f-475f-a0ca-e31ec785f0f2">
+-      <database-info product="PostgreSQL" version="18.1 (Debian 18.1-1.pgdg13+2)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.8" dbms="POSTGRES" exact-version="18.1" exact-driver-version="42.7">
++  <component name="dataSourceStorageLocal" created-in="IU-253.30387.90">
++    <data-source name="postgres@localhost" uuid="8f2e3b23-222a-4bb7-8636-b07fa478ad20">
++      <database-info product="PostgreSQL" version="18.1 (Debian 18.1-1.pgdg13+2)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.9" dbms="POSTGRES" exact-version="18.1" exact-driver-version="42.7">
+         <identifier-quote-string>&quot;</identifier-quote-string>
+       </database-info>
+       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+@@ -13,17 +13,13 @@
+           <node negative="1">
+             <node kind="database" qname="@">
+               <node kind="schema" qname="@" />
+-            </node>
+-            <node kind="database" qname="auth_service_db">
+-              <node kind="schema" qname="private" />
+-            </node>
+-            <node kind="database" qname="student_service">
+-              <node kind="schema" qname="public" />
+             </node>
+             <node kind="database">
+-              <name qname="authentication_service" />
+-              <name qname="auth_service" />
++              <name qname="auth_service_db" />
++              <name qname="student_service" />
++              <node kind="schema" qname="public" />
+             </node>
++            <node kind="database" qname="grade_service" />
+           </node>
+         </introspection-scope>
+       </schema-mapping>
+Index: student-service/src/main/java/cd/studentservice/entity/Student.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.entity;\r\n\r\nimport cd.studentservice.enumerate.StudentStatus;\r\nimport jakarta.persistence.*;\r\nimport lombok.*;\r\nimport lombok.experimental.FieldDefaults;\r\nimport org.hibernate.annotations.CreationTimestamp;\r\nimport org.hibernate.annotations.SQLDelete;\r\nimport org.hibernate.annotations.SQLRestriction;\r\n\r\nimport java.time.Instant;\r\nimport java.time.LocalDate;\r\nimport java.util.UUID;\r\n\r\n@Entity\r\n@Table(name = \"students\")\r\n@FieldDefaults(level = AccessLevel.PRIVATE)\r\n@Getter\r\n@Setter\r\n@Builder\r\n@NoArgsConstructor\r\n@AllArgsConstructor\r\n@SQLDelete(sql = \"UPDATE students SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?\")\r\n@SQLRestriction(\"deleted_at is null\")\r\npublic class Student {\r\n    @Id @GeneratedValue(strategy = GenerationType.UUID)\r\n    UUID id;\r\n\r\n    @Column(unique = true,nullable = false)\r\n    String code;\r\n\r\n    String fullName;\r\n    LocalDate dob;\r\n    Boolean gender;\r\n    @Enumerated(EnumType.STRING)\r\n    StudentStatus status;\r\n    @CreationTimestamp\r\n    Instant createdAt;\r\n\r\n    @ManyToOne\r\n    @JoinColumn(name = \"class_id\")\r\n    Class clazz;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/entity/Student.java b/student-service/src/main/java/cd/studentservice/entity/Student.java
+--- a/student-service/src/main/java/cd/studentservice/entity/Student.java	(revision e28f30e52fbf58457f4e13adb51aacbb934fcc13)
++++ b/student-service/src/main/java/cd/studentservice/entity/Student.java	(date 1770630368407)
+@@ -36,6 +36,7 @@
+     StudentStatus status;
+     @CreationTimestamp
+     Instant createdAt;
++    Instant deletedAt;
+ 
+     @ManyToOne
+     @JoinColumn(name = "class_id")
+Index: student-service/src/main/java/cd/studentservice/entity/Class.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.entity;\r\n\r\nimport cd.studentservice.enumerate.ClassStatus;\r\nimport jakarta.persistence.*;\r\nimport lombok.*;\r\nimport lombok.experimental.FieldDefaults;\r\nimport org.hibernate.annotations.CreationTimestamp;\r\nimport org.hibernate.annotations.SQLDelete;\r\nimport org.hibernate.annotations.SQLRestriction;\r\n\r\nimport java.time.Instant;\r\nimport java.util.UUID;\r\n\r\n@Entity\r\n@Table(name = \"classes\")\r\n@FieldDefaults(level = AccessLevel.PRIVATE)\r\n@Getter\r\n@Setter\r\n@Builder\r\n@NoArgsConstructor\r\n@AllArgsConstructor\r\n@SQLDelete(sql = \"UPDATE classes SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?\")\r\n@SQLRestriction(\"deleted_at is null\")\r\npublic class Class {\r\n    @Id\r\n    @GeneratedValue(strategy = GenerationType.UUID)\r\n    UUID id;\r\n    @Column(unique = true,nullable = false)\r\n    String code;\r\n    String name;\r\n    Integer grade;\r\n    @Enumerated(EnumType.STRING)\r\n    ClassStatus status;\r\n\r\n    @CreationTimestamp\r\n    Instant createdAt;\r\n\r\n    @ManyToOne\r\n    @JoinColumn(name = \"school_id\")\r\n    School school;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/entity/Class.java b/student-service/src/main/java/cd/studentservice/entity/Class.java
+--- a/student-service/src/main/java/cd/studentservice/entity/Class.java	(revision e28f30e52fbf58457f4e13adb51aacbb934fcc13)
++++ b/student-service/src/main/java/cd/studentservice/entity/Class.java	(date 1770630368419)
+@@ -35,6 +35,8 @@
+     @CreationTimestamp
+     Instant createdAt;
+ 
++    Instant deletedAt;
++
+     @ManyToOne
+     @JoinColumn(name = "school_id")
+     School school;
+Index: student-service/src/main/java/cd/studentservice/entity/School.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.entity;\r\n\r\nimport cd.studentservice.enumerate.SchoolStatus;\r\nimport jakarta.persistence.*;\r\nimport lombok.*;\r\nimport lombok.experimental.FieldDefaults;\r\nimport org.hibernate.annotations.CreationTimestamp;\r\nimport org.hibernate.annotations.SQLDelete;\r\nimport org.hibernate.annotations.SQLRestriction;\r\n\r\nimport java.time.Instant;\r\nimport java.util.UUID;\r\n\r\n@Entity\r\n@Table(name = \"schools\")\r\n@FieldDefaults(level = AccessLevel.PRIVATE)\r\n@Getter\r\n@Setter\r\n@Builder\r\n@NoArgsConstructor\r\n@AllArgsConstructor\r\n@SQLDelete(sql = \"UPDATE schools SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?\")\r\n@SQLRestriction(\"deleted_at is null\")\r\npublic class School {\r\n    @Id\r\n    @GeneratedValue(strategy = GenerationType.UUID)\r\n    UUID id;\r\n    @Column(unique = true,nullable = false)\r\n    String code;\r\n    @Column(nullable = false)\r\n    String name;\r\n    String address;\r\n    @Enumerated(EnumType.STRING)\r\n    SchoolStatus status;\r\n    @CreationTimestamp\r\n    Instant createdAt;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/entity/School.java b/student-service/src/main/java/cd/studentservice/entity/School.java
+--- a/student-service/src/main/java/cd/studentservice/entity/School.java	(revision e28f30e52fbf58457f4e13adb51aacbb934fcc13)
++++ b/student-service/src/main/java/cd/studentservice/entity/School.java	(date 1770630368429)
+@@ -34,4 +34,5 @@
+     SchoolStatus status;
+     @CreationTimestamp
+     Instant createdAt;
++    Instant deletedAt;
+ }

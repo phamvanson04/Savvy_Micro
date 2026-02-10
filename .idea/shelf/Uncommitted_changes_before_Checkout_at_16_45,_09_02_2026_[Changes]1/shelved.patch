@@ -1,0 +1,206 @@
+Index: auth-service/src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\n  port: 8081\n\nspring:\n  application:\n    name: auth-service\n  datasource:\n    url: jdbc:postgresql://localhost:5432/auth_service_db\n    username: postgres\n    password: 12345\n    driver-class-name: org.postgresql.Driver\n  jpa:\n    hibernate:\n      ddl-auto: update\n    show-sql: true\n    properties:\n      hibernate:\n        default_schema: private\n\napplication:\n  security:\n    jwt:\n      secret-key: \"1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij\"\n      expiration: 900000\n      refresh-token:\n        secret-key: \"Q0E3aWl4ZmZyV0dZWm0zQm1kTjJQdFRuV2M4Z0ZxYjFQeHcxYlM0dD0=\"\n        expiration: 3600000\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/resources/application.yml b/auth-service/src/main/resources/application.yml
+--- a/auth-service/src/main/resources/application.yml	(revision 77c4298426919ea15ef796edce713d1766fdfe5d)
++++ b/auth-service/src/main/resources/application.yml	(date 1770628133813)
+@@ -6,16 +6,13 @@
+     name: auth-service
+   datasource:
+     url: jdbc:postgresql://localhost:5432/auth_service_db
+-    username: postgres
+-    password: 12345
++    username: micro
++    password: 123456
+     driver-class-name: org.postgresql.Driver
+   jpa:
+     hibernate:
+       ddl-auto: update
+     show-sql: true
+-    properties:
+-      hibernate:
+-        default_schema: private
+ 
+ application:
+   security:
+Index: auth-service/pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n\t\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\t\t xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd\">\n\t<modelVersion>4.0.0</modelVersion>\n\t<parent>\n\t\t<groupId>org.springframework.boot</groupId>\n\t\t<artifactId>spring-boot-starter-parent</artifactId>\n\t\t<version>3.2.0</version>\n\t\t<relativePath/>\n\t</parent>\n\t<groupId>com.savvycom</groupId>\n\t<artifactId>auth-service</artifactId>\n\t<version>0.0.1-SNAPSHOT</version>\n\t<properties>\n\t\t<java.version>21</java.version>\n\t\t<spring-cloud.version>2023.0.0</spring-cloud.version>\n\t</properties>\n\t<dependencies>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-web</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-security</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.security</groupId>\n\t\t\t<artifactId>spring-security-oauth2-jose</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-validation</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-data-jpa</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.postgresql</groupId>\n\t\t\t<artifactId>postgresql</artifactId>\n\t\t\t<scope>runtime</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.flywaydb</groupId>\n\t\t\t<artifactId>flyway-core</artifactId>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>com.savvy</groupId>\n\t\t\t<artifactId>common-library</artifactId>\n\t\t\t<version>1.0.0</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>io.jsonwebtoken</groupId>\n\t\t\t<artifactId>jjwt-api</artifactId>\n\t\t\t<version>0.11.5</version>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>io.jsonwebtoken</groupId>\n\t\t\t<artifactId>jjwt-impl</artifactId>\n\t\t\t<version>0.11.5</version>\n\t\t\t<scope>runtime</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>io.jsonwebtoken</groupId>\n\t\t\t<artifactId>jjwt-jackson</artifactId>\n\t\t\t<version>0.11.5</version>\n\t\t\t<scope>runtime</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.projectlombok</groupId>\n\t\t\t<artifactId>lombok</artifactId>\n\t\t\t<scope>provided</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t<artifactId>spring-boot-starter-test</artifactId>\n\t\t\t<scope>test</scope>\n\t\t</dependency>\n\t\t<dependency>\n\t\t\t<groupId>org.springframework.security</groupId>\n\t\t\t<artifactId>spring-security-test</artifactId>\n\t\t\t<scope>test</scope>\n\t\t</dependency>\n\t</dependencies>\n\n\t<dependencyManagement>\n\t\t<dependencies>\n\t\t\t<dependency>\n\t\t\t\t<groupId>org.springframework.cloud</groupId>\n\t\t\t\t<artifactId>spring-cloud-dependencies</artifactId>\n\t\t\t\t<version>${spring-cloud.version}</version>\n\t\t\t\t<type>pom</type>\n\t\t\t\t<scope>import</scope>\n\t\t\t</dependency>\n\t\t</dependencies>\n\t</dependencyManagement>\n\n\t<build>\n\t\t<plugins>\n\t\t\t<plugin>\n\t\t\t\t<groupId>org.springframework.boot</groupId>\n\t\t\t\t<artifactId>spring-boot-maven-plugin</artifactId>\n\t\t\t</plugin>\n\t\t</plugins>\n\t</build>\n</project>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/pom.xml b/auth-service/pom.xml
+--- a/auth-service/pom.xml	(revision 77c4298426919ea15ef796edce713d1766fdfe5d)
++++ b/auth-service/pom.xml	(date 1770627784976)
+@@ -46,10 +46,6 @@
+ 			<scope>runtime</scope>
+ 		</dependency>
+ 		<dependency>
+-			<groupId>org.flywaydb</groupId>
+-			<artifactId>flyway-core</artifactId>
+-		</dependency>
+-		<dependency>
+ 			<groupId>com.savvy</groupId>
+ 			<artifactId>common-library</artifactId>
+ 			<version>1.0.0</version>
+Index: student-service/src/main/java/cd/studentservice/entity/Student.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.entity;\n\nimport cd.studentservice.enumerate.StudentStatus;\nimport jakarta.persistence.*;\nimport lombok.*;\nimport lombok.experimental.FieldDefaults;\nimport org.hibernate.annotations.CreationTimestamp;\nimport org.hibernate.annotations.SQLDelete;\nimport org.hibernate.annotations.SQLRestriction;\n\nimport java.time.Instant;\nimport java.time.LocalDate;\nimport java.util.UUID;\n\n@Entity\n@Table(name = \"students\")\n@FieldDefaults(level = AccessLevel.PRIVATE)\n@Getter\n@Setter\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor\n@SQLDelete(sql = \"UPDATE students SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?\")\n@SQLRestriction(\"deleted_at is null\")\npublic class Student {\n    @Id @GeneratedValue(strategy = GenerationType.UUID)\n    UUID id;\n\n    @Column(unique = true,nullable = false)\n    String code;\n\n    String fullName;\n    LocalDate dob;\n    Boolean gender;\n    @Enumerated(EnumType.STRING)\n    StudentStatus status;\n    @CreationTimestamp\n    Instant createdAt;\n\n    @ManyToOne\n    @JoinColumn(name = \"class_id\")\n    Class clazz;\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/entity/Student.java b/student-service/src/main/java/cd/studentservice/entity/Student.java
+--- a/student-service/src/main/java/cd/studentservice/entity/Student.java	(revision 77c4298426919ea15ef796edce713d1766fdfe5d)
++++ b/student-service/src/main/java/cd/studentservice/entity/Student.java	(date 1770630311601)
+@@ -36,6 +36,7 @@
+     StudentStatus status;
+     @CreationTimestamp
+     Instant createdAt;
++    Instant deletedAt;
+ 
+     @ManyToOne
+     @JoinColumn(name = "class_id")
+Index: student-service/src/main/java/cd/studentservice/entity/Class.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.entity;\n\nimport cd.studentservice.enumerate.ClassStatus;\nimport jakarta.persistence.*;\nimport lombok.*;\nimport lombok.experimental.FieldDefaults;\nimport org.hibernate.annotations.CreationTimestamp;\nimport org.hibernate.annotations.SQLDelete;\nimport org.hibernate.annotations.SQLRestriction;\n\nimport java.time.Instant;\nimport java.util.UUID;\n\n@Entity\n@Table(name = \"classes\")\n@FieldDefaults(level = AccessLevel.PRIVATE)\n@Getter\n@Setter\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor\n@SQLDelete(sql = \"UPDATE classes SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?\")\n@SQLRestriction(\"deleted_at is null\")\npublic class Class {\n    @Id\n    @GeneratedValue(strategy = GenerationType.UUID)\n    UUID id;\n    @Column(unique = true,nullable = false)\n    String code;\n    String name;\n    Integer grade;\n    @Enumerated(EnumType.STRING)\n    ClassStatus status;\n\n    @CreationTimestamp\n    Instant createdAt;\n\n    @ManyToOne\n    @JoinColumn(name = \"school_id\")\n    School school;\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/entity/Class.java b/student-service/src/main/java/cd/studentservice/entity/Class.java
+--- a/student-service/src/main/java/cd/studentservice/entity/Class.java	(revision 77c4298426919ea15ef796edce713d1766fdfe5d)
++++ b/student-service/src/main/java/cd/studentservice/entity/Class.java	(date 1770630311598)
+@@ -35,6 +35,8 @@
+     @CreationTimestamp
+     Instant createdAt;
+ 
++    Instant deletedAt;
++
+     @ManyToOne
+     @JoinColumn(name = "school_id")
+     School school;
+Index: student-service/src/main/java/cd/studentservice/entity/School.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.entity;\n\nimport cd.studentservice.enumerate.SchoolStatus;\nimport jakarta.persistence.*;\nimport lombok.*;\nimport lombok.experimental.FieldDefaults;\nimport org.hibernate.annotations.CreationTimestamp;\nimport org.hibernate.annotations.SQLDelete;\nimport org.hibernate.annotations.SQLRestriction;\n\nimport java.time.Instant;\nimport java.util.UUID;\n\n@Entity\n@Table(name = \"schools\")\n@FieldDefaults(level = AccessLevel.PRIVATE)\n@Getter\n@Setter\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor\n@SQLDelete(sql = \"UPDATE schools SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?\")\n@SQLRestriction(\"deleted_at is null\")\npublic class School {\n    @Id\n    @GeneratedValue(strategy = GenerationType.UUID)\n    UUID id;\n    @Column(unique = true,nullable = false)\n    String code;\n    @Column(nullable = false)\n    String name;\n    String address;\n    @Enumerated(EnumType.STRING)\n    SchoolStatus status;\n    @CreationTimestamp\n    Instant createdAt;\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/entity/School.java b/student-service/src/main/java/cd/studentservice/entity/School.java
+--- a/student-service/src/main/java/cd/studentservice/entity/School.java	(revision 77c4298426919ea15ef796edce713d1766fdfe5d)
++++ b/student-service/src/main/java/cd/studentservice/entity/School.java	(date 1770630311568)
+@@ -34,4 +34,5 @@
+     SchoolStatus status;
+     @CreationTimestamp
+     Instant createdAt;
++    Instant deletedAt;
+ }
+Index: grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java
+===================================================================
+diff --git a/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java b/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java
+deleted file mode 100644
+--- a/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java	(revision 77c4298426919ea15ef796edce713d1766fdfe5d)
++++ /dev/null	(revision 77c4298426919ea15ef796edce713d1766fdfe5d)
+@@ -1,55 +0,0 @@
+-package com.savvy.gradeservice.entity;
+-
+-import static com.querydsl.core.types.PathMetadataFactory.*;
+-
+-import com.querydsl.core.types.dsl.*;
+-
+-import com.querydsl.core.types.PathMetadata;
+-import javax.annotation.processing.Generated;
+-import com.querydsl.core.types.Path;
+-
+-
+-/**
+- * QGrade is a Querydsl query type for Grade
+- */
+-@Generated("com.querydsl.codegen.DefaultEntitySerializer")
+-public class QGrade extends EntityPathBase<Grade> {
+-
+-    private static final long serialVersionUID = -1958915348L;
+-
+-    public static final QGrade grade = new QGrade("grade");
+-
+-    public final ComparablePath<java.util.UUID> classId = createComparable("classId", java.util.UUID.class);
+-
+-    public final DateTimePath<java.time.Instant> createdAt = createDateTime("createdAt", java.time.Instant.class);
+-
+-    public final ComparablePath<java.util.UUID> createdBy = createComparable("createdBy", java.util.UUID.class);
+-
+-    public final ComparablePath<java.util.UUID> id = createComparable("id", java.util.UUID.class);
+-
+-    public final ComparablePath<java.util.UUID> schoolId = createComparable("schoolId", java.util.UUID.class);
+-
+-    public final NumberPath<java.math.BigDecimal> score = createNumber("score", java.math.BigDecimal.class);
+-
+-    public final ComparablePath<java.util.UUID> studentId = createComparable("studentId", java.util.UUID.class);
+-
+-    public final StringPath subject = createString("subject");
+-
+-    public final StringPath term = createString("term");
+-
+-    public final DateTimePath<java.time.Instant> updatedAt = createDateTime("updatedAt", java.time.Instant.class);
+-
+-    public QGrade(String variable) {
+-        super(Grade.class, forVariable(variable));
+-    }
+-
+-    public QGrade(Path<? extends Grade> path) {
+-        super(path.getType(), path.getMetadata());
+-    }
+-
+-    public QGrade(PathMetadata metadata) {
+-        super(Grade.class, metadata);
+-    }
+-
+-}
+-
+Index: .idea/data_source_mapping.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/data_source_mapping.xml b/.idea/data_source_mapping.xml
+new file mode 100644
+--- /dev/null	(date 1770627928644)
++++ b/.idea/data_source_mapping.xml	(date 1770627928644)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="DataSourcePerFileMappings">
++    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/8f2e3b23-222a-4bb7-8636-b07fa478ad20/console.sql" value="8f2e3b23-222a-4bb7-8636-b07fa478ad20" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/dataSources.local.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"dataSourceStorageLocal\" created-in=\"IU-253.30387.90\">\n    <data-source name=\"postgres@localhost\" uuid=\"8f2e3b23-222a-4bb7-8636-b07fa478ad20\">\n      <database-info product=\"PostgreSQL\" version=\"18.1 (Debian 18.1-1.pgdg13+2)\" jdbc-version=\"4.2\" driver-name=\"PostgreSQL JDBC Driver\" driver-version=\"42.7.9\" dbms=\"POSTGRES\" exact-version=\"18.1\" exact-driver-version=\"42.7\">\n        <identifier-quote-string>&quot;</identifier-quote-string>\n      </database-info>\n      <case-sensitivity plain-identifiers=\"lower\" quoted-identifiers=\"exact\" />\n      <secret-storage>master_key</secret-storage>\n      <user-name>conan09040</user-name>\n      <schema-mapping>\n        <introspection-scope>\n          <node negative=\"1\">\n            <node kind=\"database\" qname=\"@\">\n              <node kind=\"schema\" qname=\"@\" />\n            </node>\n            <node kind=\"database\">\n              <name qname=\"student_service\" />\n              <name qname=\"grade_service\" />\n              <name qname=\"auth_service_db\" />\n            </node>\n          </node>\n        </introspection-scope>\n      </schema-mapping>\n    </data-source>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/dataSources.local.xml b/.idea/dataSources.local.xml
+--- a/.idea/dataSources.local.xml	(revision 77c4298426919ea15ef796edce713d1766fdfe5d)
++++ b/.idea/dataSources.local.xml	(date 1770630318309)
+@@ -15,10 +15,11 @@
+               <node kind="schema" qname="@" />
+             </node>
+             <node kind="database">
+-              <name qname="student_service" />
+-              <name qname="grade_service" />
+               <name qname="auth_service_db" />
++              <name qname="student_service" />
++              <node kind="schema" qname="public" />
+             </node>
++            <node kind="database" qname="grade_service" />
+           </node>
+         </introspection-scope>
+       </schema-mapping>

@@ -1,0 +1,281 @@
+Index: student-service/src/main/java/cd/studentservice/dto/request/CreateClassRequest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/dto/request/CreateClassRequest.java b/student-service/src/main/java/cd/studentservice/dto/request/CreateClassRequest.java
+new file mode 100644
+--- /dev/null	(date 1770633762365)
++++ b/student-service/src/main/java/cd/studentservice/dto/request/CreateClassRequest.java	(date 1770633762365)
+@@ -0,0 +1,20 @@
++package cd.studentservice.dto.request;
++
++import cd.studentservice.enumerate.ClassStatus;
++import lombok.AccessLevel;
++import lombok.Getter;
++import lombok.Setter;
++import lombok.experimental.FieldDefaults;
++
++import java.util.UUID;
++
++@Getter
++@Setter
++@FieldDefaults(level = AccessLevel.PRIVATE)
++public class CreateClassRequest {
++    String code;
++    String name;
++    Integer grade;
++    ClassStatus status;
++    UUID schoolId;
++}
+Index: student-service/src/main/java/cd/studentservice/dto/request/UpdateClassRequest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/dto/request/UpdateClassRequest.java b/student-service/src/main/java/cd/studentservice/dto/request/UpdateClassRequest.java
+new file mode 100644
+--- /dev/null	(date 1770633791654)
++++ b/student-service/src/main/java/cd/studentservice/dto/request/UpdateClassRequest.java	(date 1770633791654)
+@@ -0,0 +1,19 @@
++package cd.studentservice.dto.request;
++
++import cd.studentservice.enumerate.ClassStatus;
++import lombok.AccessLevel;
++import lombok.Getter;
++import lombok.Setter;
++import lombok.experimental.FieldDefaults;
++
++import java.util.UUID;
++@Getter
++@Setter
++@FieldDefaults(level = AccessLevel.PRIVATE)
++public class UpdateClassRequest {
++    String code;
++    String name;
++    Integer grade;
++    ClassStatus status;
++    UUID schoolId;
++}
+Index: student-service/src/main/java/cd/studentservice/service/ClassService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.service;\n\nimport cd.studentservice.dto.response.ClassResponse;\nimport cd.studentservice.entity.Class;\nimport com.savvy.common.dto.PageResponse;\nimport org.springframework.data.domain.Page;\n\nimport java.util.List;\nimport java.util.UUID;\n\npublic interface ClassService {\n    Class findById(UUID id);\n    List<ClassResponse> findBySchoolId(UUID schoolId);\n    Class getReferenceById(UUID id);\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/service/ClassService.java b/student-service/src/main/java/cd/studentservice/service/ClassService.java
+--- a/student-service/src/main/java/cd/studentservice/service/ClassService.java	(revision 2d452c96427a01bbe2cc3c6d9e7f9c6efedb980f)
++++ b/student-service/src/main/java/cd/studentservice/service/ClassService.java	(date 1770634058950)
+@@ -1,5 +1,7 @@
+ package cd.studentservice.service;
+ 
++import cd.studentservice.dto.request.CreateClassRequest;
++import cd.studentservice.dto.request.UpdateClassRequest;
+ import cd.studentservice.dto.response.ClassResponse;
+ import cd.studentservice.entity.Class;
+ import com.savvy.common.dto.PageResponse;
+@@ -9,7 +11,11 @@
+ import java.util.UUID;
+ 
+ public interface ClassService {
+-    Class findById(UUID id);
++    ClassResponse findById(UUID id);
++    PageResponse<ClassResponse>findPage(int page, int size);
+     List<ClassResponse> findBySchoolId(UUID schoolId);
+     Class getReferenceById(UUID id);
++    ClassResponse save(CreateClassRequest createClassRequest);
++    ClassResponse update(UUID id, UpdateClassRequest updateClassRequest);
++    void delete(UUID id);
+ }
+Index: student-service/src/main/java/cd/studentservice/controller/ClassController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.controller;\n\nimport cd.studentservice.dto.response.ClassResponse;\nimport cd.studentservice.service.ClassService;\nimport com.savvy.common.dto.BaseResponse;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.security.access.prepost.PreAuthorize;\nimport org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.RequestParam;\nimport org.springframework.web.bind.annotation.RestController;\nimport org.springframework.web.bind.annotation.RequestMapping;\n\nimport java.util.List;\nimport java.util.UUID;\n\n@RestController\n@RequestMapping(\"/classes\")\n@RequiredArgsConstructor\npublic class ClassController {\n    private final ClassService classService;\n\n    @GetMapping\n    @PreAuthorize(\"hasAnyRole('ADMIN','SCHOOL_MANAGER')\")\n    public ResponseEntity<BaseResponse<List<ClassResponse>>>findBySchoolId(@RequestParam UUID schoolId){\n        return ResponseEntity.ok(BaseResponse.success(classService.findBySchoolId(schoolId),\"Getting data success\"));\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/controller/ClassController.java b/student-service/src/main/java/cd/studentservice/controller/ClassController.java
+--- a/student-service/src/main/java/cd/studentservice/controller/ClassController.java	(revision 2d452c96427a01bbe2cc3c6d9e7f9c6efedb980f)
++++ b/student-service/src/main/java/cd/studentservice/controller/ClassController.java	(date 1770690890945)
+@@ -1,15 +1,15 @@
+ package cd.studentservice.controller;
+ 
++import cd.studentservice.dto.request.CreateClassRequest;
++import cd.studentservice.dto.request.UpdateClassRequest;
+ import cd.studentservice.dto.response.ClassResponse;
+ import cd.studentservice.service.ClassService;
+ import com.savvy.common.dto.BaseResponse;
++import com.savvy.common.dto.PageResponse;
+ import lombok.RequiredArgsConstructor;
+ import org.springframework.http.ResponseEntity;
+ import org.springframework.security.access.prepost.PreAuthorize;
+-import org.springframework.web.bind.annotation.GetMapping;
+-import org.springframework.web.bind.annotation.RequestParam;
+-import org.springframework.web.bind.annotation.RestController;
+-import org.springframework.web.bind.annotation.RequestMapping;
++import org.springframework.web.bind.annotation.*;
+ 
+ import java.util.List;
+ import java.util.UUID;
+@@ -22,7 +22,41 @@
+ 
+     @GetMapping
+     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
+-    public ResponseEntity<BaseResponse<List<ClassResponse>>>findBySchoolId(@RequestParam UUID schoolId){
+-        return ResponseEntity.ok(BaseResponse.success(classService.findBySchoolId(schoolId),"Getting data success"));
++    public BaseResponse<List<ClassResponse>>findBySchoolId(@RequestParam UUID schoolId){
++        return BaseResponse.success(classService.findBySchoolId(schoolId),"Get data success");
++    }
++
++    @GetMapping("/{id}")
++    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
++    public BaseResponse<ClassResponse>findById(@PathVariable UUID id){
++        return BaseResponse.success(classService.findById(id),"Get data success");
++    }
++    
++    @GetMapping
++    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
++    public BaseResponse<PageResponse<ClassResponse>>findPage(@RequestParam int page,
++                                                             @RequestParam int size){
++        return BaseResponse.success(classService.findPage(page,size),"Get data success");
++    }
++    
++    @PostMapping
++    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
++    public BaseResponse<ClassResponse>save(@RequestBody CreateClassRequest createClassRequest){
++        return BaseResponse.created(classService.save(createClassRequest),"Save data success");
++    }
++    
++    @PutMapping("/{id}")
++    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
++    public BaseResponse<ClassResponse>update(@PathVariable UUID id,
++                                             @RequestBody UpdateClassRequest updateClassRequest){
++        return BaseResponse.created(classService.update(id,updateClassRequest),"Update data success");
+     }
++
++    @DeleteMapping("/{id}")
++    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
++    public BaseResponse<?>delete(@PathVariable UUID id){
++        classService.delete(id);
++        return BaseResponse.created(null,"Delete data success");
++    }
++    
+ }
+Index: student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.service.impl;\n\nimport cd.studentservice.dto.response.ClassResponse;\nimport cd.studentservice.entity.Class;\nimport cd.studentservice.mapper.ClassMapper;\nimport cd.studentservice.repository.ClassRepository;\nimport cd.studentservice.service.ClassService;\nimport com.savvy.common.dto.PageResponse;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.stereotype.Service;\n\nimport java.util.List;\nimport java.util.UUID;\n\n@Service\n@RequiredArgsConstructor\npublic class ClassServiceImpl implements ClassService {\n    private final ClassRepository classRepository;\n    private final ClassMapper classMapper;\n\n    @Override\n    public Class findById(UUID id) {\n        return classRepository.findById(id).orElseThrow(() -> new RuntimeException(\"Cannot find class with id: \" + id));\n    }\n\n    @Override\n    public List<ClassResponse> findBySchoolId(UUID schoolId) {\n        return classMapper.toClassResponses(classRepository.findAllBySchoolId(schoolId));\n    }\n\n    @Override\n    public Class getReferenceById(UUID id) {\n        return classRepository.getReferenceById(id);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java b/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java
+--- a/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java	(revision 2d452c96427a01bbe2cc3c6d9e7f9c6efedb980f)
++++ b/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java	(date 1770635763149)
+@@ -1,26 +1,49 @@
+ package cd.studentservice.service.impl;
+ 
++import cd.studentservice.dto.request.CreateClassRequest;
++import cd.studentservice.dto.request.UpdateClassRequest;
+ import cd.studentservice.dto.response.ClassResponse;
+ import cd.studentservice.entity.Class;
++import cd.studentservice.entity.School;
+ import cd.studentservice.mapper.ClassMapper;
+ import cd.studentservice.repository.ClassRepository;
+ import cd.studentservice.service.ClassService;
++import cd.studentservice.service.SchoolService;
+ import com.savvy.common.dto.PageResponse;
+ import lombok.RequiredArgsConstructor;
++import org.springframework.data.domain.Page;
++import org.springframework.data.domain.PageRequest;
++import org.springframework.data.domain.Pageable;
+ import org.springframework.stereotype.Service;
++import org.springframework.transaction.annotation.Transactional;
+ 
+ import java.util.List;
++import java.util.Objects;
+ import java.util.UUID;
+ 
+ @Service
+ @RequiredArgsConstructor
+ public class ClassServiceImpl implements ClassService {
++    private final SchoolService schoolService;
+     private final ClassRepository classRepository;
+     private final ClassMapper classMapper;
+ 
+     @Override
+-    public Class findById(UUID id) {
+-        return classRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find class with id: " + id));
++    public ClassResponse findById(UUID id) {
++        return classMapper.toClassResponse(classRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find class with id: " + id)));
++    }
++
++    @Override
++    public PageResponse<ClassResponse> findPage(int page, int size) {
++        Pageable pageable = PageRequest.of(page, size);
++        Page<Class> classPages = classRepository.findAll(pageable);
++        return new PageResponse<>(
++                classMapper.toClassResponses(classPages.getContent()),
++                classPages.getNumber(),
++                classPages.getSize(),
++                classPages.getTotalElements(),
++                classPages.getTotalPages()
++        );
+     }
+ 
+     @Override
+@@ -32,4 +55,36 @@
+     public Class getReferenceById(UUID id) {
+         return classRepository.getReferenceById(id);
+     }
++
++    @Override
++    @Transactional
++    public ClassResponse save(CreateClassRequest createClassRequest) {
++        School existedSchool=schoolService.getReferenceById(createClassRequest.getSchoolId());
++        Class newClass=Class.builder()
++                .code(createClassRequest.getCode())
++                .name(createClassRequest.getName())
++                .grade(createClassRequest.getGrade())
++                .status(createClassRequest.getStatus())
++                .school(existedSchool)
++                .build();
++        return classMapper.toClassResponse(classRepository.save(newClass));
++    }
++
++    @Override
++    @Transactional
++    public ClassResponse update(UUID id, UpdateClassRequest updateClassRequest) {
++        Class existedClass=classRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find class with id: " + id));
++        existedClass.setSchool(!Objects.equals(existedClass.getSchool().getId(),updateClassRequest.getSchoolId())?schoolService.getReferenceById(updateClassRequest.getSchoolId()):existedClass.getSchool());
++        existedClass.setCode(updateClassRequest.getCode());
++        existedClass.setName(updateClassRequest.getName());
++        existedClass.setGrade(updateClassRequest.getGrade());
++        existedClass.setStatus(updateClassRequest.getStatus());
++        return classMapper.toClassResponse(classRepository.save(existedClass));
++    }
++
++    @Override
++    @Transactional
++    public void delete(UUID id) {
++        classRepository.deleteById(id);
++    }
+ }
+Index: student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.service.impl;\n\nimport cd.studentservice.dto.request.CreateStudentRequest;\nimport cd.studentservice.dto.request.UpdateStudentRequest;\nimport cd.studentservice.dto.response.StudentResponse;\nimport cd.studentservice.entity.Class;\nimport cd.studentservice.entity.Student;\nimport cd.studentservice.mapper.StudentMapper;\nimport cd.studentservice.repository.StudentRepository;\nimport cd.studentservice.service.ClassService;\nimport cd.studentservice.service.SchoolService;\nimport cd.studentservice.service.StudentService;\nimport com.savvy.common.dto.PageResponse;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.data.domain.Page;\nimport org.springframework.data.domain.PageRequest;\nimport org.springframework.data.domain.Pageable;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\nimport java.util.Objects;\nimport java.util.UUID;\n\n@Service\n@RequiredArgsConstructor\npublic class StudentServiceImpl implements StudentService {\n    private final StudentRepository studentRepository;\n    private final SchoolService schoolService;\n    private final ClassService classService;\n    private final StudentMapper studentMapper;\n\n    @Override\n    @Transactional\n    public PageResponse<StudentResponse> getPage(int size, int page) {\n        Pageable pageable = PageRequest.of(page - 1, size);\n        Page<Student> studentPages = studentRepository.findAll(pageable);\n        return new PageResponse<>(\n                studentMapper.toStudentResponses(studentPages.getContent()),\n                studentPages.getNumber(),\n                studentPages.getSize(),\n                studentPages.getTotalElements(),\n                studentPages.getTotalPages()\n        );\n    }\n\n    @Override\n    public StudentResponse findById(UUID id) {\n        return studentMapper.toStudentResponse(studentRepository.findById(id).orElseThrow(() -> new RuntimeException(\"Cannot find student with id: \" + id)));\n    }\n\n    @Override\n    @Transactional\n    public StudentResponse save(CreateStudentRequest request) {\n        Class existedClass = classService.getReferenceById(request.getClassId());\n        Student student = Student.builder()\n                .clazz(existedClass)\n                .code(request.getCode())\n                .fullName(request.getFullName())\n                .gender(request.getGender())\n                .status(request.getStatus())\n                .dob(request.getDob())\n                .build();\n        return studentMapper.toStudentResponse(studentRepository.save(student));\n    }\n\n    @Override\n    @Transactional\n    public StudentResponse update(UUID id, UpdateStudentRequest request) {\n        Student existedStudent = studentRepository.findById(id).orElseThrow(() -> new RuntimeException(\"Cannot find student with id: \" + id));\n        existedStudent.setClazz(!Objects.equals(request.getClassId(), existedStudent.getClazz().getId())?classService.getReferenceById(request.getClassId()):existedStudent.getClazz());\n        existedStudent.setCode(request.getCode());\n        existedStudent.setFullName(request.getFullName());\n        existedStudent.setGender(request.getGender());\n        existedStudent.setStatus(request.getStatus());\n        existedStudent.setDob(request.getDob());\n        return studentMapper.toStudentResponse(studentRepository.save(existedStudent));\n    }\n\n    @Override\n    @Transactional\n    public void delete(UUID id) {\n        studentRepository.deleteById(id);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java b/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java
+--- a/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java	(revision 2d452c96427a01bbe2cc3c6d9e7f9c6efedb980f)
++++ b/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java	(date 1770635763166)
+@@ -25,7 +25,6 @@
+ @RequiredArgsConstructor
+ public class StudentServiceImpl implements StudentService {
+     private final StudentRepository studentRepository;
+-    private final SchoolService schoolService;
+     private final ClassService classService;
+     private final StudentMapper studentMapper;
+ 
