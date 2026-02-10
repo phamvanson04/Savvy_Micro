@@ -47,11 +47,9 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<BaseResponse<Map<String, Object>>> logout(
-            @Valid @RequestBody LogoutRequest request,
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization
     ) {
-        authService.logout(request, authorization);
+        authService.logout(authorization);
         return ResponseEntity.ok(BaseResponse.success(Map.of("loggedOut", true), "Logout successfully"));
     }
-
 }

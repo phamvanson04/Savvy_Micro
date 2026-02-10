@@ -29,17 +29,4 @@ public class GatewayController {
         
         return ResponseEntity.ok(BaseResponse.success(health, "Gateway is running"));
     }
-
-//    @GetMapping("/services")
-//    public ResponseEntity<BaseResponse<Map<String, List<ServiceInstance>>>> getServices() {
-//        List<String> services = discoveryClient.getServices();
-//        Map<String, List<ServiceInstance>> serviceMap = new HashMap<>();
-//
-//        for (String service : services) {
-//            List<ServiceInstance> instances = discoveryClient.getInstances(service);
-//            serviceMap.put(service, instances);
-//        }
-//
-//        return ResponseEntity.ok(BaseResponse.success(serviceMap, "Registered services"));
-//    }
 }

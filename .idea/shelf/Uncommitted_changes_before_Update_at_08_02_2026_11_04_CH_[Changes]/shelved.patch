@@ -1,0 +1,675 @@
+Index: api-gateway/target/classes/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\r\n  port: 8080\r\n\r\nspring:\r\n  application:\r\n    name: api-gateway\r\n\r\n  cloud:\r\n    gateway:\r\n      httpclient:\r\n        connect-timeout: 3000\r\n        response-timeout: 10s\r\n      routes:\r\n        - id: auth-service\r\n          uri: http://localhost:8081\r\n          predicates:\r\n            - Path=/api/v1/auth/**\r\n        - id: student-service\r\n          uri: http://localhost:8082\r\n          predicates:\r\n            - Path=/api/v1/students/**\r\n        - id: grade-service\r\n          uri: http://localhost:8083\r\n          predicates:\r\n            - Path=/api/v1/grades/**\r\n\r\njwt:\r\n  signerKey: \"1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij\"\r\n\r\nsecurity:\r\n  public-paths:\r\n    - /api/v1/auth/register\r\n    - /api/v1/auth/login\r\n    - /api/v1/auth/refresh\r\n    - /api/v1/auth/logout\r\n    - /actuator/**\r\n    - /swagger-ui/**\r\n    - /v3/api-docs/**\r\n  permissions-mapping:\r\n    - methods: [GET]\r\n      paths: [/api/v1/students/me]\r\n      require: [STUDENT_READ_SELF]\r\n    - methods: [GET]\r\n      paths: [/api/v1/students/**]\r\n      require: [STUDENT_READ_SCHOOL]\r\n    - methods: [GET]\r\n      paths: [/api/v1/grades/me]\r\n      require: [GRADE_READ_SELF]\r\n    - methods: [GET]\r\n      paths: [/api/v1/grades/**]\r\n      require: [GRADE_READ_SCHOOL]\r\n    - methods: [POST, PUT, DELETE]\r\n      paths: [/api/v1/grades/**]\r\n      require: [GRADE_WRITE_SCHOOL]\r\n    - methods: [ GET,POST,PUT,DELETE ]\r\n      paths: [ /api/v1/auth/admin/** ]\r\n      require: [ ROLE_ADMIN ]\r\n\r\n  logging:\r\n    level:\r\n      org.springframework.security: DEBUG\r\n      org.springframework.security.oauth2: DEBUG\r\n      org.springframework.cloud.gateway: DEBUG\r\n      reactor.netty.http.server: INFO\r\n      reactor.netty.http.client: INFO
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/target/classes/application.yml b/api-gateway/target/classes/application.yml
+--- a/api-gateway/target/classes/application.yml	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/api-gateway/target/classes/application.yml	(date 1770485611835)
+@@ -33,28 +33,10 @@
+     - /api/v1/auth/login
+     - /api/v1/auth/refresh
+     - /api/v1/auth/logout
++    - /api/v1/auth/introspect
+     - /actuator/**
+     - /swagger-ui/**
+     - /v3/api-docs/**
+-  permissions-mapping:
+-    - methods: [GET]
+-      paths: [/api/v1/students/me]
+-      require: [STUDENT_READ_SELF]
+-    - methods: [GET]
+-      paths: [/api/v1/students/**]
+-      require: [STUDENT_READ_SCHOOL]
+-    - methods: [GET]
+-      paths: [/api/v1/grades/me]
+-      require: [GRADE_READ_SELF]
+-    - methods: [GET]
+-      paths: [/api/v1/grades/**]
+-      require: [GRADE_READ_SCHOOL]
+-    - methods: [POST, PUT, DELETE]
+-      paths: [/api/v1/grades/**]
+-      require: [GRADE_WRITE_SCHOOL]
+-    - methods: [ GET,POST,PUT,DELETE ]
+-      paths: [ /api/v1/auth/admin/** ]
+-      require: [ ROLE_ADMIN ]
+ 
+   logging:
+     level:
+Index: auth-service/src/main/java/com/savvycom/auth_service/entity/InvalidatedToken.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/entity/InvalidatedToken.java b/auth-service/src/main/java/com/savvycom/auth_service/entity/InvalidatedToken.java
+new file mode 100644
+--- /dev/null	(date 1770484712905)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/entity/InvalidatedToken.java	(date 1770484712905)
+@@ -0,0 +1,35 @@
++package com.savvycom.auth_service.entity;
++
++import jakarta.persistence.Column;
++import jakarta.persistence.Entity;
++import jakarta.persistence.Id;
++import jakarta.persistence.Table;
++import lombok.*;
++
++import java.time.Instant;
++
++@Getter
++@Setter
++@NoArgsConstructor
++@AllArgsConstructor
++@Builder
++@Table(name = "invalidated_tokens")
++@Entity
++public class InvalidatedToken {
++    @Id
++    @Column(name = "jti", length = 64, nullable = false, updatable = false)
++    private String jti;
++
++    @Column(name = "expires_at", nullable = false)
++    private Instant expiresAt;
++
++    @Column(name = "created_at", nullable = false)
++    private Instant createdAt;
++
++    @Column(name = "type", length = 20, nullable = false)
++    private String type;
++
++    @Column(name = "reason", length = 50)
++    private String reason;
++}
++
+Index: api-gateway/src/main/java/com/savvy/gateway/dto/response/GatewayBaseResponse.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/dto/response/GatewayBaseResponse.java b/api-gateway/src/main/java/com/savvy/gateway/dto/response/GatewayBaseResponse.java
+new file mode 100644
+--- /dev/null	(date 1770486865732)
++++ b/api-gateway/src/main/java/com/savvy/gateway/dto/response/GatewayBaseResponse.java	(date 1770486865732)
+@@ -0,0 +1,35 @@
++package com.savvy.gateway.dto.response;
++
++import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
++import com.fasterxml.jackson.annotation.JsonInclude;
++import lombok.*;
++
++import java.time.LocalDateTime;
++
++@Getter
++@Setter
++@NoArgsConstructor
++@AllArgsConstructor
++@Builder
++@JsonInclude(JsonInclude.Include.NON_NULL)
++@JsonIgnoreProperties(ignoreUnknown = true)
++public class GatewayBaseResponse<T> {
++    private boolean success;
++    private int status;
++    private String message;
++    private T data;
++    private LocalDateTime timestamp;
++    private ErrorDetail error;
++
++    @Getter
++    @Setter
++    @NoArgsConstructor
++    @AllArgsConstructor
++    @Builder
++    @JsonIgnoreProperties(ignoreUnknown = true)
++    public static class ErrorDetail {
++        private String code;
++        private String message;
++        private String details;
++    }
++}
+\ No newline at end of file
+Index: api-gateway/src/main/java/com/savvy/gateway/config/SecurityConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvy.gateway.config;\r\n\r\nimport com.savvy.gateway.exception.GatewayExceptionHandler;\r\nimport org.springframework.boot.context.properties.EnableConfigurationProperties;\r\nimport org.springframework.context.annotation.Bean;\r\nimport org.springframework.context.annotation.Configuration;\r\nimport org.springframework.core.convert.converter.Converter;\r\nimport org.springframework.http.HttpMethod;\r\nimport org.springframework.security.authentication.AbstractAuthenticationToken;\r\nimport org.springframework.security.config.web.server.ServerHttpSecurity;\r\nimport org.springframework.security.oauth2.jwt.Jwt;\r\nimport org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;\r\nimport org.springframework.security.web.server.SecurityWebFilterChain;\r\nimport reactor.core.publisher.Mono;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\n@Configuration\r\n@EnableConfigurationProperties({SecurityProperties.class, JwtProps.class})\r\npublic class SecurityConfig {\r\n\r\n    private static final String SUPER_PERMISSION = \"SYSTEM_ADMIN\";\r\n\r\n    @Bean\r\n    public SecurityWebFilterChain springSecurityFilterChain(\r\n            ServerHttpSecurity http,\r\n            SecurityProperties props,\r\n            GatewayExceptionHandler handlers,\r\n            ReactiveJwtDecoder jwtDecoder,\r\n            Converter<Jwt, Mono<AbstractAuthenticationToken>> jwtAuthenticationConverter\r\n    ) {\r\n        http.csrf(ServerHttpSecurity.CsrfSpec::disable)\r\n                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)\r\n                .formLogin(ServerHttpSecurity.FormLoginSpec::disable);\r\n\r\n        http.oauth2ResourceServer(oauth2 -> oauth2\r\n                .jwt(jwt -> jwt\r\n                        .jwtDecoder(jwtDecoder)\r\n                        .jwtAuthenticationConverter(jwtAuthenticationConverter)\r\n                )\r\n                .authenticationEntryPoint(handlers.authenticationEntryPoint())\r\n        );\r\n\r\n        http.exceptionHandling(e -> e\r\n                .authenticationEntryPoint(handlers.authenticationEntryPoint())\r\n                .accessDeniedHandler(handlers.accessDeniedHandler())\r\n        );\r\n\r\n        http.authorizeExchange(exchanges -> {\r\n            exchanges.pathMatchers(HttpMethod.OPTIONS, \"/**\").permitAll();\r\n\r\n            for (String p : props.getPublicPaths()) {\r\n                exchanges.pathMatchers(p).permitAll();\r\n            }\r\n\r\n            for (SecurityProperties.PermissionRule rule : props.getPermissionsMapping()) {\r\n                List<String> required = mergeWithSystemAdmin(rule.getRequire());\r\n\r\n                for (String path : rule.getPaths()) {\r\n                    if (rule.getMethods() == null || rule.getMethods().isEmpty()) {\r\n                        exchanges.pathMatchers(path).hasAnyAuthority(required.toArray(String[]::new));\r\n                    } else {\r\n                        for (String m : rule.getMethods()) {\r\n                            HttpMethod method = HttpMethod.valueOf(m);\r\n                            exchanges.pathMatchers(method, path).hasAnyAuthority(required.toArray(String[]::new));\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n\r\n            exchanges.anyExchange().authenticated();\r\n        });\r\n\r\n        return http.build();\r\n    }\r\n\r\n    private List<String> mergeWithSystemAdmin(List<String> requires) {\r\n        List<String> out = new ArrayList<>();\r\n        out.add(SUPER_PERMISSION);\r\n        if (requires != null) out.addAll(requires);\r\n        return out;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/config/SecurityConfig.java b/api-gateway/src/main/java/com/savvy/gateway/config/SecurityConfig.java
+--- a/api-gateway/src/main/java/com/savvy/gateway/config/SecurityConfig.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/api-gateway/src/main/java/com/savvy/gateway/config/SecurityConfig.java	(date 1770484267907)
+@@ -4,81 +4,33 @@
+ import org.springframework.boot.context.properties.EnableConfigurationProperties;
+ import org.springframework.context.annotation.Bean;
+ import org.springframework.context.annotation.Configuration;
+-import org.springframework.core.convert.converter.Converter;
+ import org.springframework.http.HttpMethod;
+-import org.springframework.security.authentication.AbstractAuthenticationToken;
+ import org.springframework.security.config.web.server.ServerHttpSecurity;
+-import org.springframework.security.oauth2.jwt.Jwt;
+-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+ import org.springframework.security.web.server.SecurityWebFilterChain;
+-import reactor.core.publisher.Mono;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+ 
+ @Configuration
+-@EnableConfigurationProperties({SecurityProperties.class, JwtProps.class})
++@EnableConfigurationProperties(SecurityProperties.class)
+ public class SecurityConfig {
+ 
+-    private static final String SUPER_PERMISSION = "SYSTEM_ADMIN";
+-
+     @Bean
+     public SecurityWebFilterChain springSecurityFilterChain(
+             ServerHttpSecurity http,
+-            SecurityProperties props,
+-            GatewayExceptionHandler handlers,
+-            ReactiveJwtDecoder jwtDecoder,
+-            Converter<Jwt, Mono<AbstractAuthenticationToken>> jwtAuthenticationConverter
++            GatewayExceptionHandler handlers
+     ) {
+-        http.csrf(ServerHttpSecurity.CsrfSpec::disable)
++        return http
++                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+-                .formLogin(ServerHttpSecurity.FormLoginSpec::disable);
++                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+ 
+-        http.oauth2ResourceServer(oauth2 -> oauth2
+-                .jwt(jwt -> jwt
+-                        .jwtDecoder(jwtDecoder)
+-                        .jwtAuthenticationConverter(jwtAuthenticationConverter)
+-                )
+-                .authenticationEntryPoint(handlers.authenticationEntryPoint())
+-        );
+-
+-        http.exceptionHandling(e -> e
+-                .authenticationEntryPoint(handlers.authenticationEntryPoint())
+-                .accessDeniedHandler(handlers.accessDeniedHandler())
+-        );
+-
+-        http.authorizeExchange(exchanges -> {
+-            exchanges.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+-
+-            for (String p : props.getPublicPaths()) {
+-                exchanges.pathMatchers(p).permitAll();
+-            }
+-
+-            for (SecurityProperties.PermissionRule rule : props.getPermissionsMapping()) {
+-                List<String> required = mergeWithSystemAdmin(rule.getRequire());
+-
+-                for (String path : rule.getPaths()) {
+-                    if (rule.getMethods() == null || rule.getMethods().isEmpty()) {
+-                        exchanges.pathMatchers(path).hasAnyAuthority(required.toArray(String[]::new));
+-                    } else {
+-                        for (String m : rule.getMethods()) {
+-                            HttpMethod method = HttpMethod.valueOf(m);
+-                            exchanges.pathMatchers(method, path).hasAnyAuthority(required.toArray(String[]::new));
+-                        }
+-                    }
+-                }
+-            }
++                .exceptionHandling(e -> e
++                        .authenticationEntryPoint(handlers.authenticationEntryPoint())
++                        .accessDeniedHandler(handlers.accessDeniedHandler())
++                )
+ 
+-            exchanges.anyExchange().authenticated();
+-        });
+-
+-        return http.build();
+-    }
+-
+-    private List<String> mergeWithSystemAdmin(List<String> requires) {
+-        List<String> out = new ArrayList<>();
+-        out.add(SUPER_PERMISSION);
+-        if (requires != null) out.addAll(requires);
+-        return out;
++                .authorizeExchange(ex -> ex
++                        .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
++                        .anyExchange().permitAll()
++                )
++                .build();
+     }
+ }
+Index: auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.service;\r\n\r\nimport com.savvycom.auth_service.entity.User;\r\nimport io.jsonwebtoken.*;\r\nimport io.jsonwebtoken.security.Keys;\r\nimport org.springframework.beans.factory.annotation.Value;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport javax.crypto.SecretKey;\r\nimport java.time.Instant;\r\nimport java.util.*;\r\n\r\n@Service\r\npublic class JwtService {\r\n\r\n    private static final String CLAIM_TYP = \"typ\";\r\n    private static final String TYP_REFRESH = \"refresh\";\r\n\r\n    private final SecretKey accessKey;\r\n    private final long accessExpMs;\r\n\r\n    private final SecretKey refreshKey;\r\n    private final long refreshExpMs;\r\n\r\n    public JwtService(\r\n            @Value(\"${application.security.jwt.secret-key}\") String accessSecret,\r\n            @Value(\"${application.security.jwt.expiration}\") long accessExpMs,\r\n            @Value(\"${application.security.jwt.refresh-token.secret-key}\") String refreshSecret,\r\n            @Value(\"${application.security.jwt.refresh-token.expiration}\") long refreshExpMs\r\n    ) {\r\n        this.accessKey = Keys.hmacShaKeyFor(decodeSecret(accessSecret));\r\n        this.accessExpMs = accessExpMs;\r\n\r\n        this.refreshKey = Keys.hmacShaKeyFor(decodeSecret(refreshSecret));\r\n        this.refreshExpMs = refreshExpMs;\r\n    }\r\n\r\n    public String generateAccessToken(\r\n            User user,\r\n            List<String> roles,\r\n            List<String> permissions,\r\n            List<Long> schoolIds,\r\n            Long studentId\r\n    ) {\r\n        Instant now = Instant.now();\r\n        Date issuedAt = Date.from(now);\r\n        Date exp = Date.from(now.plusMillis(accessExpMs));\r\n\r\n        Map<String, Object> dataScope = new HashMap<>();\r\n        dataScope.put(\"schoolIds\", schoolIds == null ? List.of() : schoolIds);\r\n\r\n        Map<String, Object> claims = new HashMap<>();\r\n        claims.put(\"roles\", roles == null ? List.of() : roles);\r\n        claims.put(\"permissions\", permissions == null ? List.of() : permissions);\r\n        claims.put(\"dataScope\", dataScope);\r\n\r\n        if (studentId != null) {\r\n            claims.put(\"studentId\", studentId);\r\n        }\r\n\r\n        return Jwts.builder()\r\n                .setSubject(String.valueOf(user.getId()))\r\n                .setIssuedAt(issuedAt)\r\n                .setExpiration(exp)\r\n                .addClaims(claims)\r\n                .signWith(accessKey, SignatureAlgorithm.HS256)\r\n                .compact();\r\n    }\r\n\r\n    public String generateRefreshToken(UUID userId) {\r\n        Instant now = Instant.now();\r\n        Date issuedAt = Date.from(now);\r\n        Date exp = Date.from(now.plusMillis(refreshExpMs));\r\n\r\n        return Jwts.builder()\r\n                .setSubject(String.valueOf(userId))\r\n                .setId(UUID.randomUUID().toString())\r\n                .setIssuedAt(issuedAt)\r\n                .setExpiration(exp)\r\n                .claim(CLAIM_TYP, TYP_REFRESH)\r\n                .signWith(refreshKey, SignatureAlgorithm.HS256)\r\n                .compact();\r\n    }\r\n\r\n    public Claims parseAndValidateRefreshToken(String rawRefreshToken) {\r\n        Claims claims = Jwts.parserBuilder()\r\n                .setSigningKey(refreshKey)\r\n                .build()\r\n                .parseClaimsJws(rawRefreshToken)\r\n                .getBody();\r\n\r\n        String typ = claims.get(CLAIM_TYP, String.class);\r\n        if (!TYP_REFRESH.equals(typ)) {\r\n            throw new JwtException(\"Invalid token type\");\r\n        }\r\n        return claims;\r\n    }\r\n\r\n    private static byte[] decodeSecret(String s) {\r\n        if (s == null) throw new IllegalArgumentException(\"JWT secret is null\");\r\n        String t = s.trim();\r\n\r\n        // hex\r\n        if (t.matches(\"^[0-9a-fA-F]+$\") && t.length() % 2 == 0) {\r\n            byte[] out = new byte[t.length() / 2];\r\n            for (int i = 0; i < out.length; i++) {\r\n                int hi = Character.digit(t.charAt(i * 2), 16);\r\n                int lo = Character.digit(t.charAt(i * 2 + 1), 16);\r\n                out[i] = (byte) ((hi << 4) + lo);\r\n            }\r\n            return out;\r\n        }\r\n\r\n        // base64\r\n        return Base64.getDecoder().decode(t);\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java b/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java	(date 1770484847960)
+@@ -60,6 +60,7 @@
+ 
+         return Jwts.builder()
+                 .setSubject(String.valueOf(user.getId()))
++                .setId(UUID.randomUUID().toString())
+                 .setIssuedAt(issuedAt)
+                 .setExpiration(exp)
+                 .addClaims(claims)
+@@ -95,6 +96,25 @@
+         }
+         return claims;
+     }
++
++    public Claims parseAndValidateAccessToken(String rawAccessToken) {
++        if (rawAccessToken == null || rawAccessToken.isBlank()) {
++            throw new JwtException("Access token is missing");
++        }
++
++        Claims claims = Jwts.parserBuilder()
++                .setSigningKey(accessKey)
++                .build()
++                .parseClaimsJws(rawAccessToken)
++                .getBody();
++
++        String typ = claims.get(CLAIM_TYP, String.class);
++        if (TYP_REFRESH.equals(typ)) {
++            throw new JwtException("Invalid token type");
++        }
++
++        return claims;
++    }
+ 
+     private static byte[] decodeSecret(String s) {
+         if (s == null) throw new IllegalArgumentException("JWT secret is null");
+Index: api-gateway/src/main/java/com/savvy/gateway/repository/IdentityClient.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/repository/IdentityClient.java b/api-gateway/src/main/java/com/savvy/gateway/repository/IdentityClient.java
+new file mode 100644
+--- /dev/null	(date 1770487023226)
++++ b/api-gateway/src/main/java/com/savvy/gateway/repository/IdentityClient.java	(date 1770487023226)
+@@ -0,0 +1,16 @@
++package com.savvy.gateway.repository;
++
++import com.savvy.common.dto.BaseResponse;
++import com.savvy.gateway.dto.request.IntrospectRequest;
++import com.savvy.gateway.dto.response.GatewayBaseResponse;
++import com.savvy.gateway.dto.response.IntrospectResponse;
++import org.springframework.http.MediaType;
++import org.springframework.web.bind.annotation.RequestBody;
++import org.springframework.web.service.annotation.PostExchange;
++import reactor.core.publisher.Mono;
++
++public interface IdentityClient {
++
++    @PostExchange(url = "/api/v1/auth/introspect", contentType = MediaType.APPLICATION_JSON_VALUE)
++    Mono<GatewayBaseResponse<IntrospectResponse>> introspect(@RequestBody IntrospectRequest request);
++}
+Index: api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java b/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java
+new file mode 100644
+--- /dev/null	(date 1770485761257)
++++ b/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java	(date 1770485761257)
+@@ -0,0 +1,158 @@
++package com.savvy.gateway.filter;
++
++import com.fasterxml.jackson.core.JsonProcessingException;
++import com.fasterxml.jackson.databind.ObjectMapper;
++import com.savvy.common.dto.BaseResponse;
++import com.savvy.gateway.config.SecurityProperties;
++import com.savvy.gateway.dto.response.IntrospectResponse;
++import com.savvy.gateway.service.IdentityService;
++import lombok.RequiredArgsConstructor;
++import lombok.extern.slf4j.Slf4j;
++import org.springframework.core.Ordered;
++import org.springframework.http.HttpHeaders;
++import org.springframework.http.HttpStatus;
++import org.springframework.http.MediaType;
++import org.springframework.http.server.reactive.ServerHttpRequest;
++import org.springframework.http.server.reactive.ServerHttpResponse;
++import org.springframework.stereotype.Component;
++import org.springframework.util.StringUtils;
++import org.springframework.web.server.ServerWebExchange;
++import reactor.core.publisher.Mono;
++
++import java.util.List;
++import java.util.Map;
++import java.util.Objects;
++
++@Slf4j
++@Component
++@RequiredArgsConstructor
++public class AuthenticationGlobalFilter implements org.springframework.cloud.gateway.filter.GlobalFilter, Ordered {
++
++    private final SecurityProperties securityProperties;
++    private final IdentityService identityService;
++    private final ObjectMapper objectMapper;
++
++    @Override
++    public int getOrder() {
++        return -1;
++    }
++
++    @Override
++    public Mono<Void> filter(ServerWebExchange exchange, org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {
++
++        String path = exchange.getRequest().getURI().getPath();
++
++        log.info("[GW] path={}, Authorization={}",
++                path,
++                exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION)
++        );
++
++        if (isPublic(path)) {
++            return chain.filter(exchange);
++        }
++
++        String auth = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
++        if (!StringUtils.hasText(auth) || !auth.regionMatches(true, 0, "Bearer ", 0, 7)) {
++            return unauthenticated(exchange.getResponse(), "Missing Bearer token");
++        }
++
++        String token = auth.substring(7).trim();
++
++        return identityService.introspect(token)
++                .flatMap(res -> {
++                    IntrospectResponse data = res == null ? null : res.getData();
++                    if (data != null && data.isValid()) {
++
++                        ServerHttpRequest mutated = exchange.getRequest().mutate()
++                                .header("X-User-Id", safe(data.getSub()))
++                                .header("X-Jti", safe(data.getJti()))
++                                .header("X-Roles", join(data.getRoles()))
++                                .header("X-Permissions", join(data.getPermissions()))
++                                .header("X-Student-Id", data.getStudentId() == null ? "" : String.valueOf(data.getStudentId()))
++                                .header("X-School-Ids", joinSchoolIds(data.getDataScope()))
++                                .build();
++                        var h = mutated.getHeaders();
++
++                        log.info("Injected headers map: X-User-Id={}, X-Jti={}, X-Roles={}, X-Permissions={}, X-Student-Id={}, X-School-Ids={}",
++                                h.getFirst("X-User-Id"),
++                                h.getFirst("X-Jti"),
++                                h.getFirst("X-Roles"),
++                                h.getFirst("X-Permissions"),
++                                h.getFirst("X-Student-Id"),
++                                h.getFirst("X-School-Ids")
++                        );
++
++                        return chain.filter(exchange.mutate().request(mutated).build());
++                    }
++
++                    String reason = data == null ? "INVALID" : data.getReason();
++                    return unauthenticated(exchange.getResponse(), "Unauthenticated: " + reason);
++                })
++                .onErrorResume(e -> {
++                    log.error("Introspect error", e);
++                    return unauthenticated(exchange.getResponse(), "Unauthenticated");
++                });
++    }
++
++    private boolean isPublic(String path) {
++        if (!StringUtils.hasText(path)) return false;
++
++        for (String p : securityProperties.getPublicPaths()) {
++            if (!StringUtils.hasText(p)) continue;
++
++            String rule = p.trim();
++
++            if (rule.endsWith("/**")) {
++                String prefix = rule.substring(0, rule.length() - 3);
++                if (path.startsWith(prefix)) return true;
++            } else {
++                if (path.equals(rule)) return true;
++            }
++        }
++        return false;
++    }
++
++    private Mono<Void> unauthenticated(ServerHttpResponse response, String msg) {
++        BaseResponse<?> body = BaseResponse.error("1401", msg, HttpStatus.UNAUTHORIZED);
++
++        String json;
++        try {
++            json = objectMapper.writeValueAsString(body);
++        } catch (JsonProcessingException e) {
++            json = "{\"success\":false,\"status\":401,\"message\":\"Unauthenticated\"}";
++        }
++
++        response.setStatusCode(HttpStatus.UNAUTHORIZED);
++        response.getHeaders().set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
++
++        return response.writeWith(Mono.just(response.bufferFactory().wrap(json.getBytes())));
++    }
++
++    private String safe(String s) {
++        return s == null ? "" : s;
++    }
++
++    private String join(List<String> xs) {
++        if (xs == null || xs.isEmpty()) return "";
++        return String.join(",", xs);
++    }
++
++    @SuppressWarnings("unchecked")
++    private String joinSchoolIds(Map<String, Object> dataScope) {
++        if (dataScope == null) return "";
++
++        Object v = dataScope.get("schoolIds");
++        if (v == null) return "";
++
++        if (v instanceof List<?> list) {
++            return list.stream()
++                    .filter(Objects::nonNull)
++                    .map(String::valueOf)
++                    .reduce((a, b) -> a + "," + b)
++                    .orElse("");
++        }
++
++        return String.valueOf(v);
++    }
++
++}
+\ No newline at end of file
+Index: api-gateway/src/main/java/com/savvy/gateway/dto/response/IntrospectResponse.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/dto/response/IntrospectResponse.java b/api-gateway/src/main/java/com/savvy/gateway/dto/response/IntrospectResponse.java
+new file mode 100644
+--- /dev/null	(date 1770484403472)
++++ b/api-gateway/src/main/java/com/savvy/gateway/dto/response/IntrospectResponse.java	(date 1770484403472)
+@@ -0,0 +1,27 @@
++package com.savvy.gateway.dto.response;
++
++import lombok.*;
++
++import java.util.List;
++import java.util.Map;
++
++@Setter
++@Getter
++@NoArgsConstructor
++@AllArgsConstructor
++@Builder
++public class IntrospectResponse {
++    private boolean valid;
++
++    private String sub;
++    private String jti;
++    private long exp;
++
++    private List<String> roles;
++    private List<String> permissions;
++
++    private Long studentId;
++    private Map<String, Object> dataScope;
++
++    private String reason;
++}
+Index: auth-service/src/main/java/com/savvycom/auth_service/admin/service/impl/AdminUserServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.admin.service.impl;\r\n\r\nimport com.savvy.common.dto.PageResponse;\r\nimport com.savvy.common.exception.BusinessException;\r\nimport com.savvy.common.exception.ErrorCode;\r\nimport com.savvycom.auth_service.admin.dto.request.AdminCreateUserRequest;\r\nimport com.savvycom.auth_service.admin.dto.request.AdminSetUserRolesRequest;\r\nimport com.savvycom.auth_service.admin.dto.request.AdminUpdateUserRequest;\r\nimport com.savvycom.auth_service.admin.dto.response.AdminUserDetailResponse;\r\nimport com.savvycom.auth_service.admin.dto.response.AdminUserSummaryResponse;\r\nimport com.savvycom.auth_service.admin.helper.*;\r\nimport com.savvycom.auth_service.admin.service.AdminUserService;\r\nimport com.savvycom.auth_service.entity.User;\r\nimport com.savvycom.auth_service.repository.RefreshTokenRepository;\r\nimport com.savvycom.auth_service.repository.UserRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.data.domain.Page;\r\nimport org.springframework.data.domain.Pageable;\r\nimport org.springframework.security.crypto.password.PasswordEncoder;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.transaction.annotation.Transactional;\r\nimport org.springframework.util.StringUtils;\r\n\r\nimport java.util.UUID;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class AdminUserServiceImpl implements AdminUserService {\r\n\r\n    private final UserRepository userRepository;\r\n    private final RefreshTokenRepository refreshTokenRepository;\r\n    private final PasswordEncoder passwordEncoder;\r\n\r\n    private final AdminUserValidator validator;\r\n    private final AdminUserRoleResolver roleResolver;\r\n    private final AdminUserScopeHelper scopeHelper;\r\n    private final AdminUserMapper mapper;\r\n    private final AdminUserPageAssembler pageAssembler;\r\n\r\n    @Override\r\n    @Transactional(readOnly = true)\r\n    public PageResponse<AdminUserSummaryResponse> listUsers(Pageable pageable) {\r\n        Page<User> page = userRepository.findAll(pageable);\r\n        return pageAssembler.toSummaryPage(page);\r\n    }\r\n\r\n    @Override\r\n    @Transactional(readOnly = true)\r\n    public AdminUserDetailResponse getUser(UUID userId) {\r\n        User u = userRepository.findById(userId)\r\n                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, \"User not found\"));\r\n\r\n        return mapper.toDetail(\r\n                u,\r\n                scopeHelper.loadSchoolIds(userId),\r\n                scopeHelper.loadStudentId(userId)\r\n        );\r\n    }\r\n\r\n    @Override\r\n    @Transactional\r\n    public AdminUserDetailResponse createUser(AdminCreateUserRequest request) {\r\n        String email = validator.normalizeEmailRequired(request.getEmail());\r\n        String username = validator.normalizeUsernameRequired(request.getUsername());\r\n\r\n        if (userRepository.existsByEmail(email)) {\r\n            throw new BusinessException(ErrorCode.DUPLICATE_RESOURCE, \"Email already exists\");\r\n        }\r\n        if (userRepository.existsByUsername(username)) {\r\n            throw new BusinessException(ErrorCode.DUPLICATE_RESOURCE, \"Username already exists\");\r\n        }\r\n\r\n        User u = User.builder()\r\n                .email(email)\r\n                .username(username)\r\n                .passwordHash(passwordEncoder.encode(request.getPassword()))\r\n                .enabled(true)\r\n                .roles(roleResolver.resolveRolesOrDefault(request.getRoleNames()))\r\n                .build();\r\n\r\n        userRepository.save(u);\r\n\r\n        // nếu createUser của bạn có scope:\r\n        scopeHelper.replaceSchoolScope(u.getId(), request.getSchoolIds());\r\n        scopeHelper.replaceStudentMapping(u.getId(), request.getStudentId());\r\n\r\n        return getUser(u.getId());\r\n    }\r\n\r\n    @Override\r\n    @Transactional\r\n    public AdminUserDetailResponse updateUser(UUID userId, AdminUpdateUserRequest request) {\r\n        User u = userRepository.findById(userId)\r\n                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, \"User not found\"));\r\n\r\n        // update username\r\n        if (StringUtils.hasText(request.getUsername())) {\r\n            String username = validator.normalizeUsernameRequired(request.getUsername());\r\n\r\n            if (!username.equalsIgnoreCase(u.getUsername()) && userRepository.existsByUsername(username)) {\r\n                throw new BusinessException(ErrorCode.DUPLICATE_RESOURCE, \"Username already exists\");\r\n            }\r\n            u.setUsername(username);\r\n        }\r\n\r\n        // update enabled\r\n        if (request.getEnabled() != null) {\r\n            u.setEnabled(request.getEnabled());\r\n        }\r\n\r\n        userRepository.save(u);\r\n        return getUser(userId);\r\n    }\r\n\r\n    @Override\r\n    @Transactional\r\n    public void deleteUser(UUID userId) {\r\n        if (!userRepository.existsById(userId)) {\r\n            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, \"User not found\");\r\n        }\r\n\r\n        refreshTokenRepository.deleteByUserId(userId);\r\n\r\n        scopeHelper.replaceStudentMapping(userId, null);\r\n        scopeHelper.replaceSchoolScope(userId, null);\r\n\r\n        userRepository.deleteById(userId);\r\n    }\r\n\r\n    @Override\r\n    @Transactional\r\n    public AdminUserDetailResponse setUserRoles(UUID userId, AdminSetUserRolesRequest request) {\r\n        User u = userRepository.findById(userId)\r\n                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, \"User not found\"));\r\n\r\n        u.setRoles(roleResolver.resolveRolesOrDefault(request.getRoleNames()));\r\n        userRepository.save(u);\r\n\r\n        return getUser(userId);\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/admin/service/impl/AdminUserServiceImpl.java b/auth-service/src/main/java/com/savvycom/auth_service/admin/service/impl/AdminUserServiceImpl.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/admin/service/impl/AdminUserServiceImpl.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/admin/service/impl/AdminUserServiceImpl.java	(date 1770346209909)
+@@ -70,17 +70,18 @@
+             throw new BusinessException(ErrorCode.DUPLICATE_RESOURCE, "Username already exists");
+         }
+ 
++        boolean enabled = (request.getEnabled() == null) ? true : request.getEnabled();
++
+         User u = User.builder()
+                 .email(email)
+                 .username(username)
+                 .passwordHash(passwordEncoder.encode(request.getPassword()))
+-                .enabled(true)
++                .enabled(enabled)
+                 .roles(roleResolver.resolveRolesOrDefault(request.getRoleNames()))
+                 .build();
+ 
+         userRepository.save(u);
+ 
+-        // nếu createUser của bạn có scope:
+         scopeHelper.replaceSchoolScope(u.getId(), request.getSchoolIds());
+         scopeHelper.replaceStudentMapping(u.getId(), request.getStudentId());
+ 
+@@ -93,7 +94,6 @@
+         User u = userRepository.findById(userId)
+                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "User not found"));
+ 
+-        // update username
+         if (StringUtils.hasText(request.getUsername())) {
+             String username = validator.normalizeUsernameRequired(request.getUsername());
+ 
+@@ -103,7 +103,6 @@
+             u.setUsername(username);
+         }
+ 
+-        // update enabled
+         if (request.getEnabled() != null) {
+             u.setEnabled(request.getEnabled());
+         }
+Index: auth-service/src/main/java/com/savvycom/auth_service/dto/response/IntrospectResponse.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/dto/response/IntrospectResponse.java b/auth-service/src/main/java/com/savvycom/auth_service/dto/response/IntrospectResponse.java
+new file mode 100644
+--- /dev/null	(date 1770484684767)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/dto/response/IntrospectResponse.java	(date 1770484684767)
+@@ -0,0 +1,24 @@
++package com.savvycom.auth_service.dto.response;
++
++import lombok.*;
++
++import java.util.List;
++import java.util.Map;
++
++@Getter
++@Setter
++@NoArgsConstructor
++@AllArgsConstructor
++@Builder
++public class IntrospectResponse {
++
++    private boolean valid;
++    private String sub;
++    private String jti;
++    private long exp;
++    private List<String> roles;
++    private List<String> permissions;
++    private Long studentId;
++    private Map<String, Object> dataScope;
++    private String reason;
++}
+Index: auth-service/src/main/java/com/savvycom/auth_service/dto/request/IntrospectRequest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/dto/request/IntrospectRequest.java b/auth-service/src/main/java/com/savvycom/auth_service/dto/request/IntrospectRequest.java
+new file mode 100644
+--- /dev/null	(date 1770484658626)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/dto/request/IntrospectRequest.java	(date 1770484658626)
+@@ -0,0 +1,14 @@
++package com.savvycom.auth_service.dto.request;
++
++import jakarta.validation.constraints.NotBlank;
++import lombok.*;
++
++@Getter
++@Setter
++@NoArgsConstructor
++@AllArgsConstructor
++@Builder
++public class IntrospectRequest {
++    @NotBlank
++    private String token;
++}
+Index: auth-service/src/main/java/com/savvycom/auth_service/config/SecurityConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.config;\r\n\r\nimport org.springframework.context.annotation.Bean;\r\nimport org.springframework.context.annotation.Configuration;\r\nimport org.springframework.security.authentication.AuthenticationManager;\r\nimport org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;\r\nimport org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;\r\nimport org.springframework.security.config.annotation.web.builders.HttpSecurity;\r\nimport org.springframework.security.config.http.SessionCreationPolicy;\r\nimport org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;\r\nimport org.springframework.security.crypto.password.PasswordEncoder;\r\nimport org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;\r\nimport org.springframework.security.web.SecurityFilterChain;\r\n\r\n@Configuration\r\n@EnableMethodSecurity(prePostEnabled = true)\r\npublic class SecurityConfig {\r\n\r\n    @Bean\r\n    SecurityFilterChain securityFilterChain(HttpSecurity http,\r\n                                            JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {\r\n        http\r\n                .csrf(csrf -> csrf.disable())\r\n                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))\r\n                .authorizeHttpRequests(auth -> auth\r\n                        .requestMatchers(\r\n                                \"/api/v1/auth/ping\",\r\n                                \"/api/v1/auth/login\",\r\n                                \"/api/v1/auth/register\",\r\n                                \"/api/v1/auth/refresh\",\r\n                                \"/api/v1/auth/logout\"\r\n                        ).permitAll()\r\n                        .requestMatchers(\"/api/v1/auth/admin/**\").authenticated()\r\n                        .anyRequest().authenticated()\r\n                )\r\n                .oauth2ResourceServer(oauth2 -> oauth2\r\n                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))\r\n                );\r\n\r\n        return http.build();\r\n    }\r\n\r\n    @Bean\r\n    PasswordEncoder passwordEncoder() {\r\n        return new BCryptPasswordEncoder();\r\n    }\r\n\r\n    @Bean\r\n    AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {\r\n        return cfg.getAuthenticationManager();\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/config/SecurityConfig.java b/auth-service/src/main/java/com/savvycom/auth_service/config/SecurityConfig.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/config/SecurityConfig.java	(revision fc6d1f187c85411378f98f3d9ac0cf2c1e22a021)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/config/SecurityConfig.java	(date 1770484630226)
+@@ -28,8 +28,9 @@
+                                 "/api/v1/auth/login",
+                                 "/api/v1/auth/register",
+                                 "/api/v1/auth/refresh",
+-                                "/api/v1/auth/logout"
++                                "/api/v1/auth/introspect"
+                         ).permitAll()
++                        .requestMatchers("/api/v1/auth/logout").authenticated()
+                         .requestMatchers("/api/v1/auth/admin/**").authenticated()
+                         .anyRequest().authenticated()
+                 )
+Index: api-gateway/src/main/java/com/savvy/gateway/service/IdentityService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/service/IdentityService.java b/api-gateway/src/main/java/com/savvy/gateway/service/IdentityService.java
+new file mode 100644
+--- /dev/null	(date 1770487009626)
++++ b/api-gateway/src/main/java/com/savvy/gateway/service/IdentityService.java	(date 1770487009626)
+@@ -0,0 +1,25 @@
++package com.savvy.gateway.service;
++
++import com.savvy.common.dto.BaseResponse;
++import com.savvy.gateway.dto.request.IntrospectRequest;
++import com.savvy.gateway.dto.response.GatewayBaseResponse;
++import com.savvy.gateway.dto.response.IntrospectResponse;
++import com.savvy.gateway.repository.IdentityClient;
++import lombok.RequiredArgsConstructor;
++import org.springframework.stereotype.Service;
++import reactor.core.publisher.Mono;
++
++@Service
++@RequiredArgsConstructor
++public class IdentityService {
++
++    private final IdentityClient identityClient;
++
++    public Mono<GatewayBaseResponse<IntrospectResponse>> introspect(String token) {
++        return identityClient.introspect(
++                IntrospectRequest.builder()
++                        .token(token)
++                        .build()
++        );
++    }
++}
+\ No newline at end of file

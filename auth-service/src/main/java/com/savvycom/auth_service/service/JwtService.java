@@ -46,7 +46,7 @@ public class JwtService {
         Date issuedAt = Date.from(now);
         Date exp = Date.from(now.plusMillis(accessExpMs));
 
-        // dataScope: schoolId (single)
+        // dataScope: schoolId
         Map<String, Object> dataScope = new HashMap<>();
         if (schoolId != null) {
             dataScope.put("schoolId", schoolId.toString());

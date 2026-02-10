@@ -1,0 +1,573 @@
+Index: auth-service/src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\r\n  port: 8081\r\n\r\nspring:\r\n  application:\r\n    name: auth-service\r\n  datasource:\r\n    url: jdbc:postgresql://localhost:5432/auth_service_db\r\n    username: micro\r\n    password: 123456\r\n    driver-class-name: org.postgresql.Driver\r\n  jpa:\r\n    hibernate:\r\n      ddl-auto: update\r\n    show-sql: true\r\n\r\napplication:\r\n  security:\r\n    jwt:\r\n      secret-key: \"1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij\"\r\n      expiration: 900000\r\n      refresh-token:\r\n        secret-key: \"Q0E3aWl4ZmZyV0dZWm0zQm1kTjJQdFRuV2M4Z0ZxYjFQeHcxYlM0dD0=\"\r\n        expiration: 3600000\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/resources/application.yml b/auth-service/src/main/resources/application.yml
+--- a/auth-service/src/main/resources/application.yml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/auth-service/src/main/resources/application.yml	(date 1770633088867)
+@@ -5,14 +5,17 @@
+   application:
+     name: auth-service
+   datasource:
+-    url: jdbc:postgresql://localhost:5432/auth_service_db
+-    username: micro
+-    password: 123456
++    url: jdbc:postgresql://localhost:5432/micro
++    username: postgres
++    password: 123456a@
+     driver-class-name: org.postgresql.Driver
+   jpa:
+     hibernate:
+       ddl-auto: update
+     show-sql: true
++#    properties:
++#      hibernate:
++#        default_schema: private
+ 
+ application:
+   security:
+@@ -21,4 +24,4 @@
+       expiration: 900000
+       refresh-token:
+         secret-key: "Q0E3aWl4ZmZyV0dZWm0zQm1kTjJQdFRuV2M4Z0ZxYjFQeHcxYlM0dD0="
+-        expiration: 3600000
++        expiration: 3600000
+\ No newline at end of file
+Index: student-service/src/main/resources/application.yaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>spring:\r\n  application:\r\n    security:\r\n      jwt:\r\n        secret-key: 1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij\r\n        expiration: 900000\r\n        refresh-token:\r\n          expiration: 3600000\r\n    name: student-service\r\n  datasource:\r\n    driver-class-name: org.postgresql.Driver\r\n    username: micro\r\n    password: 123456\r\n    url: jdbc:postgresql://localhost:5432/student_service\r\n  jpa:\r\n    show-sql: true\r\n    hibernate:\r\n      ddl-auto: update\r\n    properties:\r\n      hibernate:\r\n        format_sql: true\r\nserver:\r\n  port: 8082\r\n  servlet:\r\n    context-path: /api/v1/students/\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/resources/application.yaml b/student-service/src/main/resources/application.yaml
+--- a/student-service/src/main/resources/application.yaml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/student-service/src/main/resources/application.yaml	(date 1770633088915)
+@@ -9,9 +9,9 @@
+     name: student-service
+   datasource:
+     driver-class-name: org.postgresql.Driver
+-    username: micro
+-    password: 123456
+-    url: jdbc:postgresql://localhost:5432/student_service
++    username: postgres
++    password: 123456a@
++    url: jdbc:postgresql://localhost:5432/micro
+   jpa:
+     show-sql: true
+     hibernate:
+Index: auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.controller;\r\n\r\nimport com.savvy.common.dto.BaseResponse;\r\nimport com.savvycom.auth_service.dto.request.*;\r\nimport com.savvycom.auth_service.dto.response.IntrospectResponse;\r\nimport com.savvycom.auth_service.dto.response.RegisterResponse;\r\nimport com.savvycom.auth_service.dto.response.TokenResponse;\r\nimport com.savvycom.auth_service.service.AuthService;\r\nimport jakarta.validation.Valid;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.http.HttpHeaders;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.web.bind.annotation.*;\r\n\r\nimport java.util.Map;\r\n\r\n@RestController\r\n@RequiredArgsConstructor\r\n@RequestMapping(\"/api/v1/auth\")\r\npublic class AuthController {\r\n\r\n    private final AuthService authService;\r\n\r\n    @PostMapping(\"/introspect\")\r\n    public ResponseEntity<BaseResponse<IntrospectResponse>> introspect(@Valid @RequestBody IntrospectRequest request) {\r\n        IntrospectResponse res = authService.introspect(request);\r\n        return ResponseEntity.ok(BaseResponse.success(res, \"Introspect OK\"));\r\n    }\r\n\r\n    @PostMapping(\"/register\")\r\n    public ResponseEntity<BaseResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request) {\r\n        RegisterResponse res = authService.register(request);\r\n        return ResponseEntity.ok(BaseResponse.success(res, \"Register successfully\"));\r\n    }\r\n\r\n    @PostMapping(\"/login\")\r\n    public ResponseEntity<BaseResponse<TokenResponse>> login(@Valid @RequestBody LoginRequest request) {\r\n        TokenResponse res = authService.login(request);\r\n        return ResponseEntity.ok(BaseResponse.success(res, \"Login successfully\"));\r\n    }\r\n\r\n    @PostMapping(\"/refresh\")\r\n    public ResponseEntity<BaseResponse<TokenResponse>> refresh(@Valid @RequestBody RefreshRequest request) {\r\n        TokenResponse res = authService.refresh(request);\r\n        return ResponseEntity.ok(BaseResponse.success(res, \"Refresh token successfully\"));\r\n    }\r\n\r\n    @PostMapping(\"/logout\")\r\n    public ResponseEntity<BaseResponse<Map<String, Object>>> logout(\r\n            @Valid @RequestBody LogoutRequest request,\r\n            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization\r\n    ) {\r\n        authService.logout(request, authorization);\r\n        return ResponseEntity.ok(BaseResponse.success(Map.of(\"loggedOut\", true), \"Logout successfully\"));\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java b/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java	(date 1770633088949)
+@@ -47,11 +47,9 @@
+ 
+     @PostMapping("/logout")
+     public ResponseEntity<BaseResponse<Map<String, Object>>> logout(
+-            @Valid @RequestBody LogoutRequest request,
+             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization
+     ) {
+-        authService.logout(request, authorization);
++        authService.logout(authorization);
+         return ResponseEntity.ok(BaseResponse.success(Map.of("loggedOut", true), "Logout successfully"));
+     }
+-
+ }
+Index: grade-service/src/main/resources/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>spring.application.name=grade-service\r\nserver.port=8083\r\n\r\n# Database\r\nspring.datasource.url=jdbc:postgresql://localhost:5432/grade_service\r\nspring.datasource.username=postgres\r\nspring.datasource.password=12345\r\nspring.jpa.hibernate.ddl-auto=update\r\nspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect\r\nspring.jpa.show-sql=true\r\n\r\n\r\nauth.service.url=http://localhost:8081\r\n\r\n\r\nspring.cloud.openfeign.client.config.default.connect-timeout=5000\r\nspring.cloud.openfeign.client.config.default.read-timeout=5000\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/grade-service/src/main/resources/application.properties b/grade-service/src/main/resources/application.properties
+--- a/grade-service/src/main/resources/application.properties	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/grade-service/src/main/resources/application.properties	(date 1770633088955)
+@@ -2,9 +2,9 @@
+ server.port=8083
+ 
+ # Database
+-spring.datasource.url=jdbc:postgresql://localhost:5432/grade_service
++spring.datasource.url=jdbc:postgresql://localhost:5432/micro
+ spring.datasource.username=postgres
+-spring.datasource.password=12345
++spring.datasource.password=123456a@
+ spring.jpa.hibernate.ddl-auto=update
+ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+ spring.jpa.show-sql=true
+Index: auth-service/src/main/java/com/savvycom/auth_service/dto/request/LogoutRequest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.dto.request;\r\n\r\nimport jakarta.validation.constraints.NotBlank;\r\nimport lombok.*;\r\n\r\n@Getter\r\n@Setter\r\n@NoArgsConstructor\r\n@AllArgsConstructor\r\n@Builder\r\npublic class LogoutRequest {\r\n    @NotBlank\r\n    private String refreshToken;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/dto/request/LogoutRequest.java b/auth-service/src/main/java/com/savvycom/auth_service/dto/request/LogoutRequest.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/dto/request/LogoutRequest.java	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/dto/request/LogoutRequest.java	(date 1770633088897)
+@@ -1,14 +1,5 @@
+ package com.savvycom.auth_service.dto.request;
+ 
+-import jakarta.validation.constraints.NotBlank;
+-import lombok.*;
+-
+-@Getter
+-@Setter
+-@NoArgsConstructor
+-@AllArgsConstructor
+-@Builder
+ public class LogoutRequest {
+-    @NotBlank
+-    private String refreshToken;
++
+ }
+Index: api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvy.gateway.filter;\r\n\r\n\r\nimport com.fasterxml.jackson.core.JsonProcessingException;\r\nimport com.fasterxml.jackson.databind.ObjectMapper;\r\nimport com.savvy.common.dto.BaseResponse;\r\nimport com.savvy.gateway.config.SecurityProperties;\r\nimport com.savvy.gateway.dto.response.IntrospectResponse;\r\nimport com.savvy.gateway.service.IdentityService;\r\nimport lombok.RequiredArgsConstructor;\r\nimport lombok.extern.slf4j.Slf4j;\r\nimport org.springframework.core.Ordered;\r\nimport org.springframework.http.HttpHeaders;\r\nimport org.springframework.http.HttpStatus;\r\nimport org.springframework.http.MediaType;\r\nimport org.springframework.http.server.reactive.ServerHttpRequest;\r\nimport org.springframework.http.server.reactive.ServerHttpResponse;\r\nimport org.springframework.stereotype.Component;\r\nimport org.springframework.util.StringUtils;\r\nimport org.springframework.web.server.ServerWebExchange;\r\nimport reactor.core.publisher.Mono;\r\n\r\nimport java.util.List;\r\nimport java.util.Map;\r\nimport java.util.Objects;\r\n\r\n@Slf4j\r\n@Component\r\n@RequiredArgsConstructor\r\npublic class AuthenticationGlobalFilter implements org.springframework.cloud.gateway.filter.GlobalFilter, Ordered {\r\n\r\n    private final SecurityProperties securityProperties;\r\n    private final IdentityService identityService;\r\n    private final ObjectMapper objectMapper;\r\n\r\n    @Override\r\n    public int getOrder() {\r\n        return -1;\r\n    }\r\n\r\n    @Override\r\n    public Mono<Void> filter(ServerWebExchange exchange, org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {\r\n\r\n        String path = exchange.getRequest().getURI().getPath();\r\n\r\n        log.info(\"[GW] path={}, Authorization={}\",\r\n                path,\r\n                exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION)\r\n        );\r\n\r\n        if (isPublic(path)) {\r\n            return chain.filter(exchange);\r\n        }\r\n\r\n        String auth = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);\r\n        if (!StringUtils.hasText(auth) || !auth.regionMatches(true, 0, \"Bearer \", 0, 7)) {\r\n            return unauthenticated(exchange.getResponse(), \"Missing Bearer token\");\r\n        }\r\n\r\n        String token = auth.substring(7).trim();\r\n\r\n        return identityService.introspect(token)\r\n                .flatMap(res -> {\r\n                    IntrospectResponse data = res == null ? null : res.getData();\r\n                    if (data != null && data.isValid()) {\r\n\r\n                        ServerHttpRequest mutated = exchange.getRequest().mutate()\r\n                                .header(\"X-User-Id\", safe(data.getSub()))\r\n                                .header(\"X-Jti\", safe(data.getJti()))\r\n                                .header(\"X-Roles\", join(data.getRoles()))\r\n                                .header(\"X-Permissions\", join(data.getPermissions()))\r\n                                .header(\"X-Student-Id\", data.getStudentId() == null ? \"\" : String.valueOf(data.getStudentId()))\r\n                                .header(\"X-School-Ids\", joinSchoolIds(data.getDataScope()))\r\n                                .build();\r\n                        var h = mutated.getHeaders();\r\n\r\n                        log.info(\"Injected headers map: X-User-Id={}, X-Jti={}, X-Roles={}, X-Permissions={}, X-Student-Id={}, X-School-Ids={}\",\r\n                                h.getFirst(\"X-User-Id\"),\r\n                                h.getFirst(\"X-Jti\"),\r\n                                h.getFirst(\"X-Roles\"),\r\n                                h.getFirst(\"X-Permissions\"),\r\n                                h.getFirst(\"X-Student-Id\"),\r\n                                h.getFirst(\"X-School-Ids\")\r\n                        );\r\n\r\n                        return chain.filter(exchange.mutate().request(mutated).build());\r\n                    }\r\n\r\n                    String reason = data == null ? \"INVALID\" : data.getReason();\r\n                    return unauthenticated(exchange.getResponse(), \"Unauthenticated: \" + reason);\r\n                })\r\n                .onErrorResume(e -> {\r\n                    log.error(\"Introspect error\", e);\r\n                    return unauthenticated(exchange.getResponse(), \"Unauthenticated\");\r\n                });\r\n    }\r\n\r\n    private boolean isPublic(String path) {\r\n        if (!StringUtils.hasText(path)) return false;\r\n\r\n        for (String p : securityProperties.getPublicPaths()) {\r\n            if (!StringUtils.hasText(p)) continue;\r\n\r\n            String rule = p.trim();\r\n\r\n            if (rule.endsWith(\"/**\")) {\r\n                String prefix = rule.substring(0, rule.length() - 3);\r\n                if (path.startsWith(prefix)) return true;\r\n            } else {\r\n                if (path.equals(rule)) return true;\r\n            }\r\n        }\r\n        return false;\r\n    }\r\n\r\n    private Mono<Void> unauthenticated(ServerHttpResponse response, String msg) {\r\n        BaseResponse<?> body = BaseResponse.error(\"1401\", msg, HttpStatus.UNAUTHORIZED);\r\n\r\n        String json;\r\n        try {\r\n            json = objectMapper.writeValueAsString(body);\r\n        } catch (JsonProcessingException e) {\r\n            json = \"{\\\"success\\\":false,\\\"status\\\":401,\\\"message\\\":\\\"Unauthenticated\\\"}\";\r\n        }\r\n\r\n        response.setStatusCode(HttpStatus.UNAUTHORIZED);\r\n        response.getHeaders().set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);\r\n\r\n        return response.writeWith(Mono.just(response.bufferFactory().wrap(json.getBytes())));\r\n    }\r\n\r\n    private String safe(String s) {\r\n        return s == null ? \"\" : s;\r\n    }\r\n\r\n    private String join(List<String> xs) {\r\n        if (xs == null || xs.isEmpty()) return \"\";\r\n        return String.join(\",\", xs);\r\n    }\r\n\r\n    @SuppressWarnings(\"unchecked\")\r\n    private String joinSchoolIds(Map<String, Object> dataScope) {\r\n        if (dataScope == null) return \"\";\r\n\r\n        Object v = dataScope.get(\"schoolIds\");\r\n        if (v == null) return \"\";\r\n\r\n        if (v instanceof List<?> list) {\r\n            return list.stream()\r\n                    .filter(Objects::nonNull)\r\n                    .map(String::valueOf)\r\n                    .reduce((a, b) -> a + \",\" + b)\r\n                    .orElse(\"\");\r\n        }\r\n\r\n        return String.valueOf(v);\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java b/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java
+--- a/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java	(date 1770633088909)
+@@ -41,6 +41,7 @@
+     @Override
+     public Mono<Void> filter(ServerWebExchange exchange, org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {
+ 
++        // lay path de check public/private
+         String path = exchange.getRequest().getURI().getPath();
+ 
+         log.info("[GW] path={}, Authorization={}",
+@@ -52,6 +53,7 @@
+             return chain.filter(exchange);
+         }
+ 
++        // lay authorization header và kiểm tra format bearer
+         String auth = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+         if (!StringUtils.hasText(auth) || !auth.regionMatches(true, 0, "Bearer ", 0, 7)) {
+             return unauthenticated(exchange.getResponse(), "Missing Bearer token");
+@@ -61,6 +63,7 @@
+ 
+         return identityService.introspect(token)
+                 .flatMap(res -> {
++                    // Lay data, payload chua data o response
+                     IntrospectResponse data = res == null ? null : res.getData();
+                     if (data != null && data.isValid()) {
+ 
+@@ -83,6 +86,7 @@
+                                 h.getFirst("X-School-Ids")
+                         );
+ 
++                        // Tao exchange moi chua request moi, chay filter chan va router xuong service
+                         return chain.filter(exchange.mutate().request(mutated).build());
+                     }
+ 
+Index: api-gateway/src/main/java/com/savvy/gateway/controller/GatewayController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvy.gateway.controller;\r\n\r\nimport com.savvy.common.dto.BaseResponse;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.cloud.client.ServiceInstance;\r\nimport org.springframework.cloud.client.discovery.DiscoveryClient;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.web.bind.annotation.GetMapping;\r\nimport org.springframework.web.bind.annotation.RequestMapping;\r\nimport org.springframework.web.bind.annotation.RestController;\r\n\r\nimport java.util.HashMap;\r\nimport java.util.List;\r\nimport java.util.Map;\r\n\r\n@RestController\r\n@RequestMapping(\"/api/v1/gateway\")\r\npublic class GatewayController {\r\n\r\n    @Autowired\r\n    private DiscoveryClient discoveryClient;\r\n\r\n    @GetMapping(\"/health\")\r\n    public ResponseEntity<BaseResponse<Map<String, Object>>> health() {\r\n        Map<String, Object> health = new HashMap<>();\r\n        health.put(\"status\", \"UP\");\r\n        health.put(\"gateway\", \"API Gateway\");\r\n        health.put(\"timestamp\", System.currentTimeMillis());\r\n        \r\n        return ResponseEntity.ok(BaseResponse.success(health, \"Gateway is running\"));\r\n    }\r\n\r\n//    @GetMapping(\"/services\")\r\n//    public ResponseEntity<BaseResponse<Map<String, List<ServiceInstance>>>> getServices() {\r\n//        List<String> services = discoveryClient.getServices();\r\n//        Map<String, List<ServiceInstance>> serviceMap = new HashMap<>();\r\n//\r\n//        for (String service : services) {\r\n//            List<ServiceInstance> instances = discoveryClient.getInstances(service);\r\n//            serviceMap.put(service, instances);\r\n//        }\r\n//\r\n//        return ResponseEntity.ok(BaseResponse.success(serviceMap, \"Registered services\"));\r\n//    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/api-gateway/src/main/java/com/savvy/gateway/controller/GatewayController.java b/api-gateway/src/main/java/com/savvy/gateway/controller/GatewayController.java
+--- a/api-gateway/src/main/java/com/savvy/gateway/controller/GatewayController.java	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/api-gateway/src/main/java/com/savvy/gateway/controller/GatewayController.java	(date 1770633088920)
+@@ -29,17 +29,4 @@
+         
+         return ResponseEntity.ok(BaseResponse.success(health, "Gateway is running"));
+     }
+-
+-//    @GetMapping("/services")
+-//    public ResponseEntity<BaseResponse<Map<String, List<ServiceInstance>>>> getServices() {
+-//        List<String> services = discoveryClient.getServices();
+-//        Map<String, List<ServiceInstance>> serviceMap = new HashMap<>();
+-//
+-//        for (String service : services) {
+-//            List<ServiceInstance> instances = discoveryClient.getInstances(service);
+-//            serviceMap.put(service, instances);
+-//        }
+-//
+-//        return ResponseEntity.ok(BaseResponse.success(serviceMap, "Registered services"));
+-//    }
+ }
+Index: auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.service.impl;\r\n\r\nimport com.savvy.common.exception.BusinessException;\r\nimport com.savvy.common.exception.ErrorCode;\r\nimport com.savvycom.auth_service.dto.request.*;\r\nimport com.savvycom.auth_service.dto.response.*;\r\nimport com.savvycom.auth_service.entity.*;\r\nimport com.savvycom.auth_service.helper.AuthTokenHelper;\r\nimport com.savvycom.auth_service.helper.AuthUserMapper;\r\nimport com.savvycom.auth_service.repository.*;\r\nimport com.savvycom.auth_service.service.AuthService;\r\nimport com.savvycom.auth_service.service.InvalidatedTokenService;\r\nimport com.savvycom.auth_service.service.JwtService;\r\nimport io.jsonwebtoken.Claims;\r\nimport io.jsonwebtoken.JwtException;\r\nimport lombok.RequiredArgsConstructor;\r\nimport lombok.extern.slf4j.Slf4j;\r\nimport org.springframework.beans.factory.annotation.Value;\r\nimport org.springframework.security.authentication.AuthenticationManager;\r\nimport org.springframework.security.authentication.UsernamePasswordAuthenticationToken;\r\nimport org.springframework.security.core.AuthenticationException;\r\nimport org.springframework.security.crypto.password.PasswordEncoder;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.transaction.annotation.Transactional;\r\nimport org.springframework.util.StringUtils;\r\n\r\nimport java.time.Instant;\r\nimport java.util.List;\r\nimport java.util.UUID;\r\n\r\n@Slf4j\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class AuthServiceImpl implements AuthService {\r\n\r\n    private static final String DEFAULT_ROLE_STUDENT = \"ROLE_STUDENT\";\r\n    private static final String STATUS_ACTIVE = \"ACTIVE\";\r\n\r\n    private final UserRepository userRepository;\r\n    private final RoleRepository roleRepository;\r\n    private final UserSchoolScopeRepository userSchoolScopeRepository;\r\n    private final UserStudentRepository userStudentRepository;\r\n\r\n    private final PasswordEncoder passwordEncoder;\r\n    private final AuthenticationManager authenticationManager;\r\n\r\n    private final JwtService jwtService;\r\n    private final AuthTokenHelper tokenHelper;\r\n    private final AuthUserMapper userMapper;\r\n\r\n    private final InvalidatedTokenService invalidatedTokenService;\r\n\r\n    @Value(\"${application.security.jwt.expiration}\")\r\n    private long accessTokenExpirationMs;\r\n\r\n    @Override\r\n    @Transactional\r\n    public RegisterResponse register(RegisterRequest request) {\r\n        String email = userMapper.normalizeEmail(request.getEmail());\r\n\r\n        if (userRepository.existsByEmail(email)) {\r\n            throw new BusinessException(ErrorCode.DUPLICATE_RESOURCE, \"Email already exists\");\r\n        }\r\n\r\n        Role studentRole = roleRepository.findByName(DEFAULT_ROLE_STUDENT)\r\n                .orElseThrow(() -> new BusinessException(\r\n                        ErrorCode.INTERNAL_SERVER_ERROR,\r\n                        \"Missing role ROLE_STUDENT (seed not run?)\"\r\n                ));\r\n\r\n        Instant now = Instant.now();\r\n\r\n        String username = deriveUsername(email);\r\n\r\n        User user = User.builder()\r\n                .email(email)\r\n                .username(username)\r\n                .passwordHash(passwordEncoder.encode(request.getPassword()))\r\n                .enabled(true)\r\n                .createdAt(now)\r\n                .updatedAt(now)\r\n                .build();\r\n\r\n        user.getRoles().add(studentRole);\r\n        userRepository.save(user);\r\n\r\n        UUID schoolId = request.getSchoolId();\r\n        if (schoolId != null) {\r\n            userSchoolScopeRepository.save(UserSchoolScope.builder()\r\n                    .userId(user.getId())\r\n                    .schoolId(schoolId)\r\n                    .build());\r\n        }\r\n\r\n        UUID studentId = request.getStudentId();\r\n        if (studentId != null) {\r\n            userStudentRepository.save(UserStudent.builder()\r\n                    .userId(user.getId())\r\n                    .studentId(studentId)\r\n                    .createdAt(now)\r\n                    .build());\r\n        }\r\n\r\n        return userMapper.toRegisterResponse(user, schoolId, studentId);\r\n    }\r\n\r\n\r\n    @Override\r\n    @Transactional\r\n    public TokenResponse login(LoginRequest request) {\r\n        String email = userMapper.normalizeEmail(request.getEmail());\r\n\r\n        authenticate(email, request.getPassword());\r\n\r\n        User user = userRepository.findByEmail(email)\r\n                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS, \"Invalid credentials\"));\r\n\r\n        assertUserEnabled(user);\r\n\r\n        UUID schoolId = userMapper.loadSchoolId(user.getId());\r\n        UUID studentId = userStudentRepository.findById(user.getId())\r\n                .map(UserStudent::getStudentId)\r\n                .orElse(null);\r\n\r\n        List<String> roles = userMapper.extractRoleNames(user);\r\n        List<String> permissions = userMapper.extractPermissionCodes(user);\r\n\r\n        String accessToken = jwtService.generateAccessToken(user, roles, permissions, schoolId, studentId);\r\n\r\n        String refreshToken = tokenHelper.issueRefreshToken(user.getId());\r\n\r\n        return TokenResponse.builder()\r\n                .accessToken(accessToken)\r\n                .refreshToken(refreshToken)\r\n                .build();\r\n    }\r\n\r\n\r\n    @Override\r\n    @Transactional\r\n    public TokenResponse refresh(RefreshRequest request) {\r\n        RefreshToken old = tokenHelper.getUsableRefreshTokenOrThrow(request.getRefreshToken());\r\n\r\n        User user = userRepository.findById(old.getUserId())\r\n                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED, \"User not found\"));\r\n\r\n        assertUserEnabled(user);\r\n\r\n        UUID schoolId = userMapper.loadSchoolId(user.getId());\r\n        UUID studentId = userStudentRepository.findById(user.getId())\r\n                .map(UserStudent::getStudentId)\r\n                .orElse(null);\r\n\r\n        List<String> roles = userMapper.extractRoleNames(user);\r\n        List<String> permissions = userMapper.extractPermissionCodes(user);\r\n\r\n        String newAccessToken = jwtService.generateAccessToken(user, roles, permissions, schoolId, studentId);\r\n        String newRefreshToken = tokenHelper.rotate(old);\r\n\r\n        return TokenResponse.builder()\r\n                .accessToken(newAccessToken)\r\n                .refreshToken(newRefreshToken)\r\n                .build();\r\n    }\r\n\r\n\r\n    @Override\r\n    @Transactional\r\n    public void logout(LogoutRequest request, String authorizationHeader) {\r\n        RefreshToken rt = tokenHelper.getRefreshTokenOrThrow(request.getRefreshToken());\r\n        tokenHelper.revokeIfNeeded(rt);\r\n\r\n        String accessToken = extractBearerToken(authorizationHeader);\r\n        if (!StringUtils.hasText(accessToken)) {\r\n            throw new BusinessException(ErrorCode.TOKEN_INVALID, \"Access token is mising\");\r\n        }\r\n\r\n        Claims claims;\r\n        try {\r\n            claims = jwtService.parseAndValidateAccessToken(accessToken);\r\n        } catch (JwtException e) {\r\n            throw new BusinessException(ErrorCode.TOKEN_INVALID, \"Access token invalid\");\r\n        }\r\n\r\n        String jti = claims.getId();\r\n        if (!StringUtils.hasText(jti)) {\r\n            throw new BusinessException(ErrorCode.TOKEN_INVALID, \"Access token jti is missing\");\r\n        }\r\n\r\n        var exp = claims.getExpiration();\r\n        if (exp == null) {\r\n            throw new BusinessException(ErrorCode.TOKEN_INVALID, \"Access token exp is missing\");\r\n        }\r\n\r\n        invalidatedTokenService.blacklistAccessToken(jti, exp.toInstant(), \"LOGOUT\");\r\n    }\r\n\r\n    @Override\r\n    @Transactional(readOnly = true)\r\n    public IntrospectResponse introspect(IntrospectRequest request) {\r\n        String token = request == null ? null : request.getToken();\r\n        if (token == null || token.isBlank()) {\r\n            return IntrospectResponse.builder()\r\n                    .valid(false)\r\n                    .reason(\"MISSING\")\r\n                    .build();\r\n        }\r\n\r\n        token = stripBearer(token);\r\n\r\n        try {\r\n            var claims = jwtService.parseAndValidateAccessToken(token);\r\n\r\n            String jti = claims.getId();\r\n            if (jti != null && invalidatedTokenService.isBlacklisted(jti)) {\r\n                return IntrospectResponse.builder()\r\n                        .valid(false)\r\n                        .reason(\"REVOKED\")\r\n                        .build();\r\n            }\r\n\r\n            String sub = claims.getSubject();\r\n            long exp = claims.getExpiration() == null ? 0L : claims.getExpiration().toInstant().getEpochSecond();\r\n\r\n            @SuppressWarnings(\"unchecked\")\r\n            var roles = (java.util.List<String>) claims.get(\"roles\", java.util.List.class);\r\n\r\n            @SuppressWarnings(\"unchecked\")\r\n            var permissions = (java.util.List<String>) claims.get(\"permissions\", java.util.List.class);\r\n\r\n            UUID studentId = null;\r\n            Object sid = claims.get(\"studentId\");\r\n            if (sid instanceof String s && StringUtils.hasText(s)) {\r\n                studentId = UUID.fromString(s.trim());\r\n            }\r\n\r\n            @SuppressWarnings(\"unchecked\")\r\n            var dataScope = (java.util.Map<String, Object>) claims.get(\"dataScope\", java.util.Map.class);\r\n\r\n            return IntrospectResponse.builder()\r\n                    .valid(true)\r\n                    .sub(sub)\r\n                    .jti(jti)\r\n                    .exp(exp)\r\n                    .roles(roles)\r\n                    .permissions(permissions)\r\n                    .studentId(studentId)\r\n                    .dataScope(dataScope)\r\n                    .build();\r\n        } catch (JwtException e) {\r\n            return IntrospectResponse.builder()\r\n                    .valid(false)\r\n                    .reason(\"INVALID_OR_EXPIRED\")\r\n                    .build();\r\n        }\r\n    }\r\n\r\n\r\n    private String stripBearer(String token) {\r\n        String t = token.trim();\r\n        if (t.regionMatches(true, 0, \"Bearer \", 0, 7)) {\r\n            return t.substring(7).trim();\r\n        }\r\n        return t;\r\n    }\r\n\r\n    private String extractBearerToken(String authorizationHeader) {\r\n        if (authorizationHeader == null) return null;\r\n        String v = authorizationHeader.trim();\r\n        if (v.isEmpty()) return null;\r\n\r\n        if (v.regionMatches(true, 0, \"Bearer \", 0, 7)) {\r\n            return v.substring(7).trim();\r\n        }\r\n        return v;\r\n    }\r\n\r\n    private void authenticate(String email, String password) {\r\n        try {\r\n            authenticationManager.authenticate(\r\n                    new UsernamePasswordAuthenticationToken(email, password)\r\n            );\r\n        } catch (AuthenticationException e) {\r\n            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS, \"Invalid credentials\");\r\n        }\r\n    }\r\n\r\n    private void assertUserEnabled(User user) {\r\n        if (user == null || !user.isEnabled()) {\r\n            throw new BusinessException(ErrorCode.FORBIDDEN, \"Account is disabled\");\r\n        }\r\n    }\r\n\r\n    private String deriveUsername(String email) {\r\n        // lấy phần trước @\r\n        String base = email == null ? \"user\" : email.split(\"@\")[0];\r\n        base = base.replaceAll(\"[^a-zA-Z0-9._-]\", \"\");\r\n        if (base.length() < 3) base = base + \"_user\";\r\n        // tránh trùng username\r\n        String candidate = base;\r\n        int i = 1;\r\n        while (userRepository.existsByUsername(candidate)) {\r\n            candidate = base + i;\r\n            i++;\r\n        }\r\n        return candidate;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java b/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java	(date 1770633088930)
+@@ -25,6 +25,7 @@
+ import org.springframework.util.StringUtils;
+ 
+ import java.time.Instant;
++import java.util.Date;
+ import java.util.List;
+ import java.util.UUID;
+ 
+@@ -40,6 +41,7 @@
+     private final RoleRepository roleRepository;
+     private final UserSchoolScopeRepository userSchoolScopeRepository;
+     private final UserStudentRepository userStudentRepository;
++    private final RefreshTokenRepository refreshTokenRepository;
+ 
+     private final PasswordEncoder passwordEncoder;
+     private final AuthenticationManager authenticationManager;
+@@ -166,13 +168,11 @@
+ 
+     @Override
+     @Transactional
+-    public void logout(LogoutRequest request, String authorizationHeader) {
+-        RefreshToken rt = tokenHelper.getRefreshTokenOrThrow(request.getRefreshToken());
+-        tokenHelper.revokeIfNeeded(rt);
++    public void logout(String authorizationHeader) {
+ 
+         String accessToken = extractBearerToken(authorizationHeader);
+         if (!StringUtils.hasText(accessToken)) {
+-            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token is mising");
++            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token is missing");
+         }
+ 
+         Claims claims;
+@@ -182,12 +182,29 @@
+             throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token invalid");
+         }
+ 
++        // lay userId từ sub
++        String sub = claims.getSubject();
++        if (!StringUtils.hasText(sub)) {
++            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token sub is missing");
++        }
++
++        UUID userId;
++        try {
++            userId = UUID.fromString(sub.trim());
++        } catch (IllegalArgumentException ex) {
++            throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token sub is not UUID");
++        }
++
++        // Xóa refresh token theo userId
++        refreshTokenRepository.deleteByUserId(userId);
++
++        // Blacklist access token để logout có hiệu lực ngay trên gateway/introspect
+         String jti = claims.getId();
+         if (!StringUtils.hasText(jti)) {
+             throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token jti is missing");
+         }
+ 
+-        var exp = claims.getExpiration();
++        Date exp = claims.getExpiration();
+         if (exp == null) {
+             throw new BusinessException(ErrorCode.TOKEN_INVALID, "Access token exp is missing");
+         }
+Index: auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.service;\r\n\r\nimport com.savvycom.auth_service.dto.request.*;\r\nimport com.savvycom.auth_service.dto.response.IntrospectResponse;\r\nimport com.savvycom.auth_service.dto.response.RegisterResponse;\r\nimport com.savvycom.auth_service.dto.response.TokenResponse;\r\n\r\npublic interface AuthService {\r\n    RegisterResponse register(RegisterRequest request);\r\n    TokenResponse login(LoginRequest request);\r\n    TokenResponse refresh(RefreshRequest request);\r\n    void logout(LogoutRequest request, String authorizationHeader);\r\n    IntrospectResponse introspect(IntrospectRequest request);\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java b/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java	(date 1770633088936)
+@@ -9,6 +9,6 @@
+     RegisterResponse register(RegisterRequest request);
+     TokenResponse login(LoginRequest request);
+     TokenResponse refresh(RefreshRequest request);
+-    void logout(LogoutRequest request, String authorizationHeader);
++    void logout(String authorizationHeader);
+     IntrospectResponse introspect(IntrospectRequest request);
+ }
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"CompilerConfiguration\">\r\n    <annotationProcessing>\r\n      <profile default=\"true\" name=\"Default\" enabled=\"true\" />\r\n      <profile name=\"Maven default annotation processors profile\" enabled=\"true\">\r\n        <sourceOutputDir name=\"target/generated-sources/annotations\" />\r\n        <sourceTestOutputDir name=\"target/generated-test-sources/test-annotations\" />\r\n        <outputRelativeToContentRoot value=\"true\" />\r\n        <module name=\"api-gateway\" />\r\n        <module name=\"common-library\" />\r\n        <module name=\"auth-service\" />\r\n      </profile>\r\n      <profile name=\"Annotation profile for student-service\" enabled=\"true\">\r\n        <sourceOutputDir name=\"target/generated-sources/annotations\" />\r\n        <sourceTestOutputDir name=\"target/generated-test-sources/test-annotations\" />\r\n        <outputRelativeToContentRoot value=\"true\" />\r\n        <processorPath useClasspath=\"false\">\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.3/mapstruct-1.6.3.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar\" />\r\n        </processorPath>\r\n        <module name=\"student-service\" />\r\n      </profile>\r\n      <profile name=\"Annotation profile for Grade Service\" enabled=\"true\">\r\n        <sourceOutputDir name=\"target/generated-sources/annotations\" />\r\n        <sourceTestOutputDir name=\"target/generated-test-sources/test-annotations\" />\r\n        <outputRelativeToContentRoot value=\"true\" />\r\n        <processorPath useClasspath=\"false\">\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-apt/5.0.0/querydsl-apt-5.0.0-jakarta.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-codegen/5.0.0/querydsl-codegen-5.0.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/mysema/commons/mysema-commons-lang/0.2.4/mysema-commons-lang-0.2.4.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/codegen-utils/5.0.0/codegen-utils-5.0.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/eclipse/jdt/ecj/3.26.0/ecj-3.26.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/io/github/classgraph/classgraph/4.8.108/classgraph-4.8.108.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/javax/inject/javax.inject/1/javax.inject-1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/jetbrains/annotations/21.0.1/annotations-21.0.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/datanucleus/javax.jdo/3.2.0-m13/javax.jdo-3.2.0-m13.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/javax/transaction/transaction-api/1.1/transaction-api-1.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/springframework/roo/org.springframework.roo.annotations/1.3.2.RELEASE/org.springframework.roo.annotations-1.3.2.RELEASE.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/mongodb/morphia/morphia/1.3.2/morphia-1.3.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.4.0/mongo-java-driver-3.4.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/thoughtworks/proxytoys/proxytoys/1.0/proxytoys-1.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/joda-time/joda-time/2.10.10/joda-time-2.10.10.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.4.8.Final/hibernate-core-5.4.8.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/jboss/logging/jboss-logging/3.3.2.Final/jboss-logging-3.3.2.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/javax/persistence/javax.persistence-api/2.2/javax.persistence-api-2.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy/1.10.2/byte-buddy-1.10.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/antlr/antlr/2.7.7/antlr-2.7.7.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/jboss/spec/javax/transaction/jboss-transaction-api_1.2_spec/1.1.1.Final/jboss-transaction-api_1.2_spec-1.1.1.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/jboss/jandex/2.0.5.Final/jandex-2.0.5.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/fasterxml/classmate/1.3.4/classmate-1.3.4.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/dom4j/dom4j/2.1.1/dom4j-2.1.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/hibernate/common/hibernate-commons-annotations/5.1.0.Final/hibernate-commons-annotations-5.1.0.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/glassfish/jaxb/jaxb-runtime/2.3.1/jaxb-runtime-2.3.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/glassfish/jaxb/txw2/2.3.1/txw2-2.3.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/sun/istack/istack-commons-runtime/3.0.7/istack-commons-runtime-3.0.7.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/jvnet/staxex/stax-ex/1.8/stax-ex-1.8.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/sun/xml/fastinfoset/FastInfoset/1.2.15/FastInfoset-1.2.15.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/hibernate/hibernate-envers/5.4.8.Final/hibernate-envers-5.4.8.Final.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0-tests.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/joda/joda-money/1.0.1/joda-money-1.0.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/eclipse/jdt/core/compiler/ecj/4.6.1/ecj-4.6.1.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/junit/junit/4.13.2/junit-4.13.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/easymock/easymock/4.3/easymock-4.3.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/objenesis/objenesis/3.2/objenesis-3.2.jar\" />\r\n          <entry name=\"$MAVEN_REPOSITORY$/org/javassist/javassist/3.28.0-GA/javassist-3.28.0-GA.jar\" />\r\n        </processorPath>\r\n        <module name=\"grade-service\" />\r\n      </profile>\r\n    </annotationProcessing>\r\n    <bytecodeTargetLevel>\r\n      <module name=\"gradeservice\" target=\"21\" />\r\n    </bytecodeTargetLevel>\r\n  </component>\r\n  <component name=\"JavacSettings\">\r\n    <option name=\"ADDITIONAL_OPTIONS_OVERRIDE\">\r\n      <module name=\"api-gateway\" options=\"-parameters\" />\r\n      <module name=\"auth-service\" options=\"-parameters\" />\r\n      <module name=\"grade-service\" options=\"-parameters\" />\r\n      <module name=\"gradeservice\" options=\"-parameters\" />\r\n      <module name=\"student-service\" options=\"-parameters\" />\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+--- a/.idea/compiler.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/.idea/compiler.xml	(date 1770634298478)
+@@ -7,21 +7,9 @@
+         <sourceOutputDir name="target/generated-sources/annotations" />
+         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+         <outputRelativeToContentRoot value="true" />
+-        <module name="api-gateway" />
+         <module name="common-library" />
++        <module name="api-gateway" />
+         <module name="auth-service" />
+-      </profile>
+-      <profile name="Annotation profile for student-service" enabled="true">
+-        <sourceOutputDir name="target/generated-sources/annotations" />
+-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+-        <outputRelativeToContentRoot value="true" />
+-        <processorPath useClasspath="false">
+-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.3/mapstruct-1.6.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+-        </processorPath>
+-        <module name="student-service" />
+       </profile>
+       <profile name="Annotation profile for Grade Service" enabled="true">
+         <sourceOutputDir name="target/generated-sources/annotations" />
+@@ -76,6 +64,18 @@
+           <entry name="$MAVEN_REPOSITORY$/org/javassist/javassist/3.28.0-GA/javassist-3.28.0-GA.jar" />
+         </processorPath>
+         <module name="grade-service" />
++      </profile>
++      <profile name="Annotation profile for student-service" enabled="true">
++        <sourceOutputDir name="target/generated-sources/annotations" />
++        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
++        <outputRelativeToContentRoot value="true" />
++        <processorPath useClasspath="false">
++          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar" />
++          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.3/mapstruct-1.6.3.jar" />
++          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
++          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
++        </processorPath>
++        <module name="student-service" />
+       </profile>
+     </annotationProcessing>
+     <bytecodeTargetLevel>
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"567559d3-edee-49a8-a28a-f146b729929d\" name=\"Changes\" comment=\"\">\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/dataSources.local.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/auth-service/pom.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/auth-service/pom.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/auth-service/src/main/resources/application.yml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/auth-service/src/main/resources/application.yml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GithubPullRequestsUISettings\"><![CDATA[{\r\n  \"selectedUrlAndAccountId\": {\r\n    \"url\": \"https://github.com/phamvanson04/Savvy_Micro.git\",\r\n    \"accountId\": \"94af9d79-a670-4b29-911b-ddff5a01a064\"\r\n  }\r\n}]]></component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"git-widget-placeholder\": \"Merging main\",\r\n    \"node.js.selected.package.tslint\": \"(autodetect)\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RunManager\">\r\n    <configuration default=\"true\" type=\"JetRunConfigurationType\">\r\n      <module name=\"ms2\" />\r\n      <method v=\"2\">\r\n        <option name=\"Make\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration default=\"true\" type=\"KotlinStandaloneScriptRunConfigurationType\">\r\n      <module name=\"ms2\" />\r\n      <option name=\"filePath\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <servers />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/.idea/workspace.xml	(date 1770634396056)
+@@ -5,13 +5,20 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="567559d3-edee-49a8-a28a-f146b729929d" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/auth-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/pom.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/savvy/gateway/controller/GatewayController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/savvy/gateway/controller/GatewayController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/dto/request/LogoutRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/dto/request/LogoutRequest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/grade-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/src/main/resources/application.properties" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/grade-service/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/target/classes/application.properties" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/application.yaml" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -21,21 +28,104 @@
+   <component name="Git.Settings">
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+   </component>
+-  <component name="GithubPullRequestsUISettings"><![CDATA[{
+-  "selectedUrlAndAccountId": {
+-    "url": "https://github.com/phamvanson04/Savvy_Micro.git",
+-    "accountId": "94af9d79-a670-4b29-911b-ddff5a01a064"
++  <component name="GitHubPullRequestSearchHistory">{
++  &quot;lastFilter&quot;: {
++    &quot;state&quot;: &quot;OPEN&quot;,
++    &quot;assignee&quot;: &quot;MoiChung-nwc&quot;
+   }
+-}]]></component>
++}</component>
++  <component name="GithubPullRequestsUISettings">{
++  &quot;selectedUrlAndAccountId&quot;: {
++    &quot;url&quot;: &quot;https://github.com/MoiChung-nwc/Savvy_Micro.git&quot;,
++    &quot;accountId&quot;: &quot;e645f543-627a-4b94-8be9-a5fcb04bd0a6&quot;
++  }
++}</component>
++  <component name="ProjectColorInfo">{
++  &quot;associatedIndex&quot;: 1
++}</component>
++  <component name="ProjectId" id="39Qfn5aQvXZdgvRP3iiXQ5iHWUp" />
++  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
++  <component name="ProjectViewState">
++    <option name="hideEmptyMiddlePackages" value="true" />
++    <option name="showLibraryContents" value="true" />
++  </component>
+   <component name="PropertiesComponent"><![CDATA[{
+   "keyToString": {
+-    "git-widget-placeholder": "Merging main",
+-    "node.js.selected.package.tslint": "(autodetect)"
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "git-widget-placeholder": "main",
++    "kotlin-language-version-configured": "true",
++    "last_opened_file_path": "D:/test/student-service",
++    "node.js.selected.package.tslint": "(autodetect)",
++    "project.structure.last.edited": "Modules",
++    "project.structure.proportion": "0.0",
++    "project.structure.side.proportion": "0.20804597"
+   }
+ }]]></component>
+-  <component name="RunManager">
+-    <configuration default="true" type="JetRunConfigurationType">
+-      <module name="ms2" />
++  <component name="RunManager" selected="Application.Grade Service">
++    <configuration name="API Gateway" type="Application" factoryName="Application">
++      <option name="MAIN_CLASS_NAME" value="com.savvy.gateway.ApiGatewayApplication" />
++      <module name="api-gateway" />
++      <extension name="net.ashald.envfile">
++        <option name="IS_ENABLED" value="false" />
++        <option name="IS_SUBST" value="false" />
++        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
++        <option name="IS_IGNORE_MISSING_FILES" value="false" />
++        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
++        <ENTRIES>
++          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
++        </ENTRIES>
++      </extension>
++      <method v="2">
++        <option name="Make" enabled="true" />
++      </method>
++    </configuration>
++    <configuration name="Auth Service" type="Application" factoryName="Application">
++      <option name="MAIN_CLASS_NAME" value="com.savvycom.auth_service.AuthServiceApplication" />
++      <module name="auth-service" />
++      <extension name="net.ashald.envfile">
++        <option name="IS_ENABLED" value="false" />
++        <option name="IS_SUBST" value="false" />
++        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
++        <option name="IS_IGNORE_MISSING_FILES" value="false" />
++        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
++        <ENTRIES>
++          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
++        </ENTRIES>
++      </extension>
++      <method v="2">
++        <option name="Make" enabled="true" />
++      </method>
++    </configuration>
++    <configuration name="Grade Service" type="Application" factoryName="Application">
++      <option name="MAIN_CLASS_NAME" value="com.savvy.gradeservice.GradeServiceApplication" />
++      <module name="grade-service" />
++      <extension name="net.ashald.envfile">
++        <option name="IS_ENABLED" value="false" />
++        <option name="IS_SUBST" value="false" />
++        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
++        <option name="IS_IGNORE_MISSING_FILES" value="false" />
++        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
++        <ENTRIES>
++          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
++        </ENTRIES>
++      </extension>
++      <method v="2">
++        <option name="Make" enabled="true" />
++      </method>
++    </configuration>
++    <configuration name="Student Service" type="Application" factoryName="Application">
++      <option name="MAIN_CLASS_NAME" value="cd.studentservice.StudentServiceApplication" />
++      <module name="student-service" />
++      <extension name="net.ashald.envfile">
++        <option name="IS_ENABLED" value="false" />
++        <option name="IS_SUBST" value="false" />
++        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
++        <option name="IS_IGNORE_MISSING_FILES" value="false" />
++        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
++        <ENTRIES>
++          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
++        </ENTRIES>
++      </extension>
+       <method v="2">
+         <option name="Make" enabled="true" />
+       </method>
+@@ -45,8 +135,33 @@
+       <option name="filePath" />
+       <method v="2" />
+     </configuration>
++    <list>
++      <item itemvalue="Application.Grade Service" />
++      <item itemvalue="Application.Student Service" />
++      <item itemvalue="Application.Auth Service" />
++      <item itemvalue="Application.API Gateway" />
++    </list>
+   </component>
++  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+   <component name="TaskManager">
++    <task active="true" id="Default" summary="Default task">
++      <changelist id="567559d3-edee-49a8-a28a-f146b729929d" name="Changes" comment="" />
++      <created>1770633379987</created>
++      <option name="number" value="Default" />
++      <option name="presentableId" value="Default" />
++      <updated>1770633379987</updated>
++    </task>
+     <servers />
+   </component>
++  <component name="Vcs.Log.Tabs.Properties">
++    <option name="TAB_STATES">
++      <map>
++        <entry key="MAIN">
++          <value>
++            <State />
++          </value>
++        </entry>
++      </map>
++    </option>
++  </component>
+ </project>
+\ No newline at end of file
+Index: auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.savvycom.auth_service.service;\r\n\r\nimport com.savvycom.auth_service.entity.User;\r\nimport io.jsonwebtoken.*;\r\nimport io.jsonwebtoken.security.Keys;\r\nimport org.springframework.beans.factory.annotation.Value;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport javax.crypto.SecretKey;\r\nimport java.time.Instant;\r\nimport java.util.*;\r\n\r\n@Service\r\npublic class JwtService {\r\n\r\n    private static final String CLAIM_TYP = \"typ\";\r\n    private static final String TYP_REFRESH = \"refresh\";\r\n\r\n    private final SecretKey accessKey;\r\n    private final long accessExpMs;\r\n\r\n    private final SecretKey refreshKey;\r\n    private final long refreshExpMs;\r\n\r\n    public JwtService(\r\n            @Value(\"${application.security.jwt.secret-key}\") String accessSecret,\r\n            @Value(\"${application.security.jwt.expiration}\") long accessExpMs,\r\n            @Value(\"${application.security.jwt.refresh-token.secret-key}\") String refreshSecret,\r\n            @Value(\"${application.security.jwt.refresh-token.expiration}\") long refreshExpMs\r\n    ) {\r\n        this.accessKey = Keys.hmacShaKeyFor(decodeSecret(accessSecret));\r\n        this.accessExpMs = accessExpMs;\r\n\r\n        this.refreshKey = Keys.hmacShaKeyFor(decodeSecret(refreshSecret));\r\n        this.refreshExpMs = refreshExpMs;\r\n    }\r\n\r\n    public String generateAccessToken(\r\n            User user,\r\n            List<String> roles,\r\n            List<String> permissions,\r\n            UUID schoolId,\r\n            UUID studentId\r\n    ) {\r\n        Instant now = Instant.now();\r\n        Date issuedAt = Date.from(now);\r\n        Date exp = Date.from(now.plusMillis(accessExpMs));\r\n\r\n        // dataScope: schoolId (single)\r\n        Map<String, Object> dataScope = new HashMap<>();\r\n        if (schoolId != null) {\r\n            dataScope.put(\"schoolId\", schoolId.toString());\r\n        } else {\r\n            dataScope.put(\"schoolId\", null);\r\n        }\r\n\r\n        Map<String, Object> claims = new HashMap<>();\r\n        claims.put(\"roles\", roles == null ? List.of() : roles);\r\n        claims.put(\"permissions\", permissions == null ? List.of() : permissions);\r\n        claims.put(\"dataScope\", dataScope);\r\n\r\n        // studentId: UUID string\r\n        if (studentId != null) {\r\n            claims.put(\"studentId\", studentId.toString());\r\n        }\r\n\r\n        return Jwts.builder()\r\n                .setSubject(String.valueOf(user.getId()))\r\n                .setId(UUID.randomUUID().toString())\r\n                .setIssuedAt(issuedAt)\r\n                .setExpiration(exp)\r\n                .addClaims(claims)\r\n                .signWith(accessKey, SignatureAlgorithm.HS256)\r\n                .compact();\r\n    }\r\n\r\n    public String generateRefreshToken(UUID userId) {\r\n        Instant now = Instant.now();\r\n        Date issuedAt = Date.from(now);\r\n        Date exp = Date.from(now.plusMillis(refreshExpMs));\r\n\r\n        return Jwts.builder()\r\n                .setSubject(String.valueOf(userId))\r\n                .setId(UUID.randomUUID().toString())\r\n                .setIssuedAt(issuedAt)\r\n                .setExpiration(exp)\r\n                .claim(CLAIM_TYP, TYP_REFRESH)\r\n                .signWith(refreshKey, SignatureAlgorithm.HS256)\r\n                .compact();\r\n    }\r\n\r\n    public Claims parseAndValidateRefreshToken(String rawRefreshToken) {\r\n        Claims claims = Jwts.parserBuilder()\r\n                .setSigningKey(refreshKey)\r\n                .build()\r\n                .parseClaimsJws(rawRefreshToken)\r\n                .getBody();\r\n\r\n        String typ = claims.get(CLAIM_TYP, String.class);\r\n        if (!TYP_REFRESH.equals(typ)) {\r\n            throw new JwtException(\"Invalid token type\");\r\n        }\r\n        return claims;\r\n    }\r\n\r\n    public Claims parseAndValidateAccessToken(String rawAccessToken) {\r\n        if (rawAccessToken == null || rawAccessToken.isBlank()) {\r\n            throw new JwtException(\"Access token is missing\");\r\n        }\r\n\r\n        Claims claims = Jwts.parserBuilder()\r\n                .setSigningKey(accessKey)\r\n                .build()\r\n                .parseClaimsJws(rawAccessToken)\r\n                .getBody();\r\n\r\n        String typ = claims.get(CLAIM_TYP, String.class);\r\n        if (TYP_REFRESH.equals(typ)) {\r\n            throw new JwtException(\"Invalid token type\");\r\n        }\r\n\r\n        return claims;\r\n    }\r\n\r\n    private static byte[] decodeSecret(String s) {\r\n        if (s == null) throw new IllegalArgumentException(\"JWT secret is null\");\r\n        String t = s.trim();\r\n\r\n        // hex\r\n        if (t.matches(\"^[0-9a-fA-F]+$\") && t.length() % 2 == 0) {\r\n            byte[] out = new byte[t.length() / 2];\r\n            for (int i = 0; i < out.length; i++) {\r\n                int hi = Character.digit(t.charAt(i * 2), 16);\r\n                int lo = Character.digit(t.charAt(i * 2 + 1), 16);\r\n                out[i] = (byte) ((hi << 4) + lo);\r\n            }\r\n            return out;\r\n        }\r\n\r\n        // base64\r\n        return Base64.getDecoder().decode(t);\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java b/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java
+--- a/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java	(date 1770633088944)
+@@ -46,7 +46,7 @@
+         Date issuedAt = Date.from(now);
+         Date exp = Date.from(now.plusMillis(accessExpMs));
+ 
+-        // dataScope: schoolId (single)
++        // dataScope: schoolId
+         Map<String, Object> dataScope = new HashMap<>();
+         if (schoolId != null) {
+             dataScope.put("schoolId", schoolId.toString());
+Index: grade-service/target/classes/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>spring.application.name=grade-service\r\nserver.port=8083\r\n\r\n# Database\r\nspring.datasource.url=jdbc:postgresql://localhost:5432/grade_service\r\nspring.datasource.username=postgres\r\nspring.datasource.password=12345\r\nspring.jpa.hibernate.ddl-auto=update\r\nspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect\r\nspring.jpa.show-sql=true\r\n\r\n\r\nauth.service.url=http://localhost:8081\r\n\r\n\r\nspring.cloud.openfeign.client.config.default.connect-timeout=5000\r\nspring.cloud.openfeign.client.config.default.read-timeout=5000\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/grade-service/target/classes/application.properties b/grade-service/target/classes/application.properties
+--- a/grade-service/target/classes/application.properties	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ b/grade-service/target/classes/application.properties	(date 1770634510812)
+@@ -2,9 +2,9 @@
+ server.port=8083
+ 
+ # Database
+-spring.datasource.url=jdbc:postgresql://localhost:5432/grade_service
++spring.datasource.url=jdbc:postgresql://localhost:5432/micro
+ spring.datasource.username=postgres
+-spring.datasource.password=12345
++spring.datasource.password=123456a@
+ spring.jpa.hibernate.ddl-auto=update
+ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+ spring.jpa.show-sql=true

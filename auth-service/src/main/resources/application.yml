@@ -5,14 +5,17 @@ spring:
   application:
     name: auth-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/auth_service_db
-    username: micro
-    password: 123456
+    url: jdbc:postgresql://localhost:5432/micro
+    username: postgres
+    password: 123456a@
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+#    properties:
+#      hibernate:
+#        default_schema: private
 
 application:
   security:
@@ -22,3 +25,6 @@ application:
       refresh-token:
         secret-key: "Q0E3aWl4ZmZyV0dZWm0zQm1kTjJQdFRuV2M4Z0ZxYjFQeHcxYlM0dD0="
         expiration: 3600000
+app:
+  services:
+    students: http://localhost:8082/api/v1/students
