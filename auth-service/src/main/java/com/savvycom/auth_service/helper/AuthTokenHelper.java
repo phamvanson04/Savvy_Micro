@@ -32,7 +32,7 @@ public class AuthTokenHelper {
         Instant exp = jwtService.parseAndValidateRefreshToken(raw).getExpiration().toInstant();
 
         refreshTokenRepository.save(RefreshToken.builder()
-                .userId(userId) // UUID
+                .userId(userId)
                 .tokenHash(hash)
                 .expiresAt(exp)
                 .createdAt(now)
@@ -53,6 +53,7 @@ public class AuthTokenHelper {
             throw new BusinessException(ErrorCode.TOKEN_INVALID, "Refresh token invalid");
         }
 
+        // hash rawToken de so sanh voi token_hash trong db
         String hash = sha256(rawToken);
         return refreshTokenRepository.findByTokenHash(hash)
                 .orElseThrow(() -> new BusinessException(ErrorCode.TOKEN_INVALID, "refresh token revoked or not found"));
@@ -82,7 +83,8 @@ public class AuthTokenHelper {
 
         Instant now = Instant.now();
 
-        String newRaw = jwtService.generateRefreshToken(oldToken.getUserId()); // UUID
+        // sinh token moi cung userId
+        String newRaw = jwtService.generateRefreshToken(oldToken.getUserId());
         String newHash = sha256(newRaw);
         Instant newExp = jwtService.parseAndValidateRefreshToken(newRaw).getExpiration().toInstant();
 
@@ -93,6 +95,7 @@ public class AuthTokenHelper {
                 .createdAt(now)
                 .build());
 
+        // token da bi thu hoi (now) route
         oldToken.setRevokedAt(now);
         oldToken.setReplacedByTokenHash(newHash);
         refreshTokenRepository.save(oldToken);
@@ -101,6 +104,7 @@ public class AuthTokenHelper {
     }
 
     @Transactional
+    // thu hoi token
     public void revokeIfNeeded(RefreshToken token) {
         if (token.getRevokedAt() == null) {
             token.setRevokedAt(Instant.now());

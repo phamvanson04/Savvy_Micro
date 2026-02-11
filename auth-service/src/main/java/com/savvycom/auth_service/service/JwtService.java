@@ -93,6 +93,7 @@ public class JwtService {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(refreshKey)
                 .build()
+                // giai ma, verify, exp
                 .parseClaimsJws(rawRefreshToken)
                 .getBody();
 
@@ -126,12 +127,14 @@ public class JwtService {
         if (s == null) throw new IllegalArgumentException("JWT secret is null");
         String t = s.trim();
 
-        // hex
+        // hex : neu toan ky tu hex va do dai chan -> hex
         if (t.matches("^[0-9a-fA-F]+$") && t.length() % 2 == 0) {
+            // 2 hex -> 1 byte
             byte[] out = new byte[t.length() / 2];
             for (int i = 0; i < out.length; i++) {
                 int hi = Character.digit(t.charAt(i * 2), 16);
                 int lo = Character.digit(t.charAt(i * 2 + 1), 16);
+                // ghep thanh 1 byte
                 out[i] = (byte) ((hi << 4) + lo);
             }
             return out;

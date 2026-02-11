@@ -28,16 +28,16 @@ public class ClassController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
-    public BaseResponse<ClassResponse>findById(@PathVariable UUID id){
+    public BaseResponse<ClassResponse>findById(@PathVariable("id") UUID id){
         return BaseResponse.success(classService.findById(id),"Get data success");
     }
     
-    @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
-    public BaseResponse<PageResponse<ClassResponse>>findPage(@RequestParam int page,
-                                                             @RequestParam int size){
-        return BaseResponse.success(classService.findPage(page,size),"Get data success");
-    }
+//    @GetMapping
+//    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
+//    public BaseResponse<PageResponse<ClassResponse>>findPage(@RequestParam int page,
+//                                                             @RequestParam int size){
+//        return BaseResponse.success(classService.findPage(page,size),"Get data success");
+//    }
     
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
@@ -47,14 +47,14 @@ public class ClassController {
     
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
-    public BaseResponse<ClassResponse>update(@PathVariable UUID id,
+    public BaseResponse<ClassResponse>update(@PathVariable("id") UUID id,
                                              @RequestBody UpdateClassRequest updateClassRequest){
         return BaseResponse.created(classService.update(id,updateClassRequest),"Update data success");
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
-    public BaseResponse<?>delete(@PathVariable UUID id){
+    public BaseResponse<?>delete(@PathVariable("id") UUID id){
         classService.delete(id);
         return BaseResponse.created(null,"Delete data success");
     }
