@@ -5,19 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="567559d3-edee-49a8-a28a-f146b729929d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/savvy/gateway/controller/GatewayController.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/savvy/gateway/controller/GatewayController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/savvy/gateway/filter/AuthenticationGlobalFilter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/controller/AuthController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/dto/request/LogoutRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/dto/request/LogoutRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/helper/AuthTokenHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/helper/AuthTokenHelper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grade-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grade-service/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/controller/ClassController.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/controller/ClassController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/application.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,25 +38,27 @@
   &quot;associatedIndex&quot;: 1
 }</component>
   <component name="ProjectId" id="39Qfn5aQvXZdgvRP3iiXQ5iHWUp" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.API Gateway.executor": "Run",
-    "Application.Auth Service.executor": "Run",
-    "Application.Grade Service.executor": "Run",
-    "Application.Student Service.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/test/student-service",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.20804597"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.API Gateway.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Auth Service.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Grade Service.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Student Service.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;gateway-and-auth&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/test/student-service&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.20804597&quot;
   }
-}]]></component>
+}</component>
   <component name="RunDashboard">
     <option name="configurationTypes">
       <set>
@@ -70,7 +66,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Grade Service">
+  <component name="RunManager" selected="Application.Student Service">
     <configuration name="API Gateway" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.savvy.gateway.ApiGatewayApplication" />
       <module name="api-gateway" />
@@ -89,6 +85,9 @@
       </method>
     </configuration>
     <configuration name="Auth Service" type="Application" factoryName="Application">
+      <option name="envFilePaths">
+        <option value="$PROJECT_DIR$/auth-service/.env" />
+      </option>
       <option name="MAIN_CLASS_NAME" value="com.savvycom.auth_service.AuthServiceApplication" />
       <module name="auth-service" />
       <extension name="net.ashald.envfile">
@@ -123,6 +122,9 @@
       </method>
     </configuration>
     <configuration name="Student Service" type="Application" factoryName="Application">
+      <option name="envFilePaths">
+        <option value="$PROJECT_DIR$/student-service/.env" />
+      </option>
       <option name="MAIN_CLASS_NAME" value="cd.studentservice.StudentServiceApplication" />
       <module name="student-service" />
       <extension name="net.ashald.envfile">

@@ -11,7 +11,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: ${PASSWORD}
-    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+    url: jdbc:postgresql://localhost:5432/${DBNAME}
   jpa:
     show-sql: true
     hibernate:

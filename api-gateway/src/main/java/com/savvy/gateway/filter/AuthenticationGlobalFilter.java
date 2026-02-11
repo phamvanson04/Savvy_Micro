@@ -73,7 +73,7 @@ public class AuthenticationGlobalFilter implements org.springframework.cloud.gat
                                 .header("X-Roles", join(data.getRoles()))
                                 .header("X-Permissions", join(data.getPermissions()))
                                 .header("X-Student-Id", data.getStudentId() == null ? "" : String.valueOf(data.getStudentId()))
-                                .header("X-School-Ids", joinSchoolIds(data.getDataScope()))
+                                .header("X-School-Id", getSchoolId(data.getDataScope()))
                                 .build();
                         var h = mutated.getHeaders();
 
@@ -83,7 +83,7 @@ public class AuthenticationGlobalFilter implements org.springframework.cloud.gat
                                 h.getFirst("X-Roles"),
                                 h.getFirst("X-Permissions"),
                                 h.getFirst("X-Student-Id"),
-                                h.getFirst("X-School-Ids")
+                                h.getFirst("X-School-Id")
                         );
 
                         // Tao exchange moi chua request moi, chay filter chan va router xuong service
@@ -142,22 +142,11 @@ public class AuthenticationGlobalFilter implements org.springframework.cloud.gat
         return String.join(",", xs);
     }
 
-    @SuppressWarnings("unchecked")
-    private String joinSchoolIds(Map<String, Object> dataScope) {
+    private String getSchoolId(Map<String, Object> dataScope) {
         if (dataScope == null) return "";
-
-        Object v = dataScope.get("schoolIds");
-        if (v == null) return "";
-
-        if (v instanceof List<?> list) {
-            return list.stream()
-                    .filter(Objects::nonNull)
-                    .map(String::valueOf)
-                    .reduce((a, b) -> a + "," + b)
-                    .orElse("");
-        }
-
-        return String.valueOf(v);
+        Object v = dataScope.get("schoolId");
+        return v == null ? "" : String.valueOf(v).trim();
     }
+
 }
 
