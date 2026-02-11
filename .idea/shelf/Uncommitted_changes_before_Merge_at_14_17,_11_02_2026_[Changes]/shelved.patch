@@ -1,0 +1,971 @@
+Index: student-service/src/main/java/cd/studentservice/configuration/SecurityConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.configuration;\n\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;\nimport org.springframework.security.config.annotation.web.builders.HttpSecurity;\nimport org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;\nimport org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;\nimport org.springframework.security.config.http.SessionCreationPolicy;\nimport org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;\nimport org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;\nimport org.springframework.security.web.SecurityFilterChain;\n\n@Configuration\n@EnableWebSecurity\n@EnableMethodSecurity\n@RequiredArgsConstructor\npublic class SecurityConfig {\n    private final CustomJwtDecoder customJwtDecoder;\n\n    @Bean\n    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {\n//        http.authorizeHttpRequests(auth -> auth\n//                .requestMatchers(\"/schools/**\").hasRole(\"ADMIN\")\n//        );\n        http.csrf(AbstractHttpConfigurer::disable)\n                .sessionManagement(session -> session\n                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));\n        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer\n                        .decoder(customJwtDecoder)\n                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))\n                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));\n        return http.build();\n    }\n\n    @Bean\n    JwtAuthenticationConverter jwtAuthenticationConverter() {\n        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();\n        jwtGrantedAuthoritiesConverter.setAuthorityPrefix(\"\");        // Không thêm prefix (vì token đã có \"ROLE_ADMIN\")\n        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName(\"roles\"); // ← ĐÂY LÀ DÒNG THIẾU\n\n        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();\n        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);\n\n        return jwtAuthenticationConverter;\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/configuration/SecurityConfig.java b/student-service/src/main/java/cd/studentservice/configuration/SecurityConfig.java
+--- a/student-service/src/main/java/cd/studentservice/configuration/SecurityConfig.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/java/cd/studentservice/configuration/SecurityConfig.java	(date 1770783638213)
+@@ -11,13 +11,15 @@
+ import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+ import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+ import org.springframework.security.web.SecurityFilterChain;
++import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+ 
+ @Configuration
+ @EnableWebSecurity
+ @EnableMethodSecurity
+ @RequiredArgsConstructor
+ public class SecurityConfig {
+-    private final CustomJwtDecoder customJwtDecoder;
++    private final JwtAuthenticationFilter jwtAuthenticationFilter;
++    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+ 
+     @Bean
+     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+@@ -27,22 +29,8 @@
+         http.csrf(AbstractHttpConfigurer::disable)
+                 .sessionManagement(session -> session
+                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+-        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
+-                        .decoder(customJwtDecoder)
+-                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
++        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
++        http.exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint));
+         return http.build();
+     }
+-
+-    @Bean
+-    JwtAuthenticationConverter jwtAuthenticationConverter() {
+-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");        // Không thêm prefix (vì token đã có "ROLE_ADMIN")
+-        jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles"); // ← ĐÂY LÀ DÒNG THIẾU
+-
+-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+-
+-        return jwtAuthenticationConverter;
+-    }
+ }
+Index: student-service/src/main/java/cd/studentservice/controller/ClassController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.controller;\n\nimport cd.studentservice.dto.request.CreateClassRequest;\nimport cd.studentservice.dto.request.UpdateClassRequest;\nimport cd.studentservice.dto.response.ClassResponse;\nimport cd.studentservice.service.ClassService;\nimport com.savvy.common.dto.BaseResponse;\nimport com.savvy.common.dto.PageResponse;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.security.access.prepost.PreAuthorize;\nimport org.springframework.web.bind.annotation.*;\n\nimport java.util.List;\nimport java.util.UUID;\n\n@RestController\n@RequestMapping(\"/classes\")\n@RequiredArgsConstructor\npublic class ClassController {\n    private final ClassService classService;\n\n    @GetMapping\n    @PreAuthorize(\"hasAnyRole('ADMIN','SCHOOL_MANAGER')\")\n    public BaseResponse<List<ClassResponse>>findBySchoolId(@RequestParam UUID schoolId){\n        return BaseResponse.success(classService.findBySchoolId(schoolId),\"Get data success\");\n    }\n\n    @GetMapping(\"/{id}\")\n    @PreAuthorize(\"hasAnyRole('ADMIN','SCHOOL_MANAGER')\")\n    public BaseResponse<ClassResponse>findById(@PathVariable UUID id){\n        return BaseResponse.success(classService.findById(id),\"Get data success\");\n    }\n    \n    @GetMapping\n    @PreAuthorize(\"hasAnyRole('ADMIN','SCHOOL_MANAGER')\")\n    public BaseResponse<PageResponse<ClassResponse>>findPage(@RequestParam int page,\n                                                             @RequestParam int size){\n        return BaseResponse.success(classService.findPage(page,size),\"Get data success\");\n    }\n    \n    @PostMapping\n    @PreAuthorize(\"hasAnyRole('ADMIN','SCHOOL_MANAGER')\")\n    public BaseResponse<ClassResponse>save(@RequestBody CreateClassRequest createClassRequest){\n        return BaseResponse.created(classService.save(createClassRequest),\"Save data success\");\n    }\n    \n    @PutMapping(\"/{id}\")\n    @PreAuthorize(\"hasAnyRole('ADMIN','SCHOOL_MANAGER')\")\n    public BaseResponse<ClassResponse>update(@PathVariable UUID id,\n                                             @RequestBody UpdateClassRequest updateClassRequest){\n        return BaseResponse.created(classService.update(id,updateClassRequest),\"Update data success\");\n    }\n\n    @DeleteMapping(\"/{id}\")\n    @PreAuthorize(\"hasAnyRole('ADMIN','SCHOOL_MANAGER')\")\n    public BaseResponse<?>delete(@PathVariable UUID id){\n        classService.delete(id);\n        return BaseResponse.created(null,\"Delete data success\");\n    }\n    \n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/controller/ClassController.java b/student-service/src/main/java/cd/studentservice/controller/ClassController.java
+--- a/student-service/src/main/java/cd/studentservice/controller/ClassController.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/java/cd/studentservice/controller/ClassController.java	(date 1770717432722)
+@@ -7,7 +7,6 @@
+ import com.savvy.common.dto.BaseResponse;
+ import com.savvy.common.dto.PageResponse;
+ import lombok.RequiredArgsConstructor;
+-import org.springframework.http.ResponseEntity;
+ import org.springframework.security.access.prepost.PreAuthorize;
+ import org.springframework.web.bind.annotation.*;
+ 
+@@ -20,7 +19,7 @@
+ public class ClassController {
+     private final ClassService classService;
+ 
+-    @GetMapping
++    @GetMapping("/by-school")
+     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
+     public BaseResponse<List<ClassResponse>>findBySchoolId(@RequestParam UUID schoolId){
+         return BaseResponse.success(classService.findBySchoolId(schoolId),"Get data success");
+@@ -28,16 +27,16 @@
+ 
+     @GetMapping("/{id}")
+     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
+-    public BaseResponse<ClassResponse>findById(@PathVariable UUID id){
++    public BaseResponse<ClassResponse>findById(@PathVariable("id") UUID id){
+         return BaseResponse.success(classService.findById(id),"Get data success");
+     }
+     
+-    @GetMapping
+-    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
+-    public BaseResponse<PageResponse<ClassResponse>>findPage(@RequestParam int page,
+-                                                             @RequestParam int size){
+-        return BaseResponse.success(classService.findPage(page,size),"Get data success");
+-    }
++//    @GetMapping
++//    @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
++//    public BaseResponse<PageResponse<ClassResponse>>findPage(@RequestParam int page,
++//                                                             @RequestParam int size){
++//        return BaseResponse.success(classService.findPage(page,size),"Get data success");
++//    }
+     
+     @PostMapping
+     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
+@@ -47,14 +46,14 @@
+     
+     @PutMapping("/{id}")
+     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
+-    public BaseResponse<ClassResponse>update(@PathVariable UUID id,
++    public BaseResponse<ClassResponse>update(@PathVariable("id") UUID id,
+                                              @RequestBody UpdateClassRequest updateClassRequest){
+         return BaseResponse.created(classService.update(id,updateClassRequest),"Update data success");
+     }
+ 
+     @DeleteMapping("/{id}")
+     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
+-    public BaseResponse<?>delete(@PathVariable UUID id){
++    public BaseResponse<?>delete(@PathVariable("id") UUID id){
+         classService.delete(id);
+         return BaseResponse.created(null,"Delete data success");
+     }
+Index: student-service/src/main/java/cd/studentservice/controller/SchoolController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.controller;\n\nimport cd.studentservice.dto.request.CreateSchoolRequest;\nimport cd.studentservice.dto.request.UpdateSchoolRequest;\nimport cd.studentservice.dto.response.SchoolResponse;\nimport cd.studentservice.entity.School;\nimport cd.studentservice.service.SchoolService;\nimport com.savvy.common.dto.BaseResponse;\nimport com.savvy.common.dto.PageResponse;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.http.HttpStatus;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.security.access.prepost.PreAuthorize;\nimport org.springframework.web.bind.annotation.*;\n\nimport java.time.LocalDateTime;\nimport java.util.UUID;\n\n@RestController\n@RequestMapping(\"/schools\")\n@RequiredArgsConstructor\npublic class SchoolController {\n    private final SchoolService schoolService;\n\n    @GetMapping\n    @PreAuthorize(\"hasRole('ADMIN')\")\n    public BaseResponse<PageResponse<SchoolResponse>>findPage(@RequestParam int page,\n                                                             @RequestParam int size){\n        return BaseResponse.success(schoolService.getPages(size,page),\"Get data success\");\n    }\n\n    @GetMapping(\"/{id}\")\n    @PreAuthorize(\"hasAnyRole('ADMIN','SCHOOL_MANAGER')\")\n    public BaseResponse<SchoolResponse>findById(@PathVariable UUID id){\n        return BaseResponse.success(schoolService.findById(id),\"Get data success\");\n    }\n\n    @PostMapping\n    @PreAuthorize(\"hasRole('ADMIN')\")\n    public BaseResponse<SchoolResponse>save(@RequestBody CreateSchoolRequest request){\n        return BaseResponse.created(schoolService.save(request),\"Save data success\");\n    }\n\n    @PutMapping(\"/{id}\")\n    @PreAuthorize(\"hasRole('ADMIN')\")\n    public BaseResponse<SchoolResponse>update(@PathVariable UUID id,\n                                                      @RequestBody UpdateSchoolRequest request){\n        return BaseResponse.created(schoolService.update(id,request),\"Update data success\");\n    }\n\n    @DeleteMapping(\"/{id}\")\n    @PreAuthorize(\"hasRole('ADMIN')\")\n    public BaseResponse<?>delete(@PathVariable UUID id){\n        schoolService.delete(id);\n        return BaseResponse.success(null,\"Delete data success\");\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/controller/SchoolController.java b/student-service/src/main/java/cd/studentservice/controller/SchoolController.java
+--- a/student-service/src/main/java/cd/studentservice/controller/SchoolController.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/java/cd/studentservice/controller/SchoolController.java	(date 1770710605895)
+@@ -3,17 +3,12 @@
+ import cd.studentservice.dto.request.CreateSchoolRequest;
+ import cd.studentservice.dto.request.UpdateSchoolRequest;
+ import cd.studentservice.dto.response.SchoolResponse;
+-import cd.studentservice.entity.School;
+ import cd.studentservice.service.SchoolService;
+ import com.savvy.common.dto.BaseResponse;
+ import com.savvy.common.dto.PageResponse;
+ import lombok.RequiredArgsConstructor;
+-import org.springframework.http.HttpStatus;
+-import org.springframework.http.ResponseEntity;
+ import org.springframework.security.access.prepost.PreAuthorize;
+ import org.springframework.web.bind.annotation.*;
+-
+-import java.time.LocalDateTime;
+ import java.util.UUID;
+ 
+ @RestController
+@@ -22,12 +17,12 @@
+ public class SchoolController {
+     private final SchoolService schoolService;
+ 
+-    @GetMapping
+-    @PreAuthorize("hasRole('ADMIN')")
+-    public BaseResponse<PageResponse<SchoolResponse>>findPage(@RequestParam int page,
+-                                                             @RequestParam int size){
+-        return BaseResponse.success(schoolService.getPages(size,page),"Get data success");
+-    }
++//    @GetMapping
++//    @PreAuthorize("hasRole('ADMIN')")
++//    public BaseResponse<PageResponse<SchoolResponse>>findPage(@RequestParam int page,
++//                                                             @RequestParam int size){
++//        return BaseResponse.success(schoolService.getPages(size,page),"Get data success");
++//    }
+ 
+     @GetMapping("/{id}")
+     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
+Index: student-service/src/main/java/cd/studentservice/entity/Student.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.entity;\n\nimport cd.studentservice.enumerate.StudentStatus;\nimport jakarta.persistence.*;\nimport lombok.*;\nimport lombok.experimental.FieldDefaults;\nimport org.hibernate.annotations.CreationTimestamp;\nimport org.hibernate.annotations.SQLDelete;\nimport org.hibernate.annotations.SQLRestriction;\n\nimport java.time.Instant;\nimport java.time.LocalDate;\nimport java.util.UUID;\n\n@Entity\n@Table(name = \"students\")\n@FieldDefaults(level = AccessLevel.PRIVATE)\n@Getter\n@Setter\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor\n@SQLDelete(sql = \"UPDATE students SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?\")\n@SQLRestriction(\"deleted_at is null\")\npublic class Student {\n    @Id @GeneratedValue(strategy = GenerationType.UUID)\n    UUID id;\n\n    @Column(unique = true,nullable = false)\n    String code;\n\n    String fullName;\n    LocalDate dob;\n    Boolean gender;\n    @Enumerated(EnumType.STRING)\n    StudentStatus status;\n    @CreationTimestamp\n    Instant createdAt;\n    Instant deletedAt;\n\n    @ManyToOne\n    @JoinColumn(name = \"class_id\")\n    Class clazz;\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/entity/Student.java b/student-service/src/main/java/cd/studentservice/entity/Student.java
+--- a/student-service/src/main/java/cd/studentservice/entity/Student.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/java/cd/studentservice/entity/Student.java	(date 1770712760614)
+@@ -34,7 +34,7 @@
+     Boolean gender;
+     @Enumerated(EnumType.STRING)
+     StudentStatus status;
+-    @CreationTimestamp
++
+     Instant createdAt;
+     Instant deletedAt;
+ 
+Index: student-service/src/main/java/cd/studentservice/entity/Class.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.entity;\n\nimport cd.studentservice.enumerate.ClassStatus;\nimport jakarta.persistence.*;\nimport lombok.*;\nimport lombok.experimental.FieldDefaults;\nimport org.hibernate.annotations.CreationTimestamp;\nimport org.hibernate.annotations.SQLDelete;\nimport org.hibernate.annotations.SQLRestriction;\n\nimport java.time.Instant;\nimport java.util.UUID;\n\n@Entity\n@Table(name = \"classes\")\n@FieldDefaults(level = AccessLevel.PRIVATE)\n@Getter\n@Setter\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor\n@SQLDelete(sql = \"UPDATE classes SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?\")\n@SQLRestriction(\"deleted_at is null\")\npublic class Class {\n    @Id\n    @GeneratedValue(strategy = GenerationType.UUID)\n    UUID id;\n    @Column(unique = true,nullable = false)\n    String code;\n    String name;\n    Integer grade;\n    @Enumerated(EnumType.STRING)\n    ClassStatus status;\n\n    @CreationTimestamp\n    Instant createdAt;\n\n    Instant deletedAt;\n\n    @ManyToOne\n    @JoinColumn(name = \"school_id\")\n    School school;\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/entity/Class.java b/student-service/src/main/java/cd/studentservice/entity/Class.java
+--- a/student-service/src/main/java/cd/studentservice/entity/Class.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/java/cd/studentservice/entity/Class.java	(date 1770712472469)
+@@ -32,9 +32,7 @@
+     @Enumerated(EnumType.STRING)
+     ClassStatus status;
+ 
+-    @CreationTimestamp
+     Instant createdAt;
+-
+     Instant deletedAt;
+ 
+     @ManyToOne
+Index: student-service/src/main/java/cd/studentservice/entity/School.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.entity;\n\nimport cd.studentservice.enumerate.SchoolStatus;\nimport jakarta.persistence.*;\nimport lombok.*;\nimport lombok.experimental.FieldDefaults;\nimport org.hibernate.annotations.CreationTimestamp;\nimport org.hibernate.annotations.SQLDelete;\nimport org.hibernate.annotations.SQLRestriction;\n\nimport java.time.Instant;\nimport java.util.UUID;\n\n@Entity\n@Table(name = \"schools\")\n@FieldDefaults(level = AccessLevel.PRIVATE)\n@Getter\n@Setter\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor\n@SQLDelete(sql = \"UPDATE schools SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?\")\n@SQLRestriction(\"deleted_at is null\")\npublic class School {\n    @Id\n    @GeneratedValue(strategy = GenerationType.UUID)\n    UUID id;\n    @Column(unique = true,nullable = false)\n    String code;\n    @Column(nullable = false)\n    String name;\n    String address;\n    @Enumerated(EnumType.STRING)\n    SchoolStatus status;\n    @CreationTimestamp\n    Instant createdAt;\n    Instant deletedAt;\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/entity/School.java b/student-service/src/main/java/cd/studentservice/entity/School.java
+--- a/student-service/src/main/java/cd/studentservice/entity/School.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/java/cd/studentservice/entity/School.java	(date 1770712429284)
+@@ -32,7 +32,6 @@
+     String address;
+     @Enumerated(EnumType.STRING)
+     SchoolStatus status;
+-    @CreationTimestamp
+     Instant createdAt;
+     Instant deletedAt;
+ }
+Index: student-service/src/main/java/cd/studentservice/service/impl/SchoolServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.service.impl;\n\nimport cd.studentservice.dto.request.CreateSchoolRequest;\nimport cd.studentservice.dto.request.UpdateSchoolRequest;\nimport cd.studentservice.dto.response.SchoolResponse;\nimport cd.studentservice.entity.School;\nimport cd.studentservice.mapper.SchoolMapper;\nimport cd.studentservice.repository.SchoolRepository;\nimport cd.studentservice.service.SchoolService;\nimport com.savvy.common.dto.PageResponse;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.data.domain.Page;\nimport org.springframework.data.domain.PageRequest;\nimport org.springframework.data.domain.Pageable;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\nimport java.util.UUID;\n\n@Service\n@RequiredArgsConstructor\npublic class SchoolServiceImpl implements SchoolService {\n    private final SchoolRepository schoolRepository;\n    private final SchoolMapper schoolMapper;\n\n    @Override\n    public SchoolResponse findById(UUID id) {\n        return schoolMapper.toSchoolResponse(schoolRepository.findById(id).orElseThrow(() -> new RuntimeException(\"Cannot find school with id: \" + id)));\n    }\n\n    @Override\n    public School getReferenceById(UUID id) {\n        return schoolRepository.getReferenceById(id);\n    }\n\n    @Override\n    public PageResponse<SchoolResponse> getPages(int size, int page) {\n        Pageable pageable = PageRequest.of(page - 1, size);\n        Page<School> schoolPages = schoolRepository.findAll(pageable);\n        return new PageResponse<>(\n                schoolMapper.toSchoolResponses(schoolPages.getContent()),\n                schoolPages.getNumber(),\n                schoolPages.getSize(),\n                schoolPages.getTotalElements(),\n                schoolPages.getTotalPages()\n                );\n    }\n\n\n\n    @Override\n    @Transactional\n    public SchoolResponse save(CreateSchoolRequest createSchoolRequest) {\n        School school= School.builder()\n                .code(createSchoolRequest.getCode())\n                .name(createSchoolRequest.getName())\n                .address(createSchoolRequest.getAddress())\n                .status(createSchoolRequest.getStatus())\n                .build();\n        return schoolMapper.toSchoolResponse(schoolRepository.save(school));\n    }\n\n    @Override\n    @Transactional\n    public SchoolResponse update(UUID id, UpdateSchoolRequest updateSchoolRequest) {\n        School existedSchool = schoolRepository.findById(id).orElseThrow(() -> new RuntimeException(\"Cannot find school with id: \" + id));\n        existedSchool.setCode(updateSchoolRequest.getCode());\n        existedSchool.setName(updateSchoolRequest.getName());\n        existedSchool.setAddress(updateSchoolRequest.getAddress());\n        existedSchool.setStatus(updateSchoolRequest.getStatus());\n        return schoolMapper.toSchoolResponse(schoolRepository.save(existedSchool));\n    }\n\n    @Override\n    @Transactional\n    public void delete(UUID id) {\n        schoolRepository.deleteById(id);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/service/impl/SchoolServiceImpl.java b/student-service/src/main/java/cd/studentservice/service/impl/SchoolServiceImpl.java
+--- a/student-service/src/main/java/cd/studentservice/service/impl/SchoolServiceImpl.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/java/cd/studentservice/service/impl/SchoolServiceImpl.java	(date 1770790574920)
+@@ -1,5 +1,6 @@
+ package cd.studentservice.service.impl;
+ 
++import cd.studentservice.configuration.CustomUserDetails;
+ import cd.studentservice.dto.request.CreateSchoolRequest;
+ import cd.studentservice.dto.request.UpdateSchoolRequest;
+ import cd.studentservice.dto.response.SchoolResponse;
+@@ -12,9 +13,11 @@
+ import org.springframework.data.domain.Page;
+ import org.springframework.data.domain.PageRequest;
+ import org.springframework.data.domain.Pageable;
++import org.springframework.security.core.context.SecurityContextHolder;
+ import org.springframework.stereotype.Service;
+ import org.springframework.transaction.annotation.Transactional;
+ 
++import java.time.Instant;
+ import java.util.UUID;
+ 
+ @Service
+@@ -25,6 +28,11 @@
+ 
+     @Override
+     public SchoolResponse findById(UUID id) {
++        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
++        System.out.println(customUserDetails.getSchoolId().toString());
++        if (!customUserDetails.getSchoolId().equals(id)) {
++            throw new RuntimeException("School manager can only access to his own school");
++        }
+         return schoolMapper.toSchoolResponse(schoolRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find school with id: " + id)));
+     }
+ 
+@@ -43,19 +51,19 @@
+                 schoolPages.getSize(),
+                 schoolPages.getTotalElements(),
+                 schoolPages.getTotalPages()
+-                );
++        );
+     }
+ 
+ 
+-
+     @Override
+     @Transactional
+     public SchoolResponse save(CreateSchoolRequest createSchoolRequest) {
+-        School school= School.builder()
++        School school = School.builder()
+                 .code(createSchoolRequest.getCode())
+                 .name(createSchoolRequest.getName())
+                 .address(createSchoolRequest.getAddress())
+                 .status(createSchoolRequest.getStatus())
++                .createdAt(Instant.now())
+                 .build();
+         return schoolMapper.toSchoolResponse(schoolRepository.save(school));
+     }
+Index: student-service/src/main/java/cd/studentservice/configuration/CustomJwtDecoder.java
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/configuration/CustomJwtDecoder.java b/student-service/src/main/java/cd/studentservice/configuration/CustomJwtDecoder.java
+deleted file mode 100644
+--- a/student-service/src/main/java/cd/studentservice/configuration/CustomJwtDecoder.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ /dev/null	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
+@@ -1,29 +0,0 @@
+-package cd.studentservice.configuration;
+-
+-import com.nimbusds.jwt.SignedJWT;
+-import org.springframework.context.annotation.Configuration;
+-import org.springframework.security.oauth2.jwt.Jwt;
+-import org.springframework.security.oauth2.jwt.JwtDecoder;
+-import org.springframework.security.oauth2.jwt.JwtException;
+-import org.springframework.stereotype.Component;
+-
+-import java.text.ParseException;
+-@Component
+-public class CustomJwtDecoder implements JwtDecoder {
+-    @Override
+-    public Jwt decode(String token) throws JwtException {
+-        try {
+-            SignedJWT signedJWT = SignedJWT.parse(token);
+-
+-            return new Jwt(token,
+-                    signedJWT.getJWTClaimsSet().getIssueTime().toInstant(),
+-                    signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(),
+-                    signedJWT.getHeader().toJSONObject(),
+-                    signedJWT.getJWTClaimsSet().getClaims()
+-            );
+-
+-        } catch (ParseException e) {
+-            throw new JwtException("Invalid token");
+-        }
+-    }
+-}
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"567559d3-edee-49a8-a28a-f146b729929d\" name=\"Changes\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/grade-service/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/grade-service/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/student-service/src/main/resources/application.yaml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/student-service/src/main/resources/application.yaml\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;MoiChung-nwc&quot;\n  }\n}</component>\n  <component name=\"GithubPullRequestsUISettings\"><![CDATA[{\n  \"selectedUrlAndAccountId\": {\n    \"url\": \"https://github.com/phamvanson04/Savvy_Micro.git\",\n    \"accountId\": \"94af9d79-a670-4b29-911b-ddff5a01a064\"\n  }\n}]]></component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 1\n}</component>\n  <component name=\"ProjectId\" id=\"39Qfn5aQvXZdgvRP3iiXQ5iHWUp\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"Application.API Gateway.executor\": \"Run\",\n    \"Application.Auth Service.executor\": \"Run\",\n    \"Application.Grade Service.executor\": \"Run\",\n    \"Application.Student Service.executor\": \"Run\",\n    \"ModuleVcsDetector.initialDetectionPerformed\": \"true\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252\": \"true\",\n    \"RunOnceActivity.git.unshallow\": \"true\",\n    \"git-widget-placeholder\": \"main\",\n    \"kotlin-language-version-configured\": \"true\",\n    \"last_opened_file_path\": \"D:/test/student-service\",\n    \"node.js.detected.package.eslint\": \"true\",\n    \"node.js.selected.package.eslint\": \"(autodetect)\",\n    \"node.js.selected.package.tslint\": \"(autodetect)\",\n    \"nodejs_package_manager_path\": \"npm\",\n    \"project.structure.last.edited\": \"Modules\",\n    \"project.structure.proportion\": \"0.0\",\n    \"project.structure.side.proportion\": \"0.20804597\",\n    \"vue.rearranger.settings.migration\": \"true\"\n  }\n}]]></component>\n  <component name=\"RunDashboard\">\n    <option name=\"configurationTypes\">\n      <set>\n        <option value=\"Application\" />\n      </set>\n    </option>\n  </component>\n  <component name=\"RunManager\" selected=\"Application.Grade Service\">\n    <configuration name=\"API Gateway\" type=\"Application\" factoryName=\"Application\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"com.savvy.gateway.ApiGatewayApplication\" />\n      <module name=\"api-gateway\" />\n      <extension name=\"net.ashald.envfile\">\n        <option name=\"IS_ENABLED\" value=\"false\" />\n        <option name=\"IS_SUBST\" value=\"false\" />\n        <option name=\"IS_PATH_MACRO_SUPPORTED\" value=\"false\" />\n        <option name=\"IS_IGNORE_MISSING_FILES\" value=\"false\" />\n        <option name=\"IS_ENABLE_EXPERIMENTAL_INTEGRATIONS\" value=\"false\" />\n        <ENTRIES>\n          <ENTRY IS_ENABLED=\"true\" PARSER=\"runconfig\" IS_EXECUTABLE=\"false\" />\n        </ENTRIES>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration name=\"Auth Service\" type=\"Application\" factoryName=\"Application\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"com.savvycom.auth_service.AuthServiceApplication\" />\n      <module name=\"auth-service\" />\n      <extension name=\"net.ashald.envfile\">\n        <option name=\"IS_ENABLED\" value=\"false\" />\n        <option name=\"IS_SUBST\" value=\"false\" />\n        <option name=\"IS_PATH_MACRO_SUPPORTED\" value=\"false\" />\n        <option name=\"IS_IGNORE_MISSING_FILES\" value=\"false\" />\n        <option name=\"IS_ENABLE_EXPERIMENTAL_INTEGRATIONS\" value=\"false\" />\n        <ENTRIES>\n          <ENTRY IS_ENABLED=\"true\" PARSER=\"runconfig\" IS_EXECUTABLE=\"false\" />\n        </ENTRIES>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration name=\"Grade Service\" type=\"Application\" factoryName=\"Application\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"com.savvy.gradeservice.GradeServiceApplication\" />\n      <module name=\"grade-service\" />\n      <extension name=\"net.ashald.envfile\">\n        <option name=\"IS_ENABLED\" value=\"false\" />\n        <option name=\"IS_SUBST\" value=\"false\" />\n        <option name=\"IS_PATH_MACRO_SUPPORTED\" value=\"false\" />\n        <option name=\"IS_IGNORE_MISSING_FILES\" value=\"false\" />\n        <option name=\"IS_ENABLE_EXPERIMENTAL_INTEGRATIONS\" value=\"false\" />\n        <ENTRIES>\n          <ENTRY IS_ENABLED=\"true\" PARSER=\"runconfig\" IS_EXECUTABLE=\"false\" />\n        </ENTRIES>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration name=\"Student Service\" type=\"Application\" factoryName=\"Application\">\n      <option name=\"MAIN_CLASS_NAME\" value=\"cd.studentservice.StudentServiceApplication\" />\n      <module name=\"student-service\" />\n      <extension name=\"net.ashald.envfile\">\n        <option name=\"IS_ENABLED\" value=\"false\" />\n        <option name=\"IS_SUBST\" value=\"false\" />\n        <option name=\"IS_PATH_MACRO_SUPPORTED\" value=\"false\" />\n        <option name=\"IS_IGNORE_MISSING_FILES\" value=\"false\" />\n        <option name=\"IS_ENABLE_EXPERIMENTAL_INTEGRATIONS\" value=\"false\" />\n        <ENTRIES>\n          <ENTRY IS_ENABLED=\"true\" PARSER=\"runconfig\" IS_EXECUTABLE=\"false\" />\n        </ENTRIES>\n      </extension>\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <list>\n      <item itemvalue=\"Application.Grade Service\" />\n      <item itemvalue=\"Application.Student Service\" />\n      <item itemvalue=\"Application.Auth Service\" />\n      <item itemvalue=\"Application.API Gateway\" />\n    </list>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.23892.409\" />\n        <option value=\"bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-IU-252.23892.409\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"567559d3-edee-49a8-a28a-f146b729929d\" name=\"Changes\" comment=\"\" />\n      <created>1770633379987</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1770633379987</updated>\n      <workItem from=\"1770706205328\" duration=\"1654000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/.idea/workspace.xml	(date 1770794095271)
+@@ -5,15 +5,47 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="567559d3-edee-49a8-a28a-f146b729929d" name="Changes" comment="">
+-      <change beforePath="$PROJECT_DIR$/grade-service/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/.idea/workspace.xml" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/CustomUserDetails.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationFilter.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/grade-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/src/main/resources/application.properties" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/grade-service/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/target/classes/application.properties" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/.gitignore" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/CustomJwtDecoder.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationEntryPoint.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/SecurityConfig.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/controller/ClassController.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/controller/ClassController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/controller/SchoolController.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/controller/SchoolController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/SchoolServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/SchoolServiceImpl.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/application.yaml" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+     <option name="LAST_RESOLUTION" value="IGNORE" />
++  </component>
++  <component name="FileTemplateManagerImpl">
++    <option name="RECENT_TEMPLATES">
++      <list>
++        <option value="Class" />
++      </list>
++    </option>
+   </component>
+   <component name="Git.Settings">
++    <option name="RECENT_BRANCH_BY_REPOSITORY">
++      <map>
++        <entry key="$PROJECT_DIR$" value="main" />
++      </map>
++    </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+   </component>
+   <component name="GitHubPullRequestSearchHistory">{
+@@ -25,13 +57,16 @@
+   <component name="GithubPullRequestsUISettings"><![CDATA[{
+   "selectedUrlAndAccountId": {
+     "url": "https://github.com/phamvanson04/Savvy_Micro.git",
+-    "accountId": "94af9d79-a670-4b29-911b-ddff5a01a064"
++    "accountId": "5f4e4983-6558-4092-8ef0-32359a16e931"
+   }
+ }]]></component>
+   <component name="ProjectColorInfo">{
+   &quot;associatedIndex&quot;: 1
+ }</component>
+   <component name="ProjectId" id="39Qfn5aQvXZdgvRP3iiXQ5iHWUp" />
++  <component name="ProjectLevelVcsManager">
++    <ConfirmationsSetting value="2" id="Add" />
++  </component>
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+@@ -46,7 +81,9 @@
+     "RunOnceActivity.ShowReadmeOnStart": "true",
+     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+     "RunOnceActivity.git.unshallow": "true",
+-    "git-widget-placeholder": "main",
++    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
++    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
++    "git-widget-placeholder": "student-service",
+     "kotlin-language-version-configured": "true",
+     "last_opened_file_path": "D:/test/student-service",
+     "node.js.detected.package.eslint": "true",
+@@ -57,6 +94,11 @@
+     "project.structure.proportion": "0.0",
+     "project.structure.side.proportion": "0.20804597",
+     "vue.rearranger.settings.migration": "true"
++  },
++  "keyToStringList": {
++    "DatabaseDriversLRU": [
++      "postgresql"
++    ]
+   }
+ }]]></component>
+   <component name="RunDashboard">
+@@ -65,8 +107,21 @@
+         <option value="Application" />
+       </set>
+     </option>
++    <option name="configurationStatuses">
++      <map>
++        <entry key="Application">
++          <value>
++            <map>
++              <entry key="API Gateway" value="STOPPED" />
++              <entry key="Auth Service" value="STOPPED" />
++              <entry key="Student Service" value="STOPPED" />
++            </map>
++          </value>
++        </entry>
++      </map>
++    </option>
+   </component>
+-  <component name="RunManager" selected="Application.Grade Service">
++  <component name="RunManager" selected="Application.Student Service">
+     <configuration name="API Gateway" type="Application" factoryName="Application">
+       <option name="MAIN_CLASS_NAME" value="com.savvy.gateway.ApiGatewayApplication" />
+       <module name="api-gateway" />
+@@ -85,6 +140,11 @@
+       </method>
+     </configuration>
+     <configuration name="Auth Service" type="Application" factoryName="Application">
++      <envs>
++        <env name="USERNAME" value="conan09040" />
++        <env name="PASSWORD" value="conan14121" />
++        <env name="DB_NAME" value="auth_service" />
++      </envs>
+       <option name="MAIN_CLASS_NAME" value="com.savvycom.auth_service.AuthServiceApplication" />
+       <module name="auth-service" />
+       <extension name="net.ashald.envfile">
+@@ -102,6 +162,11 @@
+       </method>
+     </configuration>
+     <configuration name="Grade Service" type="Application" factoryName="Application">
++      <envs>
++        <env name="USERNAME" value="conan09040" />
++        <env name="PASSWORD" value="conan14121" />
++        <env name="DB_NAME" value="grade_service" />
++      </envs>
+       <option name="MAIN_CLASS_NAME" value="com.savvy.gradeservice.GradeServiceApplication" />
+       <module name="grade-service" />
+       <extension name="net.ashald.envfile">
+@@ -119,6 +184,11 @@
+       </method>
+     </configuration>
+     <configuration name="Student Service" type="Application" factoryName="Application">
++      <envs>
++        <env name="USERNAME" value="conan09040" />
++        <env name="PASSWORD" value="conan14121" />
++        <env name="DB_NAME" value="student_service" />
++      </envs>
+       <option name="MAIN_CLASS_NAME" value="cd.studentservice.StudentServiceApplication" />
+       <module name="student-service" />
+       <extension name="net.ashald.envfile">
+@@ -145,8 +215,8 @@
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.23892.409" />
+-        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-IU-252.23892.409" />
++        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
++        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.30387.90" />
+       </set>
+     </attachedChunks>
+   </component>
+@@ -159,6 +229,7 @@
+       <option name="presentableId" value="Default" />
+       <updated>1770633379987</updated>
+       <workItem from="1770706205328" duration="1654000" />
++      <workItem from="1770775702767" duration="13539000" />
+     </task>
+     <servers />
+   </component>
+@@ -166,11 +237,53 @@
+     <option name="version" value="3" />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
++    <option name="RECENT_FILTERS">
++      <map>
++        <entry key="Branch">
++          <value>
++            <list>
++              <RecentGroup>
++                <option name="FILTER_VALUES">
++                  <option value="main" />
++                </option>
++              </RecentGroup>
++              <RecentGroup>
++                <option name="FILTER_VALUES">
++                  <option value="HEAD" />
++                </option>
++              </RecentGroup>
++              <RecentGroup>
++                <option name="FILTER_VALUES">
++                  <option value="student-service" />
++                </option>
++              </RecentGroup>
++              <RecentGroup>
++                <option name="FILTER_VALUES">
++                  <option value="origin/main" />
++                </option>
++              </RecentGroup>
++            </list>
++          </value>
++        </entry>
++      </map>
++    </option>
+     <option name="TAB_STATES">
+       <map>
+         <entry key="MAIN">
+           <value>
+-            <State />
++            <State>
++              <option name="FILTERS">
++                <map>
++                  <entry key="branch">
++                    <value>
++                      <list>
++                        <option value="main" />
++                      </list>
++                    </value>
++                  </entry>
++                </map>
++              </option>
++            </State>
+           </value>
+         </entry>
+       </map>
+Index: grade-service/target/classes/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>spring.application.name=grade-service\r\nserver.port=8083\r\n# Database\r\nspring.datasource.url=jdbc:postgresql://localhost:5432/${DBNAME}\r\nspring.datasource.username=postgres\r\nspring.datasource.password=${PASSWORD}\r\nspring.jpa.hibernate.ddl-auto=update\r\nspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect\r\nspring.jpa.show-sql=true\r\n\r\n\r\nauth.service.url=http://localhost:8081\r\n\r\n\r\nspring.cloud.openfeign.client.config.default.connect-timeout=5000\r\nspring.cloud.openfeign.client.config.default.read-timeout=5000\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/grade-service/target/classes/application.properties b/grade-service/target/classes/application.properties
+--- a/grade-service/target/classes/application.properties	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/grade-service/target/classes/application.properties	(date 1770716828943)
+@@ -1,8 +1,8 @@
+ spring.application.name=grade-service
+ server.port=8083
+ # Database
+-spring.datasource.url=jdbc:postgresql://localhost:5432/${DBNAME}
+-spring.datasource.username=postgres
++spring.datasource.url=jdbc:postgresql://localhost:5432/${DB_NAME}
++spring.datasource.username=${USERNAME}
+ spring.datasource.password=${PASSWORD}
+ spring.jpa.hibernate.ddl-auto=update
+ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+Index: student-service/src/main/java/cd/studentservice/configuration/CustomUserDetails.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/configuration/CustomUserDetails.java b/student-service/src/main/java/cd/studentservice/configuration/CustomUserDetails.java
+new file mode 100644
+--- /dev/null	(date 1770785237919)
++++ b/student-service/src/main/java/cd/studentservice/configuration/CustomUserDetails.java	(date 1770785237919)
+@@ -0,0 +1,57 @@
++package cd.studentservice.configuration;
++
++import lombok.Builder;
++import lombok.Getter;
++import lombok.Setter;
++import org.springframework.security.core.GrantedAuthority;
++import org.springframework.security.core.userdetails.UserDetails;
++
++import java.util.Collection;
++import java.util.List;
++import java.util.UUID;
++
++@Getter
++@Setter
++@Builder
++public class CustomUserDetails implements UserDetails {
++    private UUID userId;
++    private List<String> roles;
++    private UUID schoolId;
++    private UUID studentId;
++    private List<String> permissions;
++
++    @Override
++    public Collection<? extends GrantedAuthority> getAuthorities() {
++        return List.of();
++    }
++
++    @Override
++    public String getPassword() {
++        return "";
++    }
++
++    @Override
++    public String getUsername() {
++        return "";
++    }
++
++    @Override
++    public boolean isAccountNonExpired() {
++        return false;
++    }
++
++    @Override
++    public boolean isAccountNonLocked() {
++        return false;
++    }
++
++    @Override
++    public boolean isCredentialsNonExpired() {
++        return false;
++    }
++
++    @Override
++    public boolean isEnabled() {
++        return false;
++    }
++}
+Index: student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationFilter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationFilter.java b/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationFilter.java
+new file mode 100644
+--- /dev/null	(date 1770788895819)
++++ b/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationFilter.java	(date 1770788895819)
+@@ -0,0 +1,68 @@
++package cd.studentservice.configuration;
++
++import jakarta.servlet.FilterChain;
++import jakarta.servlet.ServletException;
++import jakarta.servlet.http.HttpServletRequest;
++import jakarta.servlet.http.HttpServletResponse;
++import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
++import org.springframework.security.core.authority.SimpleGrantedAuthority;
++import org.springframework.security.core.context.SecurityContextHolder;
++import org.springframework.stereotype.Component;
++import org.springframework.util.StringUtils;
++import org.springframework.web.filter.OncePerRequestFilter;
++
++import java.io.IOException;
++import java.util.Arrays;
++import java.util.List;
++import java.util.UUID;
++import java.util.stream.Collectors;
++@Component
++public class JwtAuthenticationFilter extends OncePerRequestFilter {
++    @Override
++    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
++        final String userIdStr = request.getHeader("X-User-Id");
++        final String rolesStr = request.getHeader("X-Roles");
++        final String schoolIdStr = request.getHeader("X-School-Id");
++        final String studentIdStr = request.getHeader("X-Student-Id");
++        final String permissionsStr = request.getHeader("X-Permissions");
++        final String dataScopeStr = request.getHeader("X-Data-Scope");
++        logger.info("JWT Headers - UserId: " + userIdStr + ", Roles: " + rolesStr +
++                    ", SchoolIds: " + schoolIdStr + ", Permissions: " + permissionsStr + ", DataScope: " + dataScopeStr);
++        if (!StringUtils.hasText(userIdStr)) {
++//            filterChain.doFilter(request, response);
++            return;
++        }
++        try {
++            CustomUserDetails customUserDetails= CustomUserDetails.builder()
++                    .userId(UUID.fromString(userIdStr))
++                    .roles(parseCommaSeparated(rolesStr))
++                    .schoolId(schoolIdStr!=null&&!schoolIdStr.isBlank()?UUID.fromString(schoolIdStr):null)
++                    .studentId(studentIdStr!=null&&!studentIdStr.isBlank()?UUID.fromString(studentIdStr):null)
++                    .permissions(parseCommaSeparated(permissionsStr))
++                    .build();
++
++            List<SimpleGrantedAuthority> authorities = parseCommaSeparated(rolesStr).stream()
++                    .map(SimpleGrantedAuthority::new)
++                    .toList();
++            UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(
++                    customUserDetails,
++                    null,
++                    authorities
++            );
++            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
++        }
++        catch (Exception e) {
++            logger.error("Failed to process gateway headers", e);
++        }
++        filterChain.doFilter(request,response);
++    }
++    private List<String> parseCommaSeparated(String value) {
++        if (!StringUtils.hasText(value)) {
++            return List.of();
++        }
++        return Arrays.stream(value.split(","))
++                .map(String::trim)
++                .filter(s -> !s.isEmpty())
++                .collect(Collectors.toList());
++    }
++}
+Index: student-service/src/main/resources/application.yaml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>spring:\n  application:\n    security:\n      jwt:\n        secret-key: 1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij\n        expiration: 900000\n        refresh-token:\n          expiration: 3600000\n    name: student-service\n  datasource:\n    driver-class-name: org.postgresql.Driver\n    username: postgres\n    password: 123456a@\n    url: jdbc:postgresql://localhost:5432/micro\n  jpa:\n    show-sql: true\n    hibernate:\n      ddl-auto: update\n    properties:\n      hibernate:\n        format_sql: true\nserver:\n  port: 8082\n  servlet:\n    context-path: /api/v1/students/\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/resources/application.yaml b/student-service/src/main/resources/application.yaml
+--- a/student-service/src/main/resources/application.yaml	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/resources/application.yaml	(date 1770709568385)
+@@ -9,9 +9,9 @@
+     name: student-service
+   datasource:
+     driver-class-name: org.postgresql.Driver
+-    username: postgres
+-    password: 123456a@
+-    url: jdbc:postgresql://localhost:5432/micro
++    username: ${USERNAME}
++    password: ${PASSWORD}
++    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+   jpa:
+     show-sql: true
+     hibernate:
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"CompilerConfiguration\">\n    <annotationProcessing>\n      <profile default=\"true\" name=\"Default\" enabled=\"true\" />\n      <profile name=\"Maven default annotation processors profile\" enabled=\"true\">\n        <sourceOutputDir name=\"target/generated-sources/annotations\" />\n        <sourceTestOutputDir name=\"target/generated-test-sources/test-annotations\" />\n        <outputRelativeToContentRoot value=\"true\" />\n        <module name=\"common-library\" />\n        <module name=\"api-gateway\" />\n        <module name=\"auth-service\" />\n      </profile>\n      <profile name=\"Annotation profile for Grade Service\" enabled=\"true\">\n        <sourceOutputDir name=\"target/generated-sources/annotations\" />\n        <sourceTestOutputDir name=\"target/generated-test-sources/test-annotations\" />\n        <outputRelativeToContentRoot value=\"true\" />\n        <processorPath useClasspath=\"false\">\n          <entry name=\"$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-apt/5.0.0/querydsl-apt-5.0.0-jakarta.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-codegen/5.0.0/querydsl-codegen-5.0.0.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/com/mysema/commons/mysema-commons-lang/0.2.4/mysema-commons-lang-0.2.4.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/codegen-utils/5.0.0/codegen-utils-5.0.0.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/eclipse/jdt/ecj/3.26.0/ecj-3.26.0.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/io/github/classgraph/classgraph/4.8.108/classgraph-4.8.108.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/javax/inject/javax.inject/1/javax.inject-1.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/jetbrains/annotations/21.0.1/annotations-21.0.1.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/datanucleus/javax.jdo/3.2.0-m13/javax.jdo-3.2.0-m13.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/javax/transaction/transaction-api/1.1/transaction-api-1.1.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/springframework/roo/org.springframework.roo.annotations/1.3.2.RELEASE/org.springframework.roo.annotations-1.3.2.RELEASE.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/mongodb/morphia/morphia/1.3.2/morphia-1.3.2.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.4.0/mongo-java-driver-3.4.0.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/com/thoughtworks/proxytoys/proxytoys/1.0/proxytoys-1.0.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/joda-time/joda-time/2.10.10/joda-time-2.10.10.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.4.8.Final/hibernate-core-5.4.8.Final.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/jboss/logging/jboss-logging/3.3.2.Final/jboss-logging-3.3.2.Final.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/javax/persistence/javax.persistence-api/2.2/javax.persistence-api-2.2.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy/1.10.2/byte-buddy-1.10.2.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/antlr/antlr/2.7.7/antlr-2.7.7.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/jboss/spec/javax/transaction/jboss-transaction-api_1.2_spec/1.1.1.Final/jboss-transaction-api_1.2_spec-1.1.1.Final.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/jboss/jandex/2.0.5.Final/jandex-2.0.5.Final.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/com/fasterxml/classmate/1.3.4/classmate-1.3.4.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/dom4j/dom4j/2.1.1/dom4j-2.1.1.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/hibernate/common/hibernate-commons-annotations/5.1.0.Final/hibernate-commons-annotations-5.1.0.Final.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/glassfish/jaxb/jaxb-runtime/2.3.1/jaxb-runtime-2.3.1.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/glassfish/jaxb/txw2/2.3.1/txw2-2.3.1.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/com/sun/istack/istack-commons-runtime/3.0.7/istack-commons-runtime-3.0.7.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/jvnet/staxex/stax-ex/1.8/stax-ex-1.8.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/com/sun/xml/fastinfoset/FastInfoset/1.2.15/FastInfoset-1.2.15.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/hibernate/hibernate-envers/5.4.8.Final/hibernate-envers-5.4.8.Final.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0-tests.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/joda/joda-money/1.0.1/joda-money-1.0.1.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/eclipse/jdt/core/compiler/ecj/4.6.1/ecj-4.6.1.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/junit/junit/4.13.2/junit-4.13.2.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/easymock/easymock/4.3/easymock-4.3.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/objenesis/objenesis/3.2/objenesis-3.2.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/javassist/javassist/3.28.0-GA/javassist-3.28.0-GA.jar\" />\n        </processorPath>\n        <module name=\"grade-service\" />\n      </profile>\n      <profile name=\"Annotation profile for student-service\" enabled=\"true\">\n        <sourceOutputDir name=\"target/generated-sources/annotations\" />\n        <sourceTestOutputDir name=\"target/generated-test-sources/test-annotations\" />\n        <outputRelativeToContentRoot value=\"true\" />\n        <processorPath useClasspath=\"false\">\n          <entry name=\"$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.3/mapstruct-1.6.3.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar\" />\n          <entry name=\"$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar\" />\n        </processorPath>\n        <module name=\"student-service\" />\n      </profile>\n    </annotationProcessing>\n    <bytecodeTargetLevel>\n      <module name=\"gradeservice\" target=\"21\" />\n    </bytecodeTargetLevel>\n  </component>\n  <component name=\"JavacSettings\">\n    <option name=\"ADDITIONAL_OPTIONS_OVERRIDE\">\n      <module name=\"api-gateway\" options=\"-parameters\" />\n      <module name=\"auth-service\" options=\"-parameters\" />\n      <module name=\"grade-service\" options=\"-parameters\" />\n      <module name=\"gradeservice\" options=\"-parameters\" />\n      <module name=\"student-service\" options=\"-parameters\" />\n    </option>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+--- a/.idea/compiler.xml	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/.idea/compiler.xml	(date 1770708071754)
+@@ -23,45 +23,9 @@
+           <entry name="$MAVEN_REPOSITORY$/com/mysema/commons/mysema-commons-lang/0.2.4/mysema-commons-lang-0.2.4.jar" />
+           <entry name="$MAVEN_REPOSITORY$/com/querydsl/codegen-utils/5.0.0/codegen-utils-5.0.0.jar" />
+           <entry name="$MAVEN_REPOSITORY$/org/eclipse/jdt/ecj/3.26.0/ecj-3.26.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/io/github/classgraph/classgraph/4.8.108/classgraph-4.8.108.jar" />
+           <entry name="$MAVEN_REPOSITORY$/javax/inject/javax.inject/1/javax.inject-1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jetbrains/annotations/21.0.1/annotations-21.0.1.jar" />
++          <entry name="$MAVEN_REPOSITORY$/io/github/classgraph/classgraph/4.8.108/classgraph-4.8.108.jar" />
+           <entry name="$MAVEN_REPOSITORY$/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/datanucleus/javax.jdo/3.2.0-m13/javax.jdo-3.2.0-m13.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/transaction/transaction-api/1.1/transaction-api-1.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/springframework/roo/org.springframework.roo.annotations/1.3.2.RELEASE/org.springframework.roo.annotations-1.3.2.RELEASE.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/mongodb/morphia/morphia/1.3.2/morphia-1.3.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.4.0/mongo-java-driver-3.4.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/thoughtworks/proxytoys/proxytoys/1.0/proxytoys-1.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/joda-time/joda-time/2.10.10/joda-time-2.10.10.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.4.8.Final/hibernate-core-5.4.8.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jboss/logging/jboss-logging/3.3.2.Final/jboss-logging-3.3.2.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/persistence/javax.persistence-api/2.2/javax.persistence-api-2.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy/1.10.2/byte-buddy-1.10.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/antlr/antlr/2.7.7/antlr-2.7.7.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jboss/spec/javax/transaction/jboss-transaction-api_1.2_spec/1.1.1.Final/jboss-transaction-api_1.2_spec-1.1.1.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jboss/jandex/2.0.5.Final/jandex-2.0.5.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/classmate/1.3.4/classmate-1.3.4.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/dom4j/dom4j/2.1.1/dom4j-2.1.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hibernate/common/hibernate-commons-annotations/5.1.0.Final/hibernate-commons-annotations-5.1.0.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/glassfish/jaxb/jaxb-runtime/2.3.1/jaxb-runtime-2.3.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/glassfish/jaxb/txw2/2.3.1/txw2-2.3.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/sun/istack/istack-commons-runtime/3.0.7/istack-commons-runtime-3.0.7.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jvnet/staxex/stax-ex/1.8/stax-ex-1.8.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/sun/xml/fastinfoset/FastInfoset/1.2.15/FastInfoset-1.2.15.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hibernate/hibernate-envers/5.4.8.Final/hibernate-envers-5.4.8.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0-tests.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/joda/joda-money/1.0.1/joda-money-1.0.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/eclipse/jdt/core/compiler/ecj/4.6.1/ecj-4.6.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/junit/junit/4.13.2/junit-4.13.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/easymock/easymock/4.3/easymock-4.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/objenesis/objenesis/3.2/objenesis-3.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/javassist/javassist/3.28.0-GA/javassist-3.28.0-GA.jar" />
+         </processorPath>
+         <module name="grade-service" />
+       </profile>
+@@ -71,7 +35,6 @@
+         <outputRelativeToContentRoot value="true" />
+         <processorPath useClasspath="false">
+           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.3/mapstruct-1.6.3.jar" />
+           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+         </processorPath>
+Index: student-service/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>HELP.md\r\ntarget/\r\n.mvn/wrapper/maven-wrapper.jar\r\n!**/src/main/**/target/\r\n!**/src/test/**/target/\r\n\r\n### STS ###\r\n.apt_generated\r\n.classpath\r\n.factorypath\r\n.project\r\n.settings\r\n.springBeans\r\n.sts4-cache\r\n\r\n### IntelliJ IDEA ###\r\n.idea\r\n*.iws\r\n*.iml\r\n*.ipr\r\n\r\n### NetBeans ###\r\n/nbproject/private/\r\n/nbbuild/\r\n/dist/\r\n/nbdist/\r\n/.nb-gradle/\r\nbuild/\r\n!**/src/main/**/build/\r\n!**/src/test/**/build/\r\n\r\n### VS Code ###\r\n.vscode/\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/.gitignore b/student-service/.gitignore
+--- a/student-service/.gitignore	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/.gitignore	(date 1770708071748)
+@@ -7,6 +7,7 @@
+ ### STS ###
+ .apt_generated
+ .classpath
++.env
+ .factorypath
+ .project
+ .settings
+Index: student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationEntryPoint.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.configuration;\n\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.savvy.common.exception.ErrorCode;\nimport jakarta.servlet.ServletException;\nimport jakarta.servlet.http.HttpServletRequest;\nimport jakarta.servlet.http.HttpServletResponse;\nimport org.springframework.http.MediaType;\nimport org.springframework.security.core.AuthenticationException;\nimport org.springframework.security.web.AuthenticationEntryPoint;\n\nimport java.io.IOException;\n\npublic class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {\n    @Override\n    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {\n        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationEntryPoint.java b/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationEntryPoint.java
+--- a/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationEntryPoint.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationEntryPoint.java	(date 1770783638199)
+@@ -8,9 +8,10 @@
+ import org.springframework.http.MediaType;
+ import org.springframework.security.core.AuthenticationException;
+ import org.springframework.security.web.AuthenticationEntryPoint;
++import org.springframework.stereotype.Component;
+ 
+ import java.io.IOException;
+-
++@Component
+ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+     @Override
+     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+Index: auth-service/src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>server:\n  port: 8081\n\nspring:\n  application:\n    name: auth-service\n  datasource:\n    url: jdbc:postgresql://localhost:5432/${DB_NAME}\n    username: postgres\n    password: ${PASSWORD}\n    driver-class-name: org.postgresql.Driver\n  jpa:\n    hibernate:\n      ddl-auto: update\n    show-sql: true\n#    properties:\n#      hibernate:\n#        default_schema: private\n\napplication:\n  security:\n    jwt:\n      secret-key: \"1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij\"\n      expiration: 900000\n      refresh-token:\n        secret-key: \"Q0E3aWl4ZmZyV0dZWm0zQm1kTjJQdFRuV2M4Z0ZxYjFQeHcxYlM0dD0=\"\n        expiration: 3600000\napp:\n  services:\n    students: http://localhost:8082/api/v1/students
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/auth-service/src/main/resources/application.yml b/auth-service/src/main/resources/application.yml
+--- a/auth-service/src/main/resources/application.yml	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/auth-service/src/main/resources/application.yml	(date 1770709113349)
+@@ -6,7 +6,7 @@
+     name: auth-service
+   datasource:
+     url: jdbc:postgresql://localhost:5432/${DB_NAME}
+-    username: postgres
++    username: ${USERNAME}
+     password: ${PASSWORD}
+     driver-class-name: org.postgresql.Driver
+   jpa:
+Index: grade-service/src/main/resources/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>spring.application.name=grade-service\r\nserver.port=8083\r\n# Database\r\nspring.datasource.url=jdbc:postgresql://localhost:5432/${DBNAME}\r\nspring.datasource.username=postgres\r\nspring.datasource.password=${PASSWORD}\r\nspring.jpa.hibernate.ddl-auto=update\r\nspring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect\r\nspring.jpa.show-sql=true\r\n\r\n\r\nauth.service.url=http://localhost:8081\r\n\r\n\r\nspring.cloud.openfeign.client.config.default.connect-timeout=5000\r\nspring.cloud.openfeign.client.config.default.read-timeout=5000\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/grade-service/src/main/resources/application.properties b/grade-service/src/main/resources/application.properties
+--- a/grade-service/src/main/resources/application.properties	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/grade-service/src/main/resources/application.properties	(date 1770709271520)
+@@ -1,8 +1,8 @@
+ spring.application.name=grade-service
+ server.port=8083
+ # Database
+-spring.datasource.url=jdbc:postgresql://localhost:5432/${DBNAME}
+-spring.datasource.username=postgres
++spring.datasource.url=jdbc:postgresql://localhost:5432/${DB_NAME}
++spring.datasource.username=${USERNAME}
+ spring.datasource.password=${PASSWORD}
+ spring.jpa.hibernate.ddl-auto=update
+ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+Index: .idea/dataSources.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/dataSources.xml b/.idea/dataSources.xml
+new file mode 100644
+--- /dev/null	(date 1770709437946)
++++ b/.idea/dataSources.xml	(date 1770709437946)
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
++    <data-source source="LOCAL" name="student_service@localhost" uuid="df8e7718-eedf-4730-854f-182bb6374608">
++      <driver-ref>postgresql</driver-ref>
++      <synchronize>true</synchronize>
++      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
++      <jdbc-url>jdbc:postgresql://localhost:5432/student_service</jdbc-url>
++      <jdbc-additional-properties>
++        <property name="com.intellij.clouds.kubernetes.db.host.port" />
++        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
++        <property name="com.intellij.clouds.kubernetes.db.container.port" />
++      </jdbc-additional-properties>
++      <working-dir>$ProjectFileDir$</working-dir>
++    </data-source>
++  </component>
++</project>
+\ No newline at end of file
+Index: student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.service.impl;\n\nimport cd.studentservice.dto.request.CreateClassRequest;\nimport cd.studentservice.dto.request.UpdateClassRequest;\nimport cd.studentservice.dto.response.ClassResponse;\nimport cd.studentservice.entity.Class;\nimport cd.studentservice.entity.School;\nimport cd.studentservice.mapper.ClassMapper;\nimport cd.studentservice.repository.ClassRepository;\nimport cd.studentservice.service.ClassService;\nimport cd.studentservice.service.SchoolService;\nimport com.savvy.common.dto.PageResponse;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.data.domain.Page;\nimport org.springframework.data.domain.PageRequest;\nimport org.springframework.data.domain.Pageable;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\nimport java.util.List;\nimport java.util.Objects;\nimport java.util.UUID;\n\n@Service\n@RequiredArgsConstructor\npublic class ClassServiceImpl implements ClassService {\n    private final SchoolService schoolService;\n    private final ClassRepository classRepository;\n    private final ClassMapper classMapper;\n\n    @Override\n    public ClassResponse findById(UUID id) {\n        return classMapper.toClassResponse(classRepository.findById(id).orElseThrow(() -> new RuntimeException(\"Cannot find class with id: \" + id)));\n    }\n\n    @Override\n    public PageResponse<ClassResponse> findPage(int page, int size) {\n        Pageable pageable = PageRequest.of(page, size);\n        Page<Class> classPages = classRepository.findAll(pageable);\n        return new PageResponse<>(\n                classMapper.toClassResponses(classPages.getContent()),\n                classPages.getNumber(),\n                classPages.getSize(),\n                classPages.getTotalElements(),\n                classPages.getTotalPages()\n        );\n    }\n\n    @Override\n    public List<ClassResponse> findBySchoolId(UUID schoolId) {\n        return classMapper.toClassResponses(classRepository.findAllBySchoolId(schoolId));\n    }\n\n    @Override\n    public Class getReferenceById(UUID id) {\n        return classRepository.getReferenceById(id);\n    }\n\n    @Override\n    @Transactional\n    public ClassResponse save(CreateClassRequest createClassRequest) {\n        School existedSchool=schoolService.getReferenceById(createClassRequest.getSchoolId());\n        Class newClass=Class.builder()\n                .code(createClassRequest.getCode())\n                .name(createClassRequest.getName())\n                .grade(createClassRequest.getGrade())\n                .status(createClassRequest.getStatus())\n                .school(existedSchool)\n                .build();\n        return classMapper.toClassResponse(classRepository.save(newClass));\n    }\n\n    @Override\n    @Transactional\n    public ClassResponse update(UUID id, UpdateClassRequest updateClassRequest) {\n        Class existedClass=classRepository.findById(id).orElseThrow(() -> new RuntimeException(\"Cannot find class with id: \" + id));\n        existedClass.setSchool(!Objects.equals(existedClass.getSchool().getId(),updateClassRequest.getSchoolId())?schoolService.getReferenceById(updateClassRequest.getSchoolId()):existedClass.getSchool());\n        existedClass.setCode(updateClassRequest.getCode());\n        existedClass.setName(updateClassRequest.getName());\n        existedClass.setGrade(updateClassRequest.getGrade());\n        existedClass.setStatus(updateClassRequest.getStatus());\n        return classMapper.toClassResponse(classRepository.save(existedClass));\n    }\n\n    @Override\n    @Transactional\n    public void delete(UUID id) {\n        classRepository.deleteById(id);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java b/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java
+--- a/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java	(date 1770712429265)
+@@ -17,6 +17,7 @@
+ import org.springframework.stereotype.Service;
+ import org.springframework.transaction.annotation.Transactional;
+ 
++import java.time.Instant;
+ import java.util.List;
+ import java.util.Objects;
+ import java.util.UUID;
+@@ -66,6 +67,7 @@
+                 .grade(createClassRequest.getGrade())
+                 .status(createClassRequest.getStatus())
+                 .school(existedSchool)
++                .createdAt(Instant.now())
+                 .build();
+         return classMapper.toClassResponse(classRepository.save(newClass));
+     }
+Index: student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package cd.studentservice.service.impl;\n\nimport cd.studentservice.dto.request.CreateStudentRequest;\nimport cd.studentservice.dto.request.UpdateStudentRequest;\nimport cd.studentservice.dto.response.StudentResponse;\nimport cd.studentservice.entity.Class;\nimport cd.studentservice.entity.Student;\nimport cd.studentservice.mapper.StudentMapper;\nimport cd.studentservice.repository.StudentRepository;\nimport cd.studentservice.service.ClassService;\nimport cd.studentservice.service.SchoolService;\nimport cd.studentservice.service.StudentService;\nimport com.savvy.common.dto.PageResponse;\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.data.domain.Page;\nimport org.springframework.data.domain.PageRequest;\nimport org.springframework.data.domain.Pageable;\nimport org.springframework.stereotype.Service;\nimport org.springframework.transaction.annotation.Transactional;\n\nimport java.util.Objects;\nimport java.util.UUID;\n\n@Service\n@RequiredArgsConstructor\npublic class StudentServiceImpl implements StudentService {\n    private final StudentRepository studentRepository;\n    private final ClassService classService;\n    private final StudentMapper studentMapper;\n\n    @Override\n    @Transactional\n    public PageResponse<StudentResponse> getPage(int size, int page) {\n        Pageable pageable = PageRequest.of(page - 1, size);\n        Page<Student> studentPages = studentRepository.findAll(pageable);\n        return new PageResponse<>(\n                studentMapper.toStudentResponses(studentPages.getContent()),\n                studentPages.getNumber(),\n                studentPages.getSize(),\n                studentPages.getTotalElements(),\n                studentPages.getTotalPages()\n        );\n    }\n\n    @Override\n    public StudentResponse findById(UUID id) {\n        return studentMapper.toStudentResponse(studentRepository.findById(id).orElseThrow(() -> new RuntimeException(\"Cannot find student with id: \" + id)));\n    }\n\n    @Override\n    @Transactional\n    public StudentResponse save(CreateStudentRequest request) {\n        Class existedClass = classService.getReferenceById(request.getClassId());\n        Student student = Student.builder()\n                .clazz(existedClass)\n                .code(request.getCode())\n                .fullName(request.getFullName())\n                .gender(request.getGender())\n                .status(request.getStatus())\n                .dob(request.getDob())\n                .build();\n        return studentMapper.toStudentResponse(studentRepository.save(student));\n    }\n\n    @Override\n    @Transactional\n    public StudentResponse update(UUID id, UpdateStudentRequest request) {\n        Student existedStudent = studentRepository.findById(id).orElseThrow(() -> new RuntimeException(\"Cannot find student with id: \" + id));\n        existedStudent.setClazz(!Objects.equals(request.getClassId(), existedStudent.getClazz().getId())?classService.getReferenceById(request.getClassId()):existedStudent.getClazz());\n        existedStudent.setCode(request.getCode());\n        existedStudent.setFullName(request.getFullName());\n        existedStudent.setGender(request.getGender());\n        existedStudent.setStatus(request.getStatus());\n        existedStudent.setDob(request.getDob());\n        return studentMapper.toStudentResponse(studentRepository.save(existedStudent));\n    }\n\n    @Override\n    @Transactional\n    public void delete(UUID id) {\n        studentRepository.deleteById(id);\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java b/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java
+--- a/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java	(revision 218242a9e1a24c92a49863d951b935cacbb5bdc9)
++++ b/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java	(date 1770712429273)
+@@ -18,6 +18,7 @@
+ import org.springframework.stereotype.Service;
+ import org.springframework.transaction.annotation.Transactional;
+ 
++import java.time.Instant;
+ import java.util.Objects;
+ import java.util.UUID;
+ 
+@@ -58,6 +59,7 @@
+                 .gender(request.getGender())
+                 .status(request.getStatus())
+                 .dob(request.getDob())
++                .createdAt(Instant.now())
+                 .build();
+         return studentMapper.toStudentResponse(studentRepository.save(student));
+     }

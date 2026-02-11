@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Setter
 @Getter
@@ -20,7 +21,7 @@ public class IntrospectResponse {
     private List<String> roles;
     private List<String> permissions;
 
-    private Long studentId;
+    private UUID studentId;
     private Map<String, Object> dataScope;
 
     private String reason;

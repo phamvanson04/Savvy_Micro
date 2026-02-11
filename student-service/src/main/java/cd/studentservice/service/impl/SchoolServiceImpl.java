@@ -1,5 +1,6 @@
 package cd.studentservice.service.impl;
 
+import cd.studentservice.configuration.CustomUserDetails;
 import cd.studentservice.dto.request.CreateSchoolRequest;
 import cd.studentservice.dto.request.UpdateSchoolRequest;
 import cd.studentservice.dto.response.SchoolResponse;
@@ -12,9 +13,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -25,6 +29,10 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public SchoolResponse findById(UUID id) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!customUserDetails.getRoles().contains("ROLE_ADMIN"))
+            if (!Objects.equals(customUserDetails.getSchoolId(), id))
+                throw new RuntimeException("School manager can only access to his own school");
         return schoolMapper.toSchoolResponse(schoolRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find school with id: " + id)));
     }
 
@@ -43,19 +51,19 @@ public class SchoolServiceImpl implements SchoolService {
                 schoolPages.getSize(),
                 schoolPages.getTotalElements(),
                 schoolPages.getTotalPages()
-                );
+        );
     }
-
 
 
     @Override
     @Transactional
     public SchoolResponse save(CreateSchoolRequest createSchoolRequest) {
-        School school= School.builder()
+        School school = School.builder()
                 .code(createSchoolRequest.getCode())
                 .name(createSchoolRequest.getName())
                 .address(createSchoolRequest.getAddress())
                 .status(createSchoolRequest.getStatus())
+                .createdAt(Instant.now())
                 .build();
         return schoolMapper.toSchoolResponse(schoolRepository.save(school));
     }

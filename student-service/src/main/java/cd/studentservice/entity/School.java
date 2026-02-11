@@ -32,7 +32,6 @@ public class School {
     String address;
     @Enumerated(EnumType.STRING)
     SchoolStatus status;
-    @CreationTimestamp
     Instant createdAt;
     Instant deletedAt;
 }

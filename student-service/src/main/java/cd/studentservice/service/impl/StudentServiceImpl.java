@@ -1,5 +1,6 @@
 package cd.studentservice.service.impl;
 
+import cd.studentservice.configuration.CustomUserDetails;
 import cd.studentservice.dto.request.CreateStudentRequest;
 import cd.studentservice.dto.request.UpdateStudentRequest;
 import cd.studentservice.dto.response.StudentResponse;
@@ -15,9 +16,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -44,6 +47,10 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse findById(UUID id) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (customUserDetails.getRoles().contains("ROLE_STUDENT"))
+            if (!Objects.equals(customUserDetails.getStudentId(), id))
+                throw new RuntimeException("You don't have permission to access this data");
         return studentMapper.toStudentResponse(studentRepository.findById(id).orElseThrow(() -> new RuntimeException("Cannot find student with id: " + id)));
     }
 
@@ -58,6 +65,7 @@ public class StudentServiceImpl implements StudentService {
                 .gender(request.getGender())
                 .status(request.getStatus())
                 .dob(request.getDob())
+                .createdAt(Instant.now())
                 .build();
         return studentMapper.toStudentResponse(studentRepository.save(student));
     }

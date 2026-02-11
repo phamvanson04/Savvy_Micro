@@ -34,7 +34,7 @@ public class Student {
     Boolean gender;
     @Enumerated(EnumType.STRING)
     StudentStatus status;
-    @CreationTimestamp
+
     Instant createdAt;
     Instant deletedAt;
 

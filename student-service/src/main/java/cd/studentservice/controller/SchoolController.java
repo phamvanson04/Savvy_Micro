@@ -3,17 +3,12 @@ package cd.studentservice.controller;
 import cd.studentservice.dto.request.CreateSchoolRequest;
 import cd.studentservice.dto.request.UpdateSchoolRequest;
 import cd.studentservice.dto.response.SchoolResponse;
-import cd.studentservice.entity.School;
 import cd.studentservice.service.SchoolService;
 import com.savvy.common.dto.BaseResponse;
 import com.savvy.common.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -22,12 +17,12 @@ import java.util.UUID;
 public class SchoolController {
     private final SchoolService schoolService;
 
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public BaseResponse<PageResponse<SchoolResponse>>findPage(@RequestParam int page,
-                                                             @RequestParam int size){
-        return BaseResponse.success(schoolService.getPages(size,page),"Get data success");
-    }
+//    @GetMapping
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public BaseResponse<PageResponse<SchoolResponse>>findPage(@RequestParam int page,
+//                                                             @RequestParam int size){
+//        return BaseResponse.success(schoolService.getPages(size,page),"Get data success");
+//    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")

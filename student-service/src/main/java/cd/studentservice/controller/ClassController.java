@@ -7,7 +7,6 @@ import cd.studentservice.service.ClassService;
 import com.savvy.common.dto.BaseResponse;
 import com.savvy.common.dto.PageResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +19,7 @@ import java.util.UUID;
 public class ClassController {
     private final ClassService classService;
 
-    @GetMapping
+    @GetMapping("/by-school")
     @PreAuthorize("hasAnyRole('ADMIN','SCHOOL_MANAGER')")
     public BaseResponse<List<ClassResponse>>findBySchoolId(@RequestParam UUID schoolId){
         return BaseResponse.success(classService.findBySchoolId(schoolId),"Get data success");

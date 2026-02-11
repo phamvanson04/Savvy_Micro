@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -66,6 +67,7 @@ public class ClassServiceImpl implements ClassService {
                 .grade(createClassRequest.getGrade())
                 .status(createClassRequest.getStatus())
                 .school(existedSchool)
+                .createdAt(Instant.now())
                 .build();
         return classMapper.toClassResponse(classRepository.save(newClass));
     }

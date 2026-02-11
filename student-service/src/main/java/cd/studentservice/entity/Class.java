@@ -32,9 +32,7 @@ public class Class {
     @Enumerated(EnumType.STRING)
     ClassStatus status;
 
-    @CreationTimestamp
     Instant createdAt;
-
     Instant deletedAt;
 
     @ManyToOne

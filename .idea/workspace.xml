@@ -5,7 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="567559d3-edee-49a8-a28a-f146b729929d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/grade-service/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/CustomUserDetails.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/src/main/java/com/savvy/gateway/dto/response/IntrospectResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/src/main/java/com/savvy/gateway/dto/response/IntrospectResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/com/savvy/gateway/dto/response/IntrospectResponse$IntrospectResponseBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/target/classes/com/savvy/gateway/dto/response/IntrospectResponse$IntrospectResponseBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/com/savvy/gateway/dto/response/IntrospectResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/target/classes/com/savvy/gateway/dto/response/IntrospectResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/target/classes/com/savvy/gateway/filter/AuthenticationGlobalFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grade-service/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grade-service/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/CustomJwtDecoder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationEntryPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/JwtAuthenticationEntryPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/configuration/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/controller/ClassController.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/controller/ClassController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/controller/SchoolController.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/controller/SchoolController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/ClassServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/SchoolServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/SchoolServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/service/impl/StudentServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/student-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/resources/application.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -13,7 +36,19 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -22,51 +57,74 @@
     &quot;assignee&quot;: &quot;MoiChung-nwc&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/phamvanson04/Savvy_Micro.git",
-    "accountId": "94af9d79-a670-4b29-911b-ddff5a01a064"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/phamvanson04/Savvy_Micro.git&quot;,
+    &quot;accountId&quot;: &quot;5f4e4983-6558-4092-8ef0-32359a16e931&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 1
 }</component>
   <component name="ProjectId" id="39Qfn5aQvXZdgvRP3iiXQ5iHWUp" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.API Gateway.executor": "Run",
-    "Application.Auth Service.executor": "Run",
-    "Application.Grade Service.executor": "Run",
-    "Application.Student Service.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/test/student-service",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.20804597",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.API Gateway.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Auth Service.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Grade Service.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Student Service.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;student-service&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/test/student-service&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.20804597&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
+    ]
   }
-}]]></component>
+}</component>
   <component name="RunDashboard">
     <option name="configurationTypes">
       <set>
         <option value="Application" />
       </set>
     </option>
+    <option name="configurationStatuses">
+      <map>
+        <entry key="Application">
+          <value>
+            <map>
+              <entry key="API Gateway" value="STOPPED" />
+              <entry key="Auth Service" value="FAILED" />
+              <entry key="Student Service" value="STOPPED" />
+            </map>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
-  <component name="RunManager" selected="Application.Grade Service">
+  <component name="RunManager" selected="Application.Student Service">
     <configuration name="API Gateway" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="com.savvy.gateway.ApiGatewayApplication" />
       <module name="api-gateway" />
@@ -85,6 +143,11 @@
       </method>
     </configuration>
     <configuration name="Auth Service" type="Application" factoryName="Application">
+      <envs>
+        <env name="USERNAME" value="conan09040" />
+        <env name="PASSWORD" value="conan14121" />
+        <env name="DB_NAME" value="auth_service" />
+      </envs>
       <option name="MAIN_CLASS_NAME" value="com.savvycom.auth_service.AuthServiceApplication" />
       <module name="auth-service" />
       <extension name="net.ashald.envfile">
@@ -102,6 +165,11 @@
       </method>
     </configuration>
     <configuration name="Grade Service" type="Application" factoryName="Application">
+      <envs>
+        <env name="USERNAME" value="conan09040" />
+        <env name="PASSWORD" value="conan14121" />
+        <env name="DB_NAME" value="grade_service" />
+      </envs>
       <option name="MAIN_CLASS_NAME" value="com.savvy.gradeservice.GradeServiceApplication" />
       <module name="grade-service" />
       <extension name="net.ashald.envfile">
@@ -119,6 +187,11 @@
       </method>
     </configuration>
     <configuration name="Student Service" type="Application" factoryName="Application">
+      <envs>
+        <env name="USERNAME" value="conan09040" />
+        <env name="PASSWORD" value="conan14121" />
+        <env name="DB_NAME" value="student_service" />
+      </envs>
       <option name="MAIN_CLASS_NAME" value="cd.studentservice.StudentServiceApplication" />
       <module name="student-service" />
       <extension name="net.ashald.envfile">
@@ -145,8 +218,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.23892.409" />
-        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-IU-252.23892.409" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.30387.90" />
       </set>
     </attachedChunks>
   </component>
@@ -159,6 +232,7 @@
       <option name="presentableId" value="Default" />
       <updated>1770633379987</updated>
       <workItem from="1770706205328" duration="1654000" />
+      <workItem from="1770775702767" duration="18149000" />
     </task>
     <servers />
   </component>
@@ -166,11 +240,53 @@
     <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="main" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="HEAD" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="student-service" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/main" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
