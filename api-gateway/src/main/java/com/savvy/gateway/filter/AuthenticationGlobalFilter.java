@@ -147,6 +147,5 @@ public class AuthenticationGlobalFilter implements org.springframework.cloud.gat
         Object v = dataScope.get("schoolId");
         return v == null ? "" : String.valueOf(v).trim();
     }
-
 }
 

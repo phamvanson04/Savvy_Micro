@@ -1,0 +1,503 @@
+Index: api-gateway/.idea/misc.xml
+===================================================================
+diff --git a/api-gateway/.idea/misc.xml b/api-gateway/.idea/misc.xml
+deleted file mode 100644
+--- a/api-gateway/.idea/misc.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,13 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="ExternalStorageConfigurationManager" enabled="true" />
+-  <component name="KubernetesApiProvider"><![CDATA[{}]]></component>
+-  <component name="MavenProjectsManager">
+-    <option name="originalFiles">
+-      <list>
+-        <option value="$PROJECT_DIR$/pom.xml" />
+-      </list>
+-    </option>
+-  </component>
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="ms-21" project-jdk-type="JavaSDK" />
+-</project>
+\ No newline at end of file
+Index: grade-service/.idea/misc.xml
+===================================================================
+diff --git a/grade-service/.idea/misc.xml b/grade-service/.idea/misc.xml
+deleted file mode 100644
+--- a/grade-service/.idea/misc.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,13 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="ExternalStorageConfigurationManager" enabled="true" />
+-  <component name="KubernetesApiProvider">{}</component>
+-  <component name="MavenProjectsManager">
+-    <option name="originalFiles">
+-      <list>
+-        <option value="$PROJECT_DIR$/pom.xml" />
+-      </list>
+-    </option>
+-  </component>
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="ms-21" project-jdk-type="JavaSDK" />
+-</project>
+\ No newline at end of file
+Index: grade-service/.idea/vcs.xml
+===================================================================
+diff --git a/grade-service/.idea/vcs.xml b/grade-service/.idea/vcs.xml
+deleted file mode 100644
+--- a/grade-service/.idea/vcs.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+-  </component>
+-</project>
+\ No newline at end of file
+Index: api-gateway/.idea/.gitignore
+===================================================================
+diff --git a/api-gateway/.idea/.gitignore b/api-gateway/.idea/.gitignore
+deleted file mode 100644
+--- a/api-gateway/.idea/.gitignore	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,8 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+-# Editor-based HTTP Client requests
+-/httpRequests/
+-# Datasource local storage ignored files
+-/dataSources/
+-/dataSources.local.xml
+Index: .idea/compiler.xml
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+deleted file mode 100644
+--- a/.idea/compiler.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,94 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="CompilerConfiguration">
+-    <annotationProcessing>
+-      <profile default="true" name="Default" enabled="true" />
+-      <profile name="Maven default annotation processors profile" enabled="true">
+-        <sourceOutputDir name="target/generated-sources/annotations" />
+-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+-        <outputRelativeToContentRoot value="true" />
+-        <module name="api-gateway" />
+-        <module name="common-library" />
+-        <module name="auth-service" />
+-      </profile>
+-      <profile name="Annotation profile for student-service" enabled="true">
+-        <sourceOutputDir name="target/generated-sources/annotations" />
+-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+-        <outputRelativeToContentRoot value="true" />
+-        <processorPath useClasspath="false">
+-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.6.3/mapstruct-1.6.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+-        </processorPath>
+-        <module name="student-service" />
+-      </profile>
+-      <profile name="Annotation profile for Grade Service" enabled="true">
+-        <sourceOutputDir name="target/generated-sources/annotations" />
+-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+-        <outputRelativeToContentRoot value="true" />
+-        <processorPath useClasspath="false">
+-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/querydsl-apt/5.0.0/querydsl-apt-5.0.0-jakarta.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/querydsl-codegen/5.0.0/querydsl-codegen-5.0.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/mysema/commons/mysema-commons-lang/0.2.4/mysema-commons-lang-0.2.4.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/codegen-utils/5.0.0/codegen-utils-5.0.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/eclipse/jdt/ecj/3.26.0/ecj-3.26.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/io/github/classgraph/classgraph/4.8.108/classgraph-4.8.108.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/inject/javax.inject/1/javax.inject-1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jetbrains/annotations/21.0.1/annotations-21.0.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/datanucleus/javax.jdo/3.2.0-m13/javax.jdo-3.2.0-m13.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/transaction/transaction-api/1.1/transaction-api-1.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/springframework/roo/org.springframework.roo.annotations/1.3.2.RELEASE/org.springframework.roo.annotations-1.3.2.RELEASE.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/mongodb/morphia/morphia/1.3.2/morphia-1.3.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.4.0/mongo-java-driver-3.4.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/thoughtworks/proxytoys/proxytoys/1.0/proxytoys-1.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/joda-time/joda-time/2.10.10/joda-time-2.10.10.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.4.8.Final/hibernate-core-5.4.8.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jboss/logging/jboss-logging/3.3.2.Final/jboss-logging-3.3.2.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/persistence/javax.persistence-api/2.2/javax.persistence-api-2.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy/1.10.2/byte-buddy-1.10.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/antlr/antlr/2.7.7/antlr-2.7.7.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jboss/spec/javax/transaction/jboss-transaction-api_1.2_spec/1.1.1.Final/jboss-transaction-api_1.2_spec-1.1.1.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jboss/jandex/2.0.5.Final/jandex-2.0.5.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/classmate/1.3.4/classmate-1.3.4.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/dom4j/dom4j/2.1.1/dom4j-2.1.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hibernate/common/hibernate-commons-annotations/5.1.0.Final/hibernate-commons-annotations-5.1.0.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/glassfish/jaxb/jaxb-runtime/2.3.1/jaxb-runtime-2.3.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/glassfish/jaxb/txw2/2.3.1/txw2-2.3.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/sun/istack/istack-commons-runtime/3.0.7/istack-commons-runtime-3.0.7.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jvnet/staxex/stax-ex/1.8/stax-ex-1.8.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/sun/xml/fastinfoset/FastInfoset/1.2.15/FastInfoset-1.2.15.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hibernate/hibernate-envers/5.4.8.Final/hibernate-envers-5.4.8.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0-tests.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/joda/joda-money/1.0.1/joda-money-1.0.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/eclipse/jdt/core/compiler/ecj/4.6.1/ecj-4.6.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/junit/junit/4.13.2/junit-4.13.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/easymock/easymock/4.3/easymock-4.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/objenesis/objenesis/3.2/objenesis-3.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/javassist/javassist/3.28.0-GA/javassist-3.28.0-GA.jar" />
+-        </processorPath>
+-        <module name="grade-service" />
+-      </profile>
+-    </annotationProcessing>
+-    <bytecodeTargetLevel>
+-      <module name="gradeservice" target="21" />
+-    </bytecodeTargetLevel>
+-  </component>
+-  <component name="JavacSettings">
+-    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+-      <module name="api-gateway" options="-parameters" />
+-      <module name="auth-service" options="-parameters" />
+-      <module name="grade-service" options="-parameters" />
+-      <module name="gradeservice" options="-parameters" />
+-      <module name="student-service" options="-parameters" />
+-    </option>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: api-gateway/.idea/compiler.xml
+===================================================================
+diff --git a/api-gateway/.idea/compiler.xml b/api-gateway/.idea/compiler.xml
+deleted file mode 100644
+--- a/api-gateway/.idea/compiler.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,18 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="CompilerConfiguration">
+-    <annotationProcessing>
+-      <profile name="Maven default annotation processors profile" enabled="true">
+-        <sourceOutputDir name="target/generated-sources/annotations" />
+-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+-        <outputRelativeToContentRoot value="true" />
+-        <module name="api-gateway" />
+-      </profile>
+-    </annotationProcessing>
+-  </component>
+-  <component name="JavacSettings">
+-    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+-      <module name="api-gateway" options="-parameters" />
+-    </option>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: api-gateway/.idea/jarRepositories.xml
+===================================================================
+diff --git a/api-gateway/.idea/jarRepositories.xml b/api-gateway/.idea/jarRepositories.xml
+deleted file mode 100644
+--- a/api-gateway/.idea/jarRepositories.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,20 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="RemoteRepositoriesConfiguration">
+-    <remote-repository>
+-      <option name="id" value="central" />
+-      <option name="name" value="Central Repository" />
+-      <option name="url" value="https://repo.maven.apache.org/maven2" />
+-    </remote-repository>
+-    <remote-repository>
+-      <option name="id" value="central" />
+-      <option name="name" value="Maven Central repository" />
+-      <option name="url" value="https://repo1.maven.org/maven2" />
+-    </remote-repository>
+-    <remote-repository>
+-      <option name="id" value="jboss.community" />
+-      <option name="name" value="JBoss Community repository" />
+-      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+-    </remote-repository>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/dataSources.local.xml
+===================================================================
+diff --git a/.idea/dataSources.local.xml b/.idea/dataSources.local.xml
+deleted file mode 100644
+--- a/.idea/dataSources.local.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,28 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="dataSourceStorageLocal" created-in="IU-252.23892.409">
+-    <data-source name="postgres@localhost" uuid="8f2e3b23-222a-4bb7-8636-b07fa478ad20">
+-      <database-info product="PostgreSQL" version="18.1 (Debian 18.1-1.pgdg13+2)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.9" dbms="POSTGRES" exact-version="18.1" exact-driver-version="42.7">
+-        <identifier-quote-string>&quot;</identifier-quote-string>
+-      </database-info>
+-      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+-      <secret-storage>master_key</secret-storage>
+-      <user-name>conan09040</user-name>
+-      <schema-mapping>
+-        <introspection-scope>
+-          <node negative="1">
+-            <node kind="database" qname="@">
+-              <node kind="schema" qname="@" />
+-            </node>
+-            <node kind="database">
+-              <name qname="auth_service_db" />
+-              <name qname="student_service" />
+-              <node kind="schema" qname="public" />
+-            </node>
+-            <node kind="database" qname="grade_service" />
+-          </node>
+-        </introspection-scope>
+-      </schema-mapping>
+-    </data-source>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: grade-service/.idea/jarRepositories.xml
+===================================================================
+diff --git a/grade-service/.idea/jarRepositories.xml b/grade-service/.idea/jarRepositories.xml
+deleted file mode 100644
+--- a/grade-service/.idea/jarRepositories.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,20 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="RemoteRepositoriesConfiguration">
+-    <remote-repository>
+-      <option name="id" value="central" />
+-      <option name="name" value="Central Repository" />
+-      <option name="url" value="https://repo.maven.apache.org/maven2" />
+-    </remote-repository>
+-    <remote-repository>
+-      <option name="id" value="central" />
+-      <option name="name" value="Maven Central repository" />
+-      <option name="url" value="https://repo1.maven.org/maven2" />
+-    </remote-repository>
+-    <remote-repository>
+-      <option name="id" value="jboss.community" />
+-      <option name="name" value="JBoss Community repository" />
+-      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+-    </remote-repository>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: grade-service/.idea/encodings.xml
+===================================================================
+diff --git a/grade-service/.idea/encodings.xml b/grade-service/.idea/encodings.xml
+deleted file mode 100644
+--- a/grade-service/.idea/encodings.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="Encoding">
+-    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/workspace.xml
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+deleted file mode 100644
+--- a/.idea/workspace.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,52 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="AutoImportSettings">
+-    <option name="autoReloadType" value="SELECTIVE" />
+-  </component>
+-  <component name="ChangeListManager">
+-    <list default="true" id="567559d3-edee-49a8-a28a-f146b729929d" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/auth-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/pom.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/application.yml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/grade-service/target/generated-sources/annotations/com/savvy/gradeservice/entity/QGrade.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Class.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/School.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/student-service/src/main/java/cd/studentservice/entity/Student.java" afterDir="false" />
+-    </list>
+-    <option name="SHOW_DIALOG" value="false" />
+-    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+-    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+-    <option name="LAST_RESOLUTION" value="IGNORE" />
+-  </component>
+-  <component name="Git.Settings">
+-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+-  </component>
+-  <component name="GithubPullRequestsUISettings"><![CDATA[{
+-  "selectedUrlAndAccountId": {
+-    "url": "https://github.com/phamvanson04/Savvy_Micro.git",
+-    "accountId": "94af9d79-a670-4b29-911b-ddff5a01a064"
+-  }
+-}]]></component>
+-  <component name="PropertiesComponent"><![CDATA[{
+-  "keyToString": {
+-    "git-widget-placeholder": "Merging main",
+-    "node.js.selected.package.tslint": "(autodetect)"
+-  }
+-}]]></component>
+-  <component name="RunManager">
+-    <configuration default="true" type="JetRunConfigurationType">
+-      <module name="ms2" />
+-      <method v="2">
+-        <option name="Make" enabled="true" />
+-      </method>
+-    </configuration>
+-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+-      <module name="ms2" />
+-      <option name="filePath" />
+-      <method v="2" />
+-    </configuration>
+-  </component>
+-  <component name="TaskManager">
+-    <servers />
+-  </component>
+-</project>
+\ No newline at end of file
+Index: grade-service/.idea/.gitignore
+===================================================================
+diff --git a/grade-service/.idea/.gitignore b/grade-service/.idea/.gitignore
+deleted file mode 100644
+--- a/grade-service/.idea/.gitignore	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,8 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+-# Editor-based HTTP Client requests
+-/httpRequests/
+-# Datasource local storage ignored files
+-/dataSources/
+-/dataSources.local.xml
+Index: grade-service/.idea/compiler.xml
+===================================================================
+diff --git a/grade-service/.idea/compiler.xml b/grade-service/.idea/compiler.xml
+deleted file mode 100644
+--- a/grade-service/.idea/compiler.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,71 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="CompilerConfiguration">
+-    <annotationProcessing>
+-      <profile name="Maven default annotation processors profile" enabled="true">
+-        <sourceOutputDir name="target/generated-sources/annotations" />
+-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+-        <outputRelativeToContentRoot value="true" />
+-      </profile>
+-      <profile name="Annotation profile for Grade Service" enabled="true">
+-        <sourceOutputDir name="target/generated-sources/annotations" />
+-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+-        <outputRelativeToContentRoot value="true" />
+-        <processorPath useClasspath="false">
+-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/querydsl-apt/5.0.0/querydsl-apt-5.0.0-jakarta.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/querydsl-codegen/5.0.0/querydsl-codegen-5.0.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/mysema/commons/mysema-commons-lang/0.2.4/mysema-commons-lang-0.2.4.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/codegen-utils/5.0.0/codegen-utils-5.0.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/eclipse/jdt/ecj/3.26.0/ecj-3.26.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/io/github/classgraph/classgraph/4.8.108/classgraph-4.8.108.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/inject/javax.inject/1/javax.inject-1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jetbrains/annotations/21.0.1/annotations-21.0.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/datanucleus/javax.jdo/3.2.0-m13/javax.jdo-3.2.0-m13.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/transaction/transaction-api/1.1/transaction-api-1.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/springframework/roo/org.springframework.roo.annotations/1.3.2.RELEASE/org.springframework.roo.annotations-1.3.2.RELEASE.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/mongodb/morphia/morphia/1.3.2/morphia-1.3.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/mongodb/mongo-java-driver/3.4.0/mongo-java-driver-3.4.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/thoughtworks/proxytoys/proxytoys/1.0/proxytoys-1.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/joda-time/joda-time/2.10.10/joda-time-2.10.10.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hibernate/hibernate-core/5.4.8.Final/hibernate-core-5.4.8.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jboss/logging/jboss-logging/3.3.2.Final/jboss-logging-3.3.2.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/persistence/javax.persistence-api/2.2/javax.persistence-api-2.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/net/bytebuddy/byte-buddy/1.10.2/byte-buddy-1.10.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/antlr/antlr/2.7.7/antlr-2.7.7.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jboss/spec/javax/transaction/jboss-transaction-api_1.2_spec/1.1.1.Final/jboss-transaction-api_1.2_spec-1.1.1.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jboss/jandex/2.0.5.Final/jandex-2.0.5.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/classmate/1.3.4/classmate-1.3.4.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/dom4j/dom4j/2.1.1/dom4j-2.1.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hibernate/common/hibernate-commons-annotations/5.1.0.Final/hibernate-commons-annotations-5.1.0.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/glassfish/jaxb/jaxb-runtime/2.3.1/jaxb-runtime-2.3.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/glassfish/jaxb/txw2/2.3.1/txw2-2.3.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/sun/istack/istack-commons-runtime/3.0.7/istack-commons-runtime-3.0.7.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/jvnet/staxex/stax-ex/1.8/stax-ex-1.8.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/sun/xml/fastinfoset/FastInfoset/1.2.15/FastInfoset-1.2.15.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hibernate/hibernate-envers/5.4.8.Final/hibernate-envers-5.4.8.Final.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/com/querydsl/querydsl-core/5.0.0/querydsl-core-5.0.0-tests.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/joda/joda-money/1.0.1/joda-money-1.0.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/eclipse/jdt/core/compiler/ecj/4.6.1/ecj-4.6.1.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/junit/junit/4.13.2/junit-4.13.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/easymock/easymock/4.3/easymock-4.3.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/objenesis/objenesis/3.2/objenesis-3.2.jar" />
+-          <entry name="$MAVEN_REPOSITORY$/org/javassist/javassist/3.28.0-GA/javassist-3.28.0-GA.jar" />
+-        </processorPath>
+-        <module name="grade-service" />
+-      </profile>
+-    </annotationProcessing>
+-  </component>
+-  <component name="JavacSettings">
+-    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+-      <module name="grade-service" options="-parameters" />
+-    </option>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: api-gateway/.idea/encodings.xml
+===================================================================
+diff --git a/api-gateway/.idea/encodings.xml b/api-gateway/.idea/encodings.xml
+deleted file mode 100644
+--- a/api-gateway/.idea/encodings.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="Encoding">
+-    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+-  </component>
+-</project>
+\ No newline at end of file
+Index: .idea/modules.xml
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+deleted file mode 100644
+--- a/.idea/modules.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,8 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="ProjectModuleManager">
+-    <modules>
+-      <module fileurl="file://$PROJECT_DIR$/.idea/ms2.iml" filepath="$PROJECT_DIR$/.idea/ms2.iml" />
+-    </modules>
+-  </component>
+-</project>
+\ No newline at end of file
+Index: api-gateway/.idea/vcs.xml
+===================================================================
+diff --git a/api-gateway/.idea/vcs.xml b/api-gateway/.idea/vcs.xml
+deleted file mode 100644
+--- a/api-gateway/.idea/vcs.xml	(revision 34a5f64ad2530118f3db245885de081969617cf5)
++++ /dev/null	(revision 34a5f64ad2530118f3db245885de081969617cf5)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<project version="4">
+-  <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+-  </component>
+-</project>
+\ No newline at end of file
