@@ -91,7 +91,7 @@ public class JwtService {
 
     public Claims parseAndValidateRefreshToken(String rawRefreshToken) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(refreshKey)
+                .setSigningKey(refreshKey) // veryfy bang refreshKey
                 .build()
                 // giai ma, verify, exp
                 .parseClaimsJws(rawRefreshToken)

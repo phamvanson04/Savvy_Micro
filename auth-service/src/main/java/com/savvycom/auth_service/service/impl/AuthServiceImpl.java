@@ -228,6 +228,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             var claims = jwtService.parseAndValidateAccessToken(token);
 
+            // jti de check backlist
             String jti = claims.getId();
             if (jti != null && invalidatedTokenService.isBlacklisted(jti)) {
                 return IntrospectResponse.builder()
