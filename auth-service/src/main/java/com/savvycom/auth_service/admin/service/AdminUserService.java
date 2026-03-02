@@ -5,14 +5,13 @@ import com.savvycom.auth_service.admin.dto.request.AdminCreateUserRequest;
 import com.savvycom.auth_service.admin.dto.request.AdminSetUserRolesRequest;
 import com.savvycom.auth_service.admin.dto.request.AdminUpdateUserRequest;
 import com.savvycom.auth_service.admin.dto.response.AdminUserDetailResponse;
-import com.savvycom.auth_service.admin.dto.response.AdminUserSummaryResponse;
-import com.savvycom.auth_service.external.dto.UserWithStudentDto;
+import com.savvycom.auth_service.external.dto.UserScopeViewDto;
 import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
 public interface AdminUserService {
-    PageResponse<UserWithStudentDto> listUsers(Pageable pageable);
+    PageResponse<UserScopeViewDto> listUsers(Pageable pageable);
     AdminUserDetailResponse getUser(UUID userId);
     AdminUserDetailResponse createUser(AdminCreateUserRequest request);
     AdminUserDetailResponse updateUser(UUID userId, AdminUpdateUserRequest request);

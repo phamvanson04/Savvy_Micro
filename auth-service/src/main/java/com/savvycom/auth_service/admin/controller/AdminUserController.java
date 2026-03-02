@@ -6,9 +6,8 @@ import com.savvycom.auth_service.admin.dto.request.AdminCreateUserRequest;
 import com.savvycom.auth_service.admin.dto.request.AdminSetUserRolesRequest;
 import com.savvycom.auth_service.admin.dto.request.AdminUpdateUserRequest;
 import com.savvycom.auth_service.admin.dto.response.AdminUserDetailResponse;
-import com.savvycom.auth_service.admin.dto.response.AdminUserSummaryResponse;
 import com.savvycom.auth_service.admin.service.AdminUserService;
-import com.savvycom.auth_service.external.dto.UserWithStudentDto;
+import com.savvycom.auth_service.external.dto.UserScopeViewDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +26,7 @@ public class AdminUserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BaseResponse<PageResponse<UserWithStudentDto>>> listUsers(Pageable pageable) {
+    public ResponseEntity<BaseResponse<PageResponse<UserScopeViewDto>>> listUsers(Pageable pageable) {
         return ok("OK", adminUserService.listUsers(pageable));
     }
 

@@ -4,106 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="567559d3-edee-49a8-a28a-f146b729929d" name="Changes" comment="Update to remove List of schoolID">
-      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/config/RestTemplateConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/external/Class.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/external/School.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/external/Student.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/external/dto/UserWithStudentDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/external/enumerate/ClassStatus.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/external/enumerate/SchoolStatus.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/external/enumerate/StudentStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_02_2026_05_58_CH_[Changes]/AuthenticationGlobalFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_02_2026_05_58_CH_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_02_2026_05_58_CH__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_02_2026_05_59_CH_[Changes]/AuthenticationGlobalFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_02_2026_05_59_CH_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_09_02_2026_05_59_CH__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/AccessControlHelper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/ApiGatewayApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/AuthenticationGlobalFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GatewayBaseResponse$ErrorDetail$ErrorDetailBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GatewayBaseResponse$ErrorDetail.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GatewayBaseResponse$GatewayBaseResponseBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GatewayBaseResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GatewayExceptionHandler.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/Grade$GradeBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/Grade.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeItemResponse$GradeItemResponseBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeItemResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeMapper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeRepositoryCustom.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeRepositoryImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeResponse$GradeResponseBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeServiceApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/GradeValidator.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/IGradeService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/IdentityClient.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/IdentityService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/IntrospectRequest$IntrospectRequestBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/IntrospectRequest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/IntrospectResponse$IntrospectResponseBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/IntrospectResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/JwtAuthenticationFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/JwtProps.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/QGrade.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/SecurityConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/SecurityConfig1.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/SecurityProperties$PermissionRule.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/SecurityProperties.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/StudentGradesResponse$StudentGradesResponseBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/StudentGradesResponse.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/UserContext.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/WebClientConfiguration.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_10_02_2026_05_30_CH__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_16_45,_09_02_2026_[Changes]1/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_16_45__09_02_2026__Changes_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_16_46,_09_02_2026_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_16_46__09_02_2026__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/AccessControlHelper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/AuthenticationGlobalFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/CreateGradeDTO$CreateGradeDTOBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/CreateGradeDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GatewayController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeRepositoryCustom.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeRepositoryImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeSearchDTO$GradeSearchDTOBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeSearchDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/GradeServiceImpl.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/IGradeService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/JwtAuthenticationFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/SecurityConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/UpdateGradeDTO$UpdateGradeDTOBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/UpdateGradeDTO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/UserContext.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM_[Changes]1/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2_10_2026_11_03_AM__Changes_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_02_2026_11_04_CH_[Changes]1/SecurityConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_02_2026_11_04_CH_[Changes]1/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_08_02_2026_11_04_CH__Changes_1.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_02_2026_04_29_CH_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_02_2026_04_29_CH__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_02_2026_05_30_CH_[Changes]/AuthenticationGlobalFilter.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_02_2026_05_30_CH_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_02_2026_05_30_CH__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_10_02_2026_02_13_CH_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_10_02_2026_02_13_CH__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_10_46,_10_02_2026_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_10_46__10_02_2026__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase__Changes_.xml" beforeDir="false" />
+    <list default="true" id="567559d3-edee-49a8-a28a-f146b729929d" name="Changes" comment="feat: add integration with student-service to retrieve schoolId and studentId for users">
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/admin/helper/AdminUserScopeValidator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/external/client/StudentServiceClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/admin/controller/AdminUserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/admin/controller/AdminUserController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/admin/service/AdminUserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/admin/service/AdminUserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/admin/service/impl/AdminUserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/admin/service/impl/AdminUserServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/JwtService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/service/impl/AuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/external/dto/UserWithStudentDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/savvycom/auth_service/external/dto/UserScopeViewDto.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,28 +54,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.API Gateway.executor": "Run",
-    "Application.Auth Service.executor": "Run",
-    "Application.Grade Service.executor": "Run",
-    "Application.Student Service.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "gateway-and-auth",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/test/auth-service/src/main/java/com/savvycom/auth_service/external",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.20804597"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.API Gateway.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Auth Service.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Grade Service.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Student Service.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;gateway-and-auth&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/test/auth-service/src/main/java/com/savvycom/auth_service/external&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.20804597&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\test\auth-service\src\main\java\com\savvycom\auth_service\external" />
       <recent name="D:\test\auth-service\src\main\java\com\savvycom\auth_service\external\dto" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.savvycom.auth_service.admin.helper" />
       <recent name="com.savvycom.auth_service.config" />
       <recent name="com.savvycom.auth_service.external.dto" />
     </key>
@@ -281,7 +190,15 @@
       <option name="project" value="LOCAL" />
       <updated>1770789597526</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="feat: add integration with student-service to retrieve schoolId and studentId for users">
+      <option name="closed" value="true" />
+      <created>1772165604338</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1772165604338</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -297,6 +214,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Update to remove List of schoolID" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update to remove List of schoolID" />
+    <MESSAGE value="feat: add integration with student-service to retrieve schoolId and studentId for users" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add integration with student-service to retrieve schoolId and studentId for users" />
   </component>
 </project>
